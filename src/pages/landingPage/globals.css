@@ -1,0 +1,162 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Colors */
+  --accent: #f4c2c2;
+  --accent-light: #f9dede;
+  --accent-dark: #e8a0a0;
+  --accent-deep: #c47070;
+
+  --bg-primary: #FFF9F9;
+  --bg-secondary: #FFF0F0;
+  --bg-card: #FFFFFF;
+  --bg-dark: #1A1A1A;
+
+  --text-primary: #2D2D2D;
+  --text-secondary: #6B6B6B;
+  --text-light: #FFFFFF;
+  --text-muted: #9B9B9B;
+
+  --border: #f4c2c2;
+  --border-light: #f9dede;
+  --border-dark: #e8a0a0;
+
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 40px;
+  --spacing-xl: 64px;
+  --spacing-2xl: 80px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===== Landing Page base ===== */
+a.landing-logo,
+a.landing-logo:hover,
+a.landing-logo:focus,
+a.landing-logo:active {
+  text-decoration: none !important;
+}
+
+/* ===== Ant Design overrides for Landing Page ===== */
+
+/* Input & TextArea */
+.landing-input.ant-input,
+.landing-input.ant-input-affix-wrapper,
+textarea.landing-input.ant-input {
+  height: 46px;
+  border-radius: 12px;
+  border-color: var(--border-light);
+  font-size: 14px;
+  padding: 8px 14px;
+}
+textarea.landing-input.ant-input {
+  height: auto;
+}
+.landing-input.ant-input:focus,
+.landing-input.ant-input:hover,
+textarea.landing-input.ant-input:focus,
+textarea.landing-input.ant-input:hover {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 2px rgba(244, 194, 194, 0.3);
+}
+
+/* Select */
+.landing-select .ant-select-selector {
+  height: 46px !important;
+  border-radius: 12px !important;
+  border-color: var(--border-light) !important;
+  padding: 8px 14px !important;
+  display: flex;
+  align-items: center;
+}
+.landing-select.ant-select-focused .ant-select-selector {
+  border-color: var(--accent-dark) !important;
+  box-shadow: 0 0 0 2px rgba(244, 194, 194, 0.3) !important;
+}
+
+/* DatePicker */
+.ant-picker {
+  height: 46px;
+  border-radius: 12px;
+  border-color: var(--border-light);
+  width: 100%;
+}
+.ant-picker:hover,
+.ant-picker-focused {
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 2px rgba(244, 194, 194, 0.3);
+}
+
+/* Primary Button */
+.landing-btn-primary.ant-btn-primary {
+  height: 50px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: var(--accent-deep);
+  border-color: var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.landing-btn-primary.ant-btn-primary:hover,
+.landing-btn-primary.ant-btn-primary:focus {
+  background-color: #b55e5e;
+  border-color: #b55e5e;
+}
+
+/* Form labels */
+.ant-form-vertical .ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Card */
+.landing-card.ant-card {
+  box-shadow: 0 4px 20px rgba(244, 194, 194, 0.06);
+  transition: box-shadow 0.3s, transform 0.3s;
+}
+.landing-card.ant-card:hover {
+  box-shadow: 0 8px 30px rgba(244, 194, 194, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Rate */
+.ant-rate-star-full .anticon,
+.ant-rate-star-half .ant-rate-star-first .anticon {
+  color: var(--accent-dark);
+}

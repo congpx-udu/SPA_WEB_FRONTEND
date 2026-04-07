@@ -16,6 +16,21 @@
 		],
 	},
 
+	{
+		path: '/',
+		name: 'LandingPage',
+		component: './landingPage',
+		layout: false,
+		hideInMenu: true,
+	},
+	{
+		path: '/feedback',
+		name: 'Feedback',
+		component: './landingPage/components/FeedbackPage',
+		layout: false,
+		hideInMenu: true,
+	},
+
 	///////////////////////////////////
 	// DEFAULT MENU
 	{
@@ -72,9 +87,6 @@
 		],
 		layout: false,
 		hideInMenu: true,
-	},
-	{
-		path: '/',
 	},
 	{
 		path: '/403',

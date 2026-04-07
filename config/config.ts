@@ -49,6 +49,7 @@ export default defineConfig({
 	// Fast Refresh 热更新
 	fastRefresh: {},
 
+	extraPostCSSPlugins: [require('@tailwindcss/postcss7-compat'), require('autoprefixer')],
 	nodeModulesTransform: {
 		type: 'none',
 	},
