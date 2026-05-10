@@ -77,10 +77,11 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 			</OIDCBounder>
 		),
 		noFound: <NotFoundContent />,
-		rightContentRender: () => <RightContent />,
-		disableContentMargin: false,
+		rightContentRender: false,
+		headerRender: false,
+		disableContentMargin: true,
 
-		footerRender: () => <Footer />,
+		footerRender: false,
 
 		onPageChange: () => {
 			if (initialState?.currentUser) {
