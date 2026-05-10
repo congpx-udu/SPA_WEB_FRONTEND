@@ -3,7 +3,7 @@ import { EyeOutlined, StarFilled } from '@ant-design/icons';
 import { useModel } from 'umi';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import '../globals.css';
+import '../styles.less';
 
 export function FeedbackPage() {
   const {

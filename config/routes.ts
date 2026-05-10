@@ -39,25 +39,61 @@
 	},
 
 	///////////////////////////////////
-	// DEFAULT MENU
+	// SPA MANAGEMENT MENU
 	{
-		path: '/dashboard',
+		path: '/admin/dashboard',
 		name: 'Dashboard',
-		component: './TrangChu',
-		icon: 'HomeOutlined',
+		component: './admin/Dashboard',
+		icon: 'DashboardOutlined',
 	},
 	{
-		path: '/gioi-thieu',
-		name: 'About',
-		component: './TienIch/GioiThieu',
-		hideInMenu: true,
+		path: '/lich-hen',
+		name: 'Lịch hẹn',
+		component: './admin/Dashboard',
+		icon: 'CalendarOutlined',
 	},
 	{
-		path: '/random-user',
-		name: 'RandomUser',
-		component: './RandomUser',
-		icon: 'ArrowsAltOutlined',
+		path: '/dich-vu',
+		name: 'Dịch vụ',
+		component: './admin/Dashboard',
+		icon: 'StarOutlined',
 	},
+	{
+		path: '/khach-hang',
+		name: 'Khách hàng',
+		component: './admin/Dashboard',
+		icon: 'TeamOutlined',
+	},
+	{
+		path: '/nhan-vien',
+		name: 'Nhân viên',
+		component: './admin/Dashboard',
+		icon: 'UserSwitchOutlined',
+	},
+	{
+		path: '/danh-gia',
+		name: 'Đánh giá',
+		component: './admin/Dashboard',
+		icon: 'StarOutlined',
+	},
+	{
+		path: '/bao-cao',
+		name: 'Báo cáo',
+		component: './admin/Dashboard',
+		icon: 'BarChartOutlined',
+	},
+	// {
+	// 	path: '/gioi-thieu',
+	// 	name: 'About',
+	// 	component: './TienIch/GioiThieu',
+	// 	hideInMenu: true,
+	// },
+	// {
+	// 	path: '/random-user',
+	// 	name: 'RandomUser',
+	// 	component: './RandomUser',
+	// 	hideInMenu: true,
+	// },
 
 	// DANH MUC HE THONG
 	// {
@@ -73,28 +109,28 @@
 	// 	],
 	// },
 
-	{
-		path: '/notification',
-		routes: [
-			{
-				path: './subscribe',
-				exact: true,
-				component: './ThongBao/Subscribe',
-			},
-			{
-				path: './check',
-				exact: true,
-				component: './ThongBao/Check',
-			},
-			{
-				path: './',
-				exact: true,
-				component: './ThongBao/NotifOneSignal',
-			},
-		],
-		layout: false,
-		hideInMenu: true,
-	},
+	// {
+	// 	path: '/notification',
+	// 	routes: [
+	// 		{
+	// 			path: './subscribe',
+	// 			exact: true,
+	// 			component: './ThongBao/Subscribe',
+	// 		},
+	// 		{
+	// 			path: './check',
+	// 			exact: true,
+	// 			component: './ThongBao/Check',
+	// 		},
+	// 		{
+	// 			path: './',
+	// 			exact: true,
+	// 			component: './ThongBao/NotifOneSignal',
+	// 		},
+	// 	],
+	// 	layout: false,
+	// 	hideInMenu: true,
+	// },
 	{
 		path: '/403',
 		component: './exception/403/403Page',

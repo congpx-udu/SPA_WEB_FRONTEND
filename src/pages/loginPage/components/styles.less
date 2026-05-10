@@ -1,0 +1,85 @@
+// Component-level styles for the login page.
+// Tailwind utilities are still used for layout; .less is for stateful styles
+// that Tailwind doesn't express cleanly (focus rings, transitions, hover/disabled).
+
+.login-hero__title {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.login-form__title {
+  font-size: clamp(24px, 3.5vw, 32px);
+}
+
+.login-form__error {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.login-form__input {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    border-color: var(--accent-dark);
+    box-shadow: 0 0 0 2px rgba(244, 194, 194, 0.4);
+  }
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &--with-icon {
+    padding-right: 44px;
+  }
+}
+
+.login-form__eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+
+  &:hover {
+    background-color: var(--bg-secondary);
+    color: var(--accent-deep);
+  }
+}
+
+.login-form__submit {
+  height: 50px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: var(--accent-deep);
+  color: var(--text-light);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}

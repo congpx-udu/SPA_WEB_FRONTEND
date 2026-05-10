@@ -1,6 +1,10 @@
 import React from "react";
 
 export const HeroSection: React.FC = () => {
+  const scrollToId = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
   return (
     <section
       className="relative w-full h-[700px] flex items-center justify-center"
@@ -31,12 +35,14 @@ export const HeroSection: React.FC = () => {
         </p>
         <div className="flex items-center gap-4 mt-4">
           <button
+            onClick={() => scrollToId("booking")}
             className="rounded-xl px-10 py-[18px] font-semibold shadow hover:opacity-90 transition-opacity cursor-pointer"
             style={{ backgroundColor: "var(--accent-deep)", color: "#FFFFFF" }}
           >
             Đặt lịch hẹn
           </button>
           <button
+            onClick={() => scrollToId("services")}
             className="bg-transparent border-2 border-white rounded-xl px-10 py-[18px] font-semibold hover:bg-white hover:bg-opacity-10 transition-colors cursor-pointer"
             style={{ color: "#FFFFFF" }}
           >
