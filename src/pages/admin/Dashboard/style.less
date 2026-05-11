@@ -1,0 +1,28 @@
+@import '~antd/es/style/themes/default.less';
+
+// ===== Spa Dashboard layout wrapper =====
+.spa-dashboard {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+	margin: 0;
+}
+
+// Responsive cho toàn bộ dashboard
+@media (max-width: @screen-md) {
+	.spa-dashboard {
+		.kpi-card {
+			padding: 16px;
+
+			.kpi-value {
+				font-size: 20px;
+			}
+		}
+
+		.chart-card,
+		.table-card,
+		.services-card {
+			padding: 16px;
+		}
+	}
+}

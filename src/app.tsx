@@ -80,6 +80,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 		rightContentRender: false,
 		headerRender: false,
 		disableContentMargin: true,
+		collapsedWidth: 72,
 
 		footerRender: false,
 
