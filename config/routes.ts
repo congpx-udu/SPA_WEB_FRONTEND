@@ -67,8 +67,21 @@
 	{
 		path: '/nhan-vien',
 		name: 'Nhân viên',
-		component: './admin/Dashboard',
-		icon: 'UserSwitchOutlined',
+		icon: 'TeamOutlined',
+		routes: [
+			{
+				name: 'Lễ tân',
+				path: 'le-tan',
+				component: './staff/LeTan',
+				icon: 'UserSwitchOutlined',
+			},
+			{
+				name: 'Thu ngân',
+				path: 'thu-ngan',
+				component: './staff/ThuNgan',
+				icon: 'DollarOutlined',
+			},
+		],
 	},
 	{
 		path: '/danh-gia',
