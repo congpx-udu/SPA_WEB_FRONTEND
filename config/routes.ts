@@ -75,35 +75,29 @@ export default [
 		icon: 'TeamOutlined',
 		access: 'canAdminOrOperator',
 	},
-	// Cụm "Nhân viên" — ADMIN thấy đủ 3 sub, STAFF chỉ thấy Lễ tân + Thu ngân.
+	// ADMIN: top-level "Nhân viên" trỏ thẳng vào Quản lý nhân viên.
 	{
-		path: '/nhan-vien',
+		path: '/nhan-vien/quan-ly',
 		name: 'Nhân viên',
+		component: './admin/Employees',
 		icon: 'TeamOutlined',
-		access: 'canAdminOrStaff',
-		routes: [
-			{
-				name: 'Quản lý nhân viên',
-				path: 'quan-ly',
-				component: './admin/Employees',
-				icon: 'UserOutlined',
-				access: 'canAdmin',
-			},
-			{
-				name: 'Lễ tân',
-				path: 'le-tan',
-				component: './staff/LeTan',
-				icon: 'UserSwitchOutlined',
-				access: 'canAdminOrStaff',
-			},
-			{
-				name: 'Thu ngân',
-				path: 'thu-ngan',
-				component: './staff/ThuNgan',
-				icon: 'DollarOutlined',
-				access: 'canAdminOrStaff',
-			},
-		],
+		access: 'canAdmin',
+	},
+	// OPERATOR kiêm Lễ tân + Thu ngân (xem docs/role-decision.md). ADMIN xem
+	// được để giám sát (readonly).
+	{
+		path: '/le-tan',
+		name: 'Lễ tân',
+		component: './staff/LeTan',
+		icon: 'UserSwitchOutlined',
+		access: 'canAdminOrOperator',
+	},
+	{
+		path: '/thu-ngan',
+		name: 'Thu ngân',
+		component: './staff/ThuNgan',
+		icon: 'DollarOutlined',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/danh-gia',

@@ -26,10 +26,11 @@ export enum EAuthErrorCode {
 }
 
 // Trang mặc định sau khi đăng nhập theo role.
+// Lưu ý: STAFF không có UI (xem docs/role-decision.md) — không có default home.
 export const DEFAULT_HOME_BY_ROLE: Record<EStaffRole, string> = {
 	[EStaffRole.ADMIN]: '/admin/dashboard',
-	[EStaffRole.OPERATOR]: '/lich-hen',
-	[EStaffRole.STAFF]: '/nhan-vien/le-tan',
+	[EStaffRole.OPERATOR]: '/le-tan',
+	[EStaffRole.STAFF]: '/login',
 };
 
 export const PATH_LOGIN = '/login';

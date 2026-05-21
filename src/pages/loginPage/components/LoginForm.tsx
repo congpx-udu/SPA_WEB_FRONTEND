@@ -45,6 +45,22 @@ export default function LoginForm() {
 
 		try {
 			const res = await login({ email, password });
+			// STAFF không có UI (xem docs/role-decision.md). Login thành công ở
+			// BE nhưng FE chặn và tự logout.
+			if (res.user.role === 'STAFF') {
+				const { logout } = (await import('@/services/Auth/api')) as any;
+				try {
+					if (typeof logout === 'function') logout();
+				} catch {}
+				localStorage.removeItem('spa_access_token');
+				localStorage.removeItem('spa_current_user');
+				setAlert({
+					tone: 'warning',
+					title: 'Tài khoản không có quyền truy cập',
+					description: 'Tài khoản nhân viên không được phép đăng nhập vào hệ thống quản lý.',
+				});
+				return;
+			}
 			// Cập nhật initialState để plugin-access nhận role mới ngay.
 			await setInitialState({ ...(initialState ?? {}), currentUser: res.user });
 			if (res.user.mustChangePassword) {
