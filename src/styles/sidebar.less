@@ -1,0 +1,96 @@
+// Restyle ProLayout sider để khớp design Pencil (Luna Spa).
+// Token màu lấy từ tailwind.css: --sidebar-* / --accent-* / --text-*
+
+.ant-pro-sider {
+  background: #FFFFFF !important;
+  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+
+  .ant-pro-sider-logo {
+    padding: 24px 20px 12px !important;
+    border-bottom: 1px solid #F0F0F0;
+    background: #FFFFFF !important;
+
+    h1 {
+      color: var(--text-primary) !important;
+      font-family: 'Inter', sans-serif;
+      font-size: 20px !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.5px;
+    }
+
+    img {
+      width: 32px;
+      height: 32px;
+      border-radius: 18px;
+    }
+  }
+
+  .ant-menu-light {
+    background: transparent !important;
+    border-right: 0 !important;
+    padding: 16px 12px 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .ant-menu-item,
+  .ant-menu-submenu-title {
+    height: 44px !important;
+    line-height: 44px !important;
+    margin: 4px 0 !important;
+    padding: 0 14px !important;
+    border-radius: 10px !important;
+    color: var(--sidebar-text) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    display: flex;
+    align-items: center;
+
+    .anticon {
+      color: var(--sidebar-icon) !important;
+      font-size: 18px !important;
+      min-width: 20px;
+    }
+
+    &:hover {
+      background: #FFF6F6 !important;
+      color: var(--accent-deep) !important;
+      .anticon {
+        color: var(--accent-deep) !important;
+      }
+    }
+  }
+
+  .ant-menu-item-selected {
+    background: var(--sidebar-active-bg) !important;
+    color: var(--sidebar-active-text) !important;
+    font-weight: 600 !important;
+
+    &::after {
+      display: none !important; // ẩn border phải mặc định
+    }
+
+    .anticon {
+      color: var(--sidebar-active-text) !important;
+    }
+
+    a {
+      color: var(--sidebar-active-text) !important;
+    }
+  }
+
+  .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: var(--sidebar-active-text) !important;
+    .anticon {
+      color: var(--sidebar-active-text) !important;
+    }
+  }
+
+  .ant-pro-sider-menu {
+    padding-top: 8px;
+  }
+}
+
+// Footer container (menuFooterRender) — bám sát chân
+.ant-pro-sider-links {
+  display: none !important; // ẩn link copyright mặc định
+}

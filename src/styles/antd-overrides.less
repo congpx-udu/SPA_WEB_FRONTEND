@@ -1,0 +1,136 @@
+// Override AntD components để khớp design Pencil (Luna Spa).
+// Project đặt borderRadiusBase = 2px (vuông), design dùng 10-16px → bo lại.
+
+// ─── Modal ──────────────────────────────────────────────────────────
+.ant-modal {
+  .ant-modal-content {
+    border-radius: 16px !important;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  }
+
+  .ant-modal-header {
+    border-radius: 16px 16px 0 0 !important;
+    border-bottom: 1px solid #F0F0F0;
+    padding: 18px 24px;
+
+    .ant-modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: 'Inter', sans-serif;
+    }
+  }
+
+  .ant-modal-body {
+    padding: 20px 24px;
+  }
+
+  .ant-modal-footer {
+    border-top: 1px solid #F0F0F0;
+    padding: 14px 24px;
+  }
+
+  .ant-modal-close {
+    top: 14px;
+    right: 14px;
+  }
+}
+
+// ─── Button ─────────────────────────────────────────────────────────
+.ant-btn {
+  border-radius: 10px !important;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.ant-btn-primary {
+  background: var(--accent-deep) !important;
+  border-color: var(--accent-deep) !important;
+  &:hover, &:focus {
+    background: #b85f5f !important;
+    border-color: #b85f5f !important;
+  }
+}
+
+.ant-btn-dangerous {
+  border-radius: 10px !important;
+}
+
+// ─── Inputs / Select / DatePicker / InputNumber ────────────────────
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-input-number,
+.ant-picker,
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  border-radius: 10px !important;
+}
+
+.ant-input-number {
+  width: 100%;
+  .ant-input-number-input {
+    border-radius: 10px !important;
+  }
+}
+
+.ant-input-affix-wrapper > input.ant-input {
+  border-radius: 0 !important; // inner input của affix-wrapper giữ nguyên
+}
+
+.ant-form-item-label > label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+// ─── Tag ────────────────────────────────────────────────────────────
+.ant-tag {
+  border-radius: 6px !important;
+  font-weight: 500;
+  padding: 2px 8px;
+  border: none;
+}
+
+// ─── Dropdown / Menu ───────────────────────────────────────────────
+.ant-dropdown-menu {
+  border-radius: 10px !important;
+  padding: 6px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.ant-dropdown-menu-item {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+}
+
+// ─── Popconfirm ────────────────────────────────────────────────────
+.ant-popover-inner {
+  border-radius: 12px !important;
+}
+.ant-popover-inner-content {
+  padding: 14px 16px;
+}
+
+// ─── Table ──────────────────────────────────────────────────────────
+.ant-pagination-item,
+.ant-pagination-prev .ant-pagination-item-link,
+.ant-pagination-next .ant-pagination-item-link {
+  border-radius: 8px !important;
+}
+
+.ant-pagination-item-active {
+  background: var(--accent-deep) !important;
+  border-color: var(--accent-deep) !important;
+  a { color: #fff !important; }
+}
+
+// ─── Switch ────────────────────────────────────────────────────────
+.ant-switch-checked {
+  background-color: var(--accent-deep) !important;
+}
+
+// ─── Message ───────────────────────────────────────────────────────
+.ant-message-notice-content {
+  border-radius: 10px !important;
+}

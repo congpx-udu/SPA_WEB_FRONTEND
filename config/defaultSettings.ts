@@ -20,7 +20,7 @@ const Settings: LayoutSettings & {
 	iconfontUrl: '',
 	headerTheme: 'light',
 	headerHeight: 60,
-	siderWidth: 220,
+	siderWidth: 260,
 };
 
 export default Settings;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card } from 'antd';
+import { Card, Spin } from 'antd';
 import {
   SkinOutlined,
   StarOutlined,
@@ -7,18 +7,34 @@ import {
   CustomerServiceOutlined,
   FireOutlined,
 } from '@ant-design/icons';
-import { MOCK_SERVICES, formatPrice } from '@/services/DichVu/constant';
+import { useModel } from 'umi';
+import { formatPrice } from '@/services/DichVu/constant';
 import { ServiceDetailModal } from './ServiceDetailModal';
 
-const iconMap: Record<string, React.ReactNode> = {
-  'svc-001': <SkinOutlined />,
-  'svc-002': <StarOutlined />,
-  'svc-003': <ExperimentOutlined />,
-  'svc-004': <CustomerServiceOutlined />,
-  'svc-005': <FireOutlined />,
+// Map icon theo category BE — dùng khi chưa có ảnh.
+const categoryIconMap: Record<string, React.ReactNode> = {
+  SWEDISH: <CustomerServiceOutlined />,
+  HOT_STONE: <FireOutlined />,
+  THAI: <SkinOutlined />,
+  FOOT: <ExperimentOutlined />,
+  NECK_SHOULDER: <StarOutlined />,
+  AROMA: <ExperimentOutlined />,
 };
+const fallbackIcons: React.ReactNode[] = [
+  <SkinOutlined />,
+  <StarOutlined />,
+  <ExperimentOutlined />,
+  <CustomerServiceOutlined />,
+  <FireOutlined />,
+];
+const getIcon = (service: DichVu.IRecord, idx: number): React.ReactNode =>
+  (service.category && categoryIconMap[service.category]) || fallbackIcons[idx % fallbackIcons.length];
 
 export const ServicesSection: React.FC = () => {
+  const { list, loading } = useModel('landingServices') as {
+    list: DichVu.IRecord[];
+    loading: boolean;
+  };
   const [selectedService, setSelectedService] = useState<DichVu.IRecord | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -47,26 +63,34 @@ export const ServicesSection: React.FC = () => {
       </div>
 
       <div className="flex flex-col items-center gap-6 w-full max-w-[1100px]">
-        <div className="grid grid-cols-3 gap-6 w-full">
-          {MOCK_SERVICES.slice(0, 3).map((service) => (
-            <ServiceCard
-              key={service._id}
-              icon={iconMap[service._id]}
-              service={service}
-              onViewDetail={() => handleOpenDetail(service)}
-            />
-          ))}
-        </div>
-        <div className="grid grid-cols-2 gap-6 w-full max-w-[730px]">
-          {MOCK_SERVICES.slice(3).map((service) => (
-            <ServiceCard
-              key={service._id}
-              icon={iconMap[service._id]}
-              service={service}
-              onViewDetail={() => handleOpenDetail(service)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <Spin />
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-6 w-full">
+              {list.slice(0, 3).map((service, idx) => (
+                <ServiceCard
+                  key={service._id}
+                  icon={getIcon(service, idx)}
+                  service={service}
+                  onViewDetail={() => handleOpenDetail(service)}
+                />
+              ))}
+            </div>
+            {list.length > 3 && (
+              <div className="grid grid-cols-2 gap-6 w-full max-w-[730px]">
+                {list.slice(3).map((service, idx) => (
+                  <ServiceCard
+                    key={service._id}
+                    icon={getIcon(service, idx + 3)}
+                    service={service}
+                    onViewDetail={() => handleOpenDetail(service)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <ServiceDetailModal
