@@ -1,4 +1,4 @@
-﻿export default [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -31,6 +31,13 @@
 		hideInMenu: true,
 	},
 	{
+		path: '/change-password',
+		name: 'ChangePassword',
+		component: './auth/ChangePassword',
+		layout: false,
+		hideInMenu: true,
+	},
+	{
 		path: '/feedback',
 		name: 'Feedback',
 		component: './landingPage/components/FeedbackPage',
@@ -39,47 +46,62 @@
 	},
 
 	///////////////////////////////////
-	// SPA MANAGEMENT MENU
+	// SPA MANAGEMENT MENU — phân quyền theo StaffRole (ADMIN / OPERATOR / STAFF)
 	{
 		path: '/admin/dashboard',
 		name: 'Dashboard',
 		component: './admin/Dashboard',
 		icon: 'DashboardOutlined',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/lich-hen',
 		name: 'Lịch hẹn',
 		component: './admin/Dashboard',
 		icon: 'CalendarOutlined',
+		access: 'canAny',
 	},
 	{
 		path: '/dich-vu',
 		name: 'Dịch vụ',
-		component: './admin/Dashboard',
+		component: './admin/Services',
 		icon: 'StarOutlined',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/khach-hang',
 		name: 'Khách hàng',
 		component: './admin/Dashboard',
 		icon: 'TeamOutlined',
+		access: 'canAdminOrOperator',
 	},
+	// Cụm "Nhân viên" — ADMIN thấy đủ 3 sub, STAFF chỉ thấy Lễ tân + Thu ngân.
 	{
 		path: '/nhan-vien',
 		name: 'Nhân viên',
 		icon: 'TeamOutlined',
+		access: 'canAdminOrStaff',
 		routes: [
+			{
+				name: 'Quản lý nhân viên',
+				path: 'quan-ly',
+				component: './admin/Employees',
+				icon: 'UserOutlined',
+				access: 'canAdmin',
+			},
 			{
 				name: 'Lễ tân',
 				path: 'le-tan',
 				component: './staff/LeTan',
 				icon: 'UserSwitchOutlined',
+				access: 'canAdminOrStaff',
 			},
 			{
 				name: 'Thu ngân',
 				path: 'thu-ngan',
 				component: './staff/ThuNgan',
 				icon: 'DollarOutlined',
+				access: 'canAdminOrStaff',
 			},
 		],
 	},
@@ -88,62 +110,16 @@
 		name: 'Đánh giá',
 		component: './admin/Dashboard',
 		icon: 'StarOutlined',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/bao-cao',
 		name: 'Báo cáo',
 		component: './admin/Dashboard',
 		icon: 'BarChartOutlined',
+		access: 'canAdmin',
 	},
-	// {
-	// 	path: '/gioi-thieu',
-	// 	name: 'About',
-	// 	component: './TienIch/GioiThieu',
-	// 	hideInMenu: true,
-	// },
-	// {
-	// 	path: '/random-user',
-	// 	name: 'RandomUser',
-	// 	component: './RandomUser',
-	// 	hideInMenu: true,
-	// },
 
-	// DANH MUC HE THONG
-	// {
-	// 	name: 'DanhMuc',
-	// 	path: '/danh-muc',
-	// 	icon: 'copy',
-	// 	routes: [
-	// 		{
-	// 			name: 'ChucVu',
-	// 			path: 'chuc-vu',
-	// 			component: './DanhMuc/ChucVu',
-	// 		},
-	// 	],
-	// },
-
-	// {
-	// 	path: '/notification',
-	// 	routes: [
-	// 		{
-	// 			path: './subscribe',
-	// 			exact: true,
-	// 			component: './ThongBao/Subscribe',
-	// 		},
-	// 		{
-	// 			path: './check',
-	// 			exact: true,
-	// 			component: './ThongBao/Check',
-	// 		},
-	// 		{
-	// 			path: './',
-	// 			exact: true,
-	// 			component: './ThongBao/NotifOneSignal',
-	// 		},
-	// 	],
-	// 	layout: false,
-	// 	hideInMenu: true,
-	// },
 	{
 		path: '/403',
 		component: './exception/403/403Page',

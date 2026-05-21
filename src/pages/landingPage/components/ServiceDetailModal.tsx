@@ -33,13 +33,59 @@ export const ServiceDetailModal: React.FC<ServiceDetailModalProps> = ({
       className="service-detail-modal"
     >
       <div style={{ display: 'flex', minHeight: 480 }}>
-        {/* Left - Image */}
-        <div style={{ width: 340, flexShrink: 0, overflow: 'hidden', borderRadius: '8px 0 0 8px' }}>
-          <img
-            src={service.imageUrl}
-            alt={service.name}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-          />
+        {/* Left - Image (placeholder khi BE chưa có ảnh) */}
+        <div
+          style={{
+            width: 340,
+            flexShrink: 0,
+            overflow: 'hidden',
+            borderRadius: '8px 0 0 8px',
+            background: service.imageUrl
+              ? undefined
+              : 'linear-gradient(135deg, var(--accent-light) 0%, var(--accent) 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: 480,
+          }}
+        >
+          {service.imageUrl ? (
+            <img
+              src={service.imageUrl}
+              alt={service.name}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 12,
+                color: 'var(--accent-deep)',
+                padding: 24,
+                textAlign: 'center',
+              }}
+            >
+              <div
+                style={{
+                  width: 96,
+                  height: 96,
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.6)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 36,
+                }}
+              >
+                <TagOutlined />
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 600, letterSpacing: 1 }}>
+                Hình ảnh đang được cập nhật
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Right - Details */}

@@ -1,0 +1,69 @@
+.employees-page {
+  padding: 24px 32px;
+  background: #F8F9FC;
+  min-height: 100%;
+  font-family: 'Inter', sans-serif;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+
+    h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    p {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+  }
+
+  &__add-btn {
+    background: linear-gradient(135deg, #c47070, #e8a0a0) !important;
+    border: none !important;
+    height: 40px;
+    border-radius: 10px !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(196, 112, 112, 0.25);
+  }
+
+  &__toolbar {
+    display: flex;
+    gap: 12px;
+    background: #FFFFFF;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  &__table {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    .ant-table-thead > tr > th {
+      background: #FFFFFF;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid #F0F0F0;
+    }
+
+    .ant-table-tbody > tr > td {
+      border-bottom: 1px solid #F8F9FC;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: #FFF9F9 !important;
+    }
+  }
+}
