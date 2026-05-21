@@ -120,14 +120,17 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 				return;
 			}
 
+			// STAFF không có UI — nếu lỡ có token thì clear + đẩy về /login.
+			if (user?.role === 'STAFF') {
+				localStorage.removeItem('spa_access_token');
+				localStorage.removeItem('spa_current_user');
+				history.replace('/login');
+				return;
+			}
+
 			// Đã đăng nhập mà còn vào /login → đẩy về home theo role
 			if (user && (path === '/login' || path === '/user/login')) {
-				const home =
-					user.role === 'ADMIN'
-						? '/admin/dashboard'
-						: user.role === 'OPERATOR'
-						? '/lich-hen'
-						: '/nhan-vien/le-tan';
+				const home = user.role === 'ADMIN' ? '/admin/dashboard' : '/le-tan';
 				history.replace(home);
 			}
 		},
