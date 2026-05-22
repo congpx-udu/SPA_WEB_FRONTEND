@@ -9,6 +9,9 @@
     padding: 24px 20px 12px !important;
     border-bottom: 1px solid #F0F0F0;
     background: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 
     h1 {
       color: var(--text-primary) !important;
@@ -22,6 +25,38 @@
       width: 32px;
       height: 32px;
       border-radius: 18px;
+    }
+  }
+
+  // Collapsed state — center logo, ẩn tiêu đề, padding gọn để khớp giữa sider 64px
+  &.ant-layout-sider-collapsed {
+    .ant-pro-sider-logo {
+      padding: 16px 0 12px !important;
+      justify-content: center;
+
+      a {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+      }
+
+      h1 {
+        display: none !important;
+      }
+
+      img {
+        margin: 0 !important;
+      }
+    }
+
+    .ant-menu-item,
+    .ant-menu-submenu-title {
+      padding: 0 !important;
+      justify-content: center;
+
+      .anticon {
+        margin: 0 !important;
+      }
     }
   }
 

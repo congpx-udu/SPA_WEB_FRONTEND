@@ -93,6 +93,13 @@ export default [
 		access: 'canOperator',
 	},
 	{
+		path: '/phieu-dich-vu',
+		name: 'Phiếu dịch vụ',
+		component: './admin/ServiceOrders',
+		icon: 'FileDoneOutlined',
+		access: 'canAdminOrOperator',
+	},
+	{
 		path: '/thu-ngan',
 		name: 'Thu ngân',
 		component: './staff/ThuNgan',
