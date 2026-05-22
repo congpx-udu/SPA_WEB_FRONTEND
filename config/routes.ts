@@ -100,6 +100,13 @@ export default [
 		access: 'canOperator',
 	},
 	{
+		path: '/vat-lieu',
+		name: 'Vật liệu',
+		component: './admin/Materials',
+		icon: 'InboxOutlined',
+		access: 'canAdmin',
+	},
+	{
 		path: '/nha-cung-cap',
 		name: 'Nhà cung cấp',
 		component: './admin/Suppliers',
