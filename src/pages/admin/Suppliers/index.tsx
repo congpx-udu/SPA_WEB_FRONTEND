@@ -1,17 +1,14 @@
-// Quản lý dịch vụ — ADMIN. Khớp design Pencil.
+// Quản lý nhà cung cấp — ADMIN. Khớp design Pencil.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
 import { Plus, Search, MoreHorizontal, Pencil, Power } from 'lucide-react';
-import {
-	SERVICE_CATEGORY_OPTIONS,
-	SERVICE_STATUS_OPTIONS,
-} from '@/services/Services/constant';
-import ServiceFormModal from './components/ServiceFormModal';
+import { SUPPLIER_STATUS_OPTIONS } from '@/services/Suppliers/constant';
+import SupplierFormModal from './components/SupplierFormModal';
 import '@/pages/admin/Employees/styles.less';
 
-export default function ServicesPage() {
-	const { list, total, loading, query, fetch, create, update, toggleActive } = useModel('services') as any;
+export default function SuppliersPage() {
+	const { list, total, loading, query, fetch, create, update, toggleActive } = useModel('suppliers') as any;
 
 	const [searchInput, setSearchInput] = useState('');
 	const searchTimerRef = useRef<number | undefined>();
@@ -26,8 +23,9 @@ export default function ServicesPage() {
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchInput]);
+
 	const [modalOpen, setModalOpen] = useState(false);
-	const [editing, setEditing] = useState<SvcMgmt.IService | null>(null);
+	const [editing, setEditing] = useState<SupplierMgmt.ISupplier | null>(null);
 	const [submitting, setSubmitting] = useState(false);
 
 	useEffect(() => {
@@ -49,36 +47,20 @@ export default function ServicesPage() {
 
 	const columns = useMemo(
 		() => [
-			{ title: 'Mã DV', dataIndex: 'code', width: 130, render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code> },
 			{
-				title: 'Tên dịch vụ',
+				title: 'Tên NCC',
 				dataIndex: 'name',
 				render: (v: string) => <span style={{ fontWeight: 500 }}>{v}</span>,
 			},
-			{
-				title: 'Danh mục',
-				dataIndex: 'category',
-				render: (v: SvcMgmt.TCategory) => {
-					const opt = SERVICE_CATEGORY_OPTIONS.find((c) => c.value === v);
-					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
-				},
-			},
-			{
-				title: 'Giá (VND)',
-				dataIndex: 'unitPrice',
-				align: 'right' as const,
-				render: (v: number) => v?.toLocaleString('vi-VN'),
-			},
-			{
-				title: 'Thời lượng',
-				dataIndex: 'durationMinutes',
-				render: (v: number) => `${v} phút`,
-			},
+			{ title: 'Người liên hệ', dataIndex: 'contactPerson' },
+			{ title: 'Số điện thoại', dataIndex: 'phone' },
+			{ title: 'Email', dataIndex: 'email', render: (v?: string) => v || '—' },
+			{ title: 'Mã thuế', dataIndex: 'taxCode', render: (v?: string) => v || '—' },
 			{
 				title: 'Trạng thái',
 				dataIndex: 'isActive',
 				render: (v: boolean) => {
-					const opt = SERVICE_STATUS_OPTIONS.find((s) => s.value === v);
+					const opt = SUPPLIER_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label}</Tag>;
 				},
 			},
@@ -87,7 +69,7 @@ export default function ServicesPage() {
 				key: 'actions',
 				width: 90,
 				align: 'center' as const,
-				render: (_: any, r: SvcMgmt.IService) => (
+				render: (_: any, r: SupplierMgmt.ISupplier) => (
 					<Dropdown
 						overlay={
 							<Menu>
@@ -103,12 +85,12 @@ export default function ServicesPage() {
 								</Menu.Item>
 								<Menu.Item key='toggle' icon={<Power size={14} />}>
 									<Popconfirm
-										title={r.isActive ? 'Tạm ngưng dịch vụ này?' : 'Kích hoạt lại dịch vụ này?'}
+										title={r.isActive ? 'Ngưng hợp tác với NCC này?' : 'Kích hoạt lại hợp tác?'}
 										onConfirm={() => toggleActive(r)}
 										okText='Đồng ý'
 										cancelText='Huỷ'
 									>
-										{r.isActive ? 'Tạm ngưng' : 'Kích hoạt'}
+										{r.isActive ? 'Ngưng hợp tác' : 'Kích hoạt'}
 									</Popconfirm>
 								</Menu.Item>
 							</Menu>
@@ -129,8 +111,8 @@ export default function ServicesPage() {
 		<div className='employees-page'>
 			<div className='employees-page__header'>
 				<div>
-					<h1>Quản lý Dịch vụ</h1>
-					<p>Danh sách dịch vụ spa hệ thống</p>
+					<h1>Quản lý Nhà cung cấp</h1>
+					<p>Quản lý thông tin nhà cung cấp vật liệu</p>
 				</div>
 				<Button
 					type='primary'
@@ -141,14 +123,14 @@ export default function ServicesPage() {
 						setModalOpen(true);
 					}}
 				>
-					Thêm dịch vụ
+					Thêm NCC
 				</Button>
 			</div>
 
 			<div className='employees-page__toolbar'>
 				<Input
 					prefix={<Search size={14} color='#9B9B9B' />}
-					placeholder='Tìm theo tên dịch vụ...'
+					placeholder='Tìm theo tên, SĐT...'
 					allowClear
 					value={searchInput}
 					onChange={(e) => setSearchInput(e.target.value)}
@@ -156,16 +138,9 @@ export default function ServicesPage() {
 				/>
 				<Select
 					allowClear
-					placeholder='Tất cả danh mục'
-					style={{ width: 180 }}
-					options={SERVICE_CATEGORY_OPTIONS.map((c) => ({ value: c.value, label: c.label }))}
-					onChange={(v) => fetch({ category: v, page: 1 })}
-				/>
-				<Select
-					allowClear
 					placeholder='Trạng thái'
-					style={{ width: 160 }}
-					options={SERVICE_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+					style={{ width: 180 }}
+					options={SUPPLIER_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
 					onChange={(v) => fetch({ isActive: v, page: 1 })}
 				/>
 			</div>
@@ -185,7 +160,7 @@ export default function ServicesPage() {
 				className='employees-page__table'
 			/>
 
-			<ServiceFormModal
+			<SupplierFormModal
 				open={modalOpen}
 				editing={editing}
 				loading={submitting}

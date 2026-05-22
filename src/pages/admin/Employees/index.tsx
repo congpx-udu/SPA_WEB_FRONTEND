@@ -3,7 +3,7 @@
 //  - Table: tên, email, SĐT, role chip, trạng thái chip, ngày bắt đầu, actions
 //  - Modal Tạo/Sửa + actions Lock/Unlock/Reset/Delete (Popconfirm)
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Space } from 'antd';
+import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Space, Tooltip } from 'antd';
 import { useModel } from 'umi';
 import moment from 'moment';
 import { Plus, Search, MoreHorizontal, Lock, Unlock, KeyRound, Trash2, Pencil } from 'lucide-react';
@@ -116,9 +116,10 @@ export default function EmployeesPage() {
 				render: (v: string) => (v ? moment(v).format('DD/MM/YYYY') : '—'),
 			},
 			{
-				title: '',
+				title: 'Thao tác',
 				key: 'actions',
-				width: 60,
+				width: 90,
+				align: 'center' as const,
 				render: (_: any, r: Employees.IEmployee) => (
 					<Dropdown
 						overlay={
@@ -176,7 +177,9 @@ export default function EmployeesPage() {
 						}
 						trigger={['click']}
 					>
-						<Button type='text' icon={<MoreHorizontal size={18} />} />
+						<Tooltip title='Tuỳ chọn'>
+							<Button type='text' icon={<MoreHorizontal size={18} />} />
+						</Tooltip>
 					</Dropdown>
 				),
 			},
