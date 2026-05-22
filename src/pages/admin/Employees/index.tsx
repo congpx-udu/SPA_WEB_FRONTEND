@@ -60,6 +60,8 @@ export default function EmployeesPage() {
 			{
 				title: 'Họ tên',
 				dataIndex: 'fullName',
+				width: 220,
+				ellipsis: true,
 				render: (v: string, r: Employees.IEmployee) => (
 					<div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
 						<div
@@ -82,11 +84,13 @@ export default function EmployeesPage() {
 					</div>
 				),
 			},
-			{ title: 'Email', dataIndex: 'email' },
-			{ title: 'SĐT', dataIndex: 'phone' },
+			{ title: 'Email', dataIndex: 'email', width: 220, ellipsis: true },
+			{ title: 'SĐT', dataIndex: 'phone', width: 130, align: 'center' as const },
 			{
 				title: 'Vai trò',
 				dataIndex: 'role',
+				width: 110,
+				align: 'center' as const,
 				render: (v: Auth.TStaffRole) => {
 					const opt = ROLE_OPTIONS.find((r) => r.value === v);
 					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
@@ -97,6 +101,8 @@ export default function EmployeesPage() {
 			{
 				title: 'Trạng thái TK',
 				dataIndex: 'accountStatus',
+				width: 140,
+				align: 'center' as const,
 				render: (v: Auth.TAccountStatus) => {
 					const opt = ACCOUNT_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
@@ -105,6 +111,8 @@ export default function EmployeesPage() {
 			{
 				title: 'Công việc',
 				dataIndex: 'workStatus',
+				width: 120,
+				align: 'center' as const,
 				render: (v: Auth.TWorkStatus) => {
 					const opt = WORK_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
@@ -113,6 +121,8 @@ export default function EmployeesPage() {
 			{
 				title: 'Ngày bắt đầu',
 				dataIndex: 'startedAt',
+				width: 130,
+				align: 'center' as const,
 				render: (v: string) => (v ? moment(v).format('DD/MM/YYYY') : '—'),
 			},
 			{
@@ -162,15 +172,28 @@ export default function EmployeesPage() {
 									</Menu.Item>
 								)}
 								<Menu.Divider />
-								<Menu.Item key='delete' danger icon={<Trash2 size={14} />}>
+								<Menu.Item
+									key='delete'
+									danger
+									disabled={r.accountStatus !== 'LOCKED'}
+									icon={<Trash2 size={14} />}
+								>
 									<Popconfirm
-										title='Xoá nhân viên? (chỉ áp dụng khi đã khoá > 30 ngày)'
+										title={
+											<span>
+												Xoá vĩnh viễn nhân viên này?<br />
+												<small style={{ color: '#666' }}>
+													Yêu cầu: đã khoá tài khoản &gt; 30 ngày.
+												</small>
+											</span>
+										}
 										onConfirm={() => remove(r.id)}
 										okText='Xoá'
 										cancelText='Huỷ'
 										okButtonProps={{ danger: true }}
+										disabled={r.accountStatus !== 'LOCKED'}
 									>
-										Xoá
+										{r.accountStatus === 'LOCKED' ? 'Xoá' : 'Xoá (cần khoá trước)'}
 									</Popconfirm>
 								</Menu.Item>
 							</Menu>
@@ -237,6 +260,7 @@ export default function EmployeesPage() {
 				loading={loading}
 				dataSource={list}
 				columns={columns as any}
+				scroll={{ x: 1200 }}
 				pagination={{
 					current: query.page,
 					pageSize: query.limit,

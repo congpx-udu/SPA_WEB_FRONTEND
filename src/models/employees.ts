@@ -62,9 +62,16 @@ export default () => {
 	}, [fetch]);
 
 	const remove = useCallback(async (id: string) => {
-		await api.deleteEmployee(id);
-		message.success('Đã xoá nhân viên');
-		await fetch();
+		try {
+			await api.deleteEmployee(id);
+			message.success('Đã xoá nhân viên');
+			await fetch();
+		} catch (e: any) {
+			const msg = e?.response?.data?.error?.message
+				|| e?.response?.data?.message
+				|| 'Không xoá được nhân viên (yêu cầu đã khoá > 30 ngày)';
+			message.error(Array.isArray(msg) ? msg.join(', ') : msg);
+		}
 	}, [fetch]);
 
 	return { list, total, loading, query, fetch, create, update, lock, unlock, reset, remove };

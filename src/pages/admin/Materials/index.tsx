@@ -1,18 +1,19 @@
-// Quản lý dịch vụ — ADMIN. Khớp design Pencil.
+// Quản lý vật liệu — ADMIN. Khớp design Pencil.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
-import { Plus, Search, MoreHorizontal, Pencil, Power, Package } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Pencil, Power, PackagePlus } from 'lucide-react';
 import {
-	SERVICE_CATEGORY_OPTIONS,
-	SERVICE_STATUS_OPTIONS,
-} from '@/services/Services/constant';
-import ServiceFormModal from './components/ServiceFormModal';
-import BomDrawer from './components/BomDrawer';
+	MATERIAL_TYPE_OPTIONS,
+	MATERIAL_STATUS_OPTIONS,
+} from '@/services/Materials/constant';
+import MaterialFormModal from './components/MaterialFormModal';
+import StockAdjustModal from './components/StockAdjustModal';
 import '@/pages/admin/Employees/styles.less';
 
-export default function ServicesPage() {
-	const { list, total, loading, query, fetch, create, update, toggleActive } = useModel('services') as any;
+export default function MaterialsPage() {
+	const { list, total, loading, suppliers, query, fetch, fetchSuppliers, create, update, toggleActive } =
+		useModel('materials') as any;
 
 	const [searchInput, setSearchInput] = useState('');
 	const searchTimerRef = useRef<number | undefined>();
@@ -27,13 +28,16 @@ export default function ServicesPage() {
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [searchInput]);
+
 	const [modalOpen, setModalOpen] = useState(false);
-	const [editing, setEditing] = useState<SvcMgmt.IService | null>(null);
+	const [editing, setEditing] = useState<MaterialMgmt.IMaterial | null>(null);
 	const [submitting, setSubmitting] = useState(false);
-	const [bomService, setBomService] = useState<SvcMgmt.IService | null>(null);
+	const [stockModalOpen, setStockModalOpen] = useState(false);
+	const [adjustingStock, setAdjustingStock] = useState<MaterialMgmt.IMaterial | null>(null);
 
 	useEffect(() => {
 		fetch();
+		fetchSuppliers();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -52,40 +56,67 @@ export default function ServicesPage() {
 	const columns = useMemo(
 		() => [
 			{
-				title: 'Mã DV',
+				title: 'Mã',
 				dataIndex: 'code',
-				width: 140,
+				width: 130,
 				render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code>,
 			},
 			{
-				title: 'Tên dịch vụ',
+				title: 'Tên vật liệu',
 				dataIndex: 'name',
-				width: 240,
+				width: 220,
 				ellipsis: true,
 				render: (v: string) => <span style={{ fontWeight: 500 }}>{v}</span>,
 			},
 			{
-				title: 'Danh mục',
-				dataIndex: 'category',
-				width: 160,
-				render: (v: SvcMgmt.TCategory) => {
-					const opt = SERVICE_CATEGORY_OPTIONS.find((c) => c.value === v);
-					return <span style={{ color: opt?.color, fontWeight: 500 }}>{opt?.label ?? v}</span>;
+				title: 'NCC',
+				dataIndex: ['supplier', 'name'],
+				width: 180,
+				ellipsis: true,
+				render: (_: any, r: MaterialMgmt.IMaterial) => r.supplier?.name || '—',
+			},
+			{
+				title: 'Đơn vị',
+				dataIndex: 'unit',
+				width: 90,
+				align: 'center' as const,
+			},
+			{
+				title: 'Tồn kho',
+				dataIndex: 'stockQuantity',
+				width: 110,
+				align: 'center' as const,
+				render: (v: number, r: MaterialMgmt.IMaterial) => {
+					const low = v <= r.reorderLevel;
+					return (
+						<span style={{ color: low ? '#DC2626' : '#1F2937', fontWeight: low ? 600 : 400 }}>
+							{v}
+						</span>
+					);
 				},
 			},
 			{
-				title: 'Giá (VND)',
-				dataIndex: 'unitPrice',
-				width: 140,
+				title: 'Tối thiểu',
+				dataIndex: 'reorderLevel',
+				width: 100,
 				align: 'center' as const,
-				render: (v: number) => v?.toLocaleString('vi-VN'),
 			},
 			{
-				title: 'Thời lượng',
-				dataIndex: 'durationMinutes',
-				width: 120,
+				title: 'Giá nhập',
+				dataIndex: 'unitPrice',
+				width: 130,
 				align: 'center' as const,
-				render: (v: number) => `${v} phút`,
+				render: (v: number) => `${v?.toLocaleString('vi-VN')}đ`,
+			},
+			{
+				title: 'Loại',
+				dataIndex: 'type',
+				width: 110,
+				align: 'center' as const,
+				render: (v: MaterialMgmt.TType) => {
+					const opt = MATERIAL_TYPE_OPTIONS.find((t) => t.value === v);
+					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
+				},
 			},
 			{
 				title: 'Trạng thái',
@@ -93,7 +124,7 @@ export default function ServicesPage() {
 				width: 130,
 				align: 'center' as const,
 				render: (v: boolean) => {
-					const opt = SERVICE_STATUS_OPTIONS.find((s) => s.value === v);
+					const opt = MATERIAL_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label}</Tag>;
 				},
 			},
@@ -102,7 +133,7 @@ export default function ServicesPage() {
 				key: 'actions',
 				width: 90,
 				align: 'center' as const,
-				render: (_: any, r: SvcMgmt.IService) => (
+				render: (_: any, r: MaterialMgmt.IMaterial) => (
 					<Dropdown
 						overlay={
 							<Menu>
@@ -117,20 +148,23 @@ export default function ServicesPage() {
 									Cập nhật
 								</Menu.Item>
 								<Menu.Item
-									key='bom'
-									icon={<Package size={14} />}
-									onClick={() => setBomService(r)}
+									key='stock'
+									icon={<PackagePlus size={14} />}
+									onClick={() => {
+										setAdjustingStock(r);
+										setStockModalOpen(true);
+									}}
 								>
-									Định mức nguyên liệu
+									Điều chỉnh tồn kho
 								</Menu.Item>
 								<Menu.Item key='toggle' icon={<Power size={14} />}>
 									<Popconfirm
-										title={r.isActive ? 'Tạm ngưng dịch vụ này?' : 'Kích hoạt lại dịch vụ này?'}
+										title={r.isActive ? 'Ngưng sử dụng vật liệu này?' : 'Kích hoạt lại?'}
 										onConfirm={() => toggleActive(r)}
 										okText='Đồng ý'
 										cancelText='Huỷ'
 									>
-										{r.isActive ? 'Tạm ngưng' : 'Kích hoạt'}
+										{r.isActive ? 'Ngưng' : 'Kích hoạt'}
 									</Popconfirm>
 								</Menu.Item>
 							</Menu>
@@ -151,8 +185,8 @@ export default function ServicesPage() {
 		<div className='employees-page'>
 			<div className='employees-page__header'>
 				<div>
-					<h1>Quản lý Dịch vụ</h1>
-					<p>Danh sách dịch vụ spa hệ thống</p>
+					<h1>Quản lý Vật liệu</h1>
+					<p>Quản lý kho vật liệu và nguyên liệu spa</p>
 				</div>
 				<Button
 					type='primary'
@@ -163,14 +197,14 @@ export default function ServicesPage() {
 						setModalOpen(true);
 					}}
 				>
-					Thêm dịch vụ
+					Thêm vật liệu
 				</Button>
 			</div>
 
 			<div className='employees-page__toolbar'>
 				<Input
 					prefix={<Search size={14} color='#9B9B9B' />}
-					placeholder='Tìm theo tên dịch vụ...'
+					placeholder='Tìm theo tên vật liệu...'
 					allowClear
 					value={searchInput}
 					onChange={(e) => setSearchInput(e.target.value)}
@@ -178,16 +212,25 @@ export default function ServicesPage() {
 				/>
 				<Select
 					allowClear
-					placeholder='Tất cả danh mục'
-					style={{ width: 180 }}
-					options={SERVICE_CATEGORY_OPTIONS.map((c) => ({ value: c.value, label: c.label }))}
-					onChange={(v) => fetch({ category: v, page: 1 })}
+					placeholder='Loại'
+					style={{ width: 160 }}
+					options={MATERIAL_TYPE_OPTIONS.map((t) => ({ value: t.value, label: t.label }))}
+					onChange={(v) => fetch({ type: v, page: 1 })}
+				/>
+				<Select
+					allowClear
+					showSearch
+					optionFilterProp='label'
+					placeholder='Nhà cung cấp'
+					style={{ width: 220 }}
+					options={suppliers.map((s: any) => ({ value: s.id, label: s.name }))}
+					onChange={(v) => fetch({ supplierId: v, page: 1 })}
 				/>
 				<Select
 					allowClear
 					placeholder='Trạng thái'
 					style={{ width: 160 }}
-					options={SERVICE_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+					options={MATERIAL_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
 					onChange={(v) => fetch({ isActive: v, page: 1 })}
 				/>
 			</div>
@@ -197,7 +240,7 @@ export default function ServicesPage() {
 				loading={loading}
 				dataSource={list}
 				columns={columns as any}
-				scroll={{ x: 1100 }}
+				scroll={{ x: 1400 }}
 				pagination={{
 					current: query.page,
 					pageSize: query.limit,
@@ -208,21 +251,36 @@ export default function ServicesPage() {
 				className='employees-page__table'
 			/>
 
-			<BomDrawer
-				open={!!bomService}
-				service={bomService}
-				onClose={() => setBomService(null)}
-			/>
-
-			<ServiceFormModal
+			<MaterialFormModal
 				open={modalOpen}
 				editing={editing}
+				suppliers={suppliers}
 				loading={submitting}
 				onCancel={() => {
 					setModalOpen(false);
 					setEditing(null);
 				}}
 				onSubmit={onSubmit}
+			/>
+
+			<StockAdjustModal
+				open={stockModalOpen}
+				material={adjustingStock}
+				loading={submitting}
+				onCancel={() => {
+					setStockModalOpen(false);
+					setAdjustingStock(null);
+				}}
+				onSubmit={async (id, payload) => {
+					setSubmitting(true);
+					try {
+						await update(id, payload);
+						setStockModalOpen(false);
+						setAdjustingStock(null);
+					} finally {
+						setSubmitting(false);
+					}
+				}}
 			/>
 		</div>
 	);

@@ -71,7 +71,7 @@ export default [
 	{
 		path: '/khach-hang',
 		name: 'Khách hàng',
-		component: './admin/Dashboard',
+		component: './admin/Customers',
 		icon: 'TeamOutlined',
 		access: 'canAdminOrOperator',
 	},
@@ -98,6 +98,13 @@ export default [
 		component: './staff/ThuNgan',
 		icon: 'DollarOutlined',
 		access: 'canOperator',
+	},
+	{
+		path: '/vat-lieu',
+		name: 'Vật liệu',
+		component: './admin/Materials',
+		icon: 'InboxOutlined',
+		access: 'canAdmin',
 	},
 	{
 		path: '/nha-cung-cap',

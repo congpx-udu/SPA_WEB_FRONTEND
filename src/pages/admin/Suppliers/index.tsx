@@ -50,15 +50,19 @@ export default function SuppliersPage() {
 			{
 				title: 'Tên NCC',
 				dataIndex: 'name',
+				width: 240,
+				ellipsis: true,
 				render: (v: string) => <span style={{ fontWeight: 500 }}>{v}</span>,
 			},
-			{ title: 'Người liên hệ', dataIndex: 'contactPerson' },
-			{ title: 'Số điện thoại', dataIndex: 'phone' },
-			{ title: 'Email', dataIndex: 'email', render: (v?: string) => v || '—' },
-			{ title: 'Mã thuế', dataIndex: 'taxCode', render: (v?: string) => v || '—' },
+			{ title: 'Người liên hệ', dataIndex: 'contactPerson', width: 170, ellipsis: true },
+			{ title: 'Số điện thoại', dataIndex: 'phone', width: 140, align: 'center' as const },
+			{ title: 'Email', dataIndex: 'email', width: 220, ellipsis: true, render: (v?: string) => v || '—' },
+			{ title: 'Mã thuế', dataIndex: 'taxCode', width: 130, align: 'center' as const, render: (v?: string) => v || '—' },
 			{
 				title: 'Trạng thái',
 				dataIndex: 'isActive',
+				width: 140,
+				align: 'center' as const,
 				render: (v: boolean) => {
 					const opt = SUPPLIER_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label}</Tag>;
@@ -150,6 +154,7 @@ export default function SuppliersPage() {
 				loading={loading}
 				dataSource={list}
 				columns={columns as any}
+				scroll={{ x: 1100 }}
 				pagination={{
 					current: query.page,
 					pageSize: query.limit,

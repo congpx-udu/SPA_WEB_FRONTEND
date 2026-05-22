@@ -37,6 +37,10 @@ export default function SupplierFormModal({ open, editing, loading, onCancel, on
 	const handleOk = async () => {
 		try {
 			const values = await form.validateFields();
+			// BE CreateSupplierDto không nhận isActive (default true). Update thì nhận.
+			if (!isEdit) {
+				delete (values as any).isActive;
+			}
 			await onSubmit(values);
 		} catch (err: any) {
 			if (err?.errorFields) return;
@@ -90,7 +94,7 @@ export default function SupplierFormModal({ open, editing, loading, onCancel, on
 						label='Số điện thoại'
 						rules={[
 							{ required: true, message: 'Nhập số điện thoại' },
-							{ pattern: /^0\d{9,10}$/, message: 'SĐT không hợp lệ' },
+							{ pattern: /^\d{10}$/, message: 'Số điện thoại phải đủ 10 chữ số' },
 						]}
 						style={{ flex: 1 }}
 					>
@@ -109,7 +113,10 @@ export default function SupplierFormModal({ open, editing, loading, onCancel, on
 				<Form.Item
 					name='address'
 					label='Địa chỉ'
-					rules={[{ required: true, message: 'Nhập địa chỉ' }]}
+					rules={[
+						{ required: true, message: 'Nhập địa chỉ' },
+						{ min: 5, max: 500, message: 'Địa chỉ 5-500 ký tự' },
+					]}
 				>
 					<Input placeholder='VD: 123 Nguyễn Huệ, Q.1, TP.HCM' />
 				</Form.Item>
@@ -117,13 +124,13 @@ export default function SupplierFormModal({ open, editing, loading, onCancel, on
 				<Form.Item
 					name='taxCode'
 					label='Mã số thuế'
-					rules={[{ pattern: /^\d{10}(\d{3})?$/, message: 'Mã số thuế 10 hoặc 13 chữ số' }]}
+					rules={[{ max: 20, message: 'Tối đa 20 ký tự' }]}
 				>
 					<Input placeholder='VD: 0312345678' />
 				</Form.Item>
 
-				<Form.Item name='note' label='Ghi chú'>
-					<Input.TextArea rows={3} placeholder='Ghi chú nội bộ' maxLength={500} showCount />
+				<Form.Item name='note' label='Ghi chú' rules={[{ max: 1000, message: 'Tối đa 1000 ký tự' }]}>
+					<Input.TextArea rows={3} placeholder='Ghi chú nội bộ' maxLength={1000} showCount />
 				</Form.Item>
 
 				<Form.Item name='isActive' label='Trạng thái' valuePropName='checked'>
