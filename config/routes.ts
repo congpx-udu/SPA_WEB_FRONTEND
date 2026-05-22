@@ -71,7 +71,7 @@ export default [
 	{
 		path: '/khach-hang',
 		name: 'Khách hàng',
-		component: './admin/Dashboard',
+		component: './admin/Customers',
 		icon: 'TeamOutlined',
 		access: 'canAdminOrOperator',
 	},
