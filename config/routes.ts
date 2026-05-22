@@ -52,7 +52,7 @@ export default [
 		name: 'Dashboard',
 		component: './admin/Dashboard',
 		icon: 'DashboardOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canAdmin',
 	},
 	{
 		path: '/lich-hen',
@@ -90,14 +90,21 @@ export default [
 		name: 'Lễ tân',
 		component: './staff/LeTan',
 		icon: 'UserSwitchOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canOperator',
 	},
 	{
 		path: '/thu-ngan',
 		name: 'Thu ngân',
 		component: './staff/ThuNgan',
 		icon: 'DollarOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canOperator',
+	},
+	{
+		path: '/nha-cung-cap',
+		name: 'Nhà cung cấp',
+		component: './admin/Suppliers',
+		icon: 'ShopOutlined',
+		access: 'canAdmin',
 	},
 	{
 		path: '/danh-gia',
