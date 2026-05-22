@@ -49,34 +49,47 @@ export default function ServicesPage() {
 
 	const columns = useMemo(
 		() => [
-			{ title: 'Mã DV', dataIndex: 'code', width: 130, render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code> },
+			{
+				title: 'Mã DV',
+				dataIndex: 'code',
+				width: 140,
+				render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code>,
+			},
 			{
 				title: 'Tên dịch vụ',
 				dataIndex: 'name',
+				width: 240,
+				ellipsis: true,
 				render: (v: string) => <span style={{ fontWeight: 500 }}>{v}</span>,
 			},
 			{
 				title: 'Danh mục',
 				dataIndex: 'category',
+				width: 160,
 				render: (v: SvcMgmt.TCategory) => {
 					const opt = SERVICE_CATEGORY_OPTIONS.find((c) => c.value === v);
-					return <Tag color={opt?.color}>{opt?.label ?? v}</Tag>;
+					return <span style={{ color: opt?.color, fontWeight: 500 }}>{opt?.label ?? v}</span>;
 				},
 			},
 			{
 				title: 'Giá (VND)',
 				dataIndex: 'unitPrice',
-				align: 'right' as const,
+				width: 140,
+				align: 'center' as const,
 				render: (v: number) => v?.toLocaleString('vi-VN'),
 			},
 			{
 				title: 'Thời lượng',
 				dataIndex: 'durationMinutes',
+				width: 120,
+				align: 'center' as const,
 				render: (v: number) => `${v} phút`,
 			},
 			{
 				title: 'Trạng thái',
 				dataIndex: 'isActive',
+				width: 130,
+				align: 'center' as const,
 				render: (v: boolean) => {
 					const opt = SERVICE_STATUS_OPTIONS.find((s) => s.value === v);
 					return <Tag color={opt?.color}>{opt?.label}</Tag>;
@@ -175,6 +188,7 @@ export default function ServicesPage() {
 				loading={loading}
 				dataSource={list}
 				columns={columns as any}
+				scroll={{ x: 1100 }}
 				pagination={{
 					current: query.page,
 					pageSize: query.limit,
