@@ -146,7 +146,7 @@ export default [
 		name: 'Đánh giá',
 		component: './admin/Dashboard',
 		icon: 'StarOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canAdmin',
 	},
 	{
 		path: '/bao-cao',

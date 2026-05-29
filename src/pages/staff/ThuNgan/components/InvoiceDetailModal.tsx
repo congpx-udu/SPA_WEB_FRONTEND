@@ -11,8 +11,9 @@ import {
 	Popconfirm,
 	Divider,
 } from 'antd';
-import { CheckCircle2, CreditCard, XCircle, Save } from 'lucide-react';
+import { CheckCircle2, CreditCard, XCircle, Save, Package } from 'lucide-react';
 import { INVOICE_STATUS_OPTIONS } from '@/services/Invoices/constant';
+import * as ledgerApi from '@/services/StockLedger/api';
 
 type Props = {
 	open: boolean;
@@ -43,6 +44,21 @@ export default function InvoiceDetailModal({
 	const [form] = Form.useForm();
 	const [cancelReason, setCancelReason] = useState('');
 	const [cancelOpen, setCancelOpen] = useState(false);
+	const [stockEntries, setStockEntries] = useState<StockLedger.ILedgerEntry[]>([]);
+	const [loadingStock, setLoadingStock] = useState(false);
+
+	useEffect(() => {
+		if (!open || !invoice || !invoice.stockDeducted) {
+			setStockEntries([]);
+			return;
+		}
+		setLoadingStock(true);
+		ledgerApi
+			.getLedgerByReference('INVOICE', invoice.id)
+			.then((r) => setStockEntries(r.data ?? []))
+			.catch(() => setStockEntries([]))
+			.finally(() => setLoadingStock(false));
+	}, [open, invoice]);
 
 	useEffect(() => {
 		if (open && invoice) {
@@ -252,6 +268,61 @@ export default function InvoiceDetailModal({
 					)}
 				</div>
 			</div>
+
+			{invoice.stockDeducted && (
+				<>
+					<Divider style={{ margin: '14px 0' }} />
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							gap: 8,
+							marginBottom: 8,
+							fontSize: 13,
+							fontWeight: 500,
+						}}
+					>
+						<Package size={14} color='#059669' />
+						<span>Lịch sử trừ kho theo BOM</span>
+						<span style={{ color: '#6B7280', fontWeight: 400 }}>
+							({stockEntries.length} dòng)
+						</span>
+					</div>
+					<Table
+						rowKey='id'
+						size='small'
+						loading={loadingStock}
+						dataSource={stockEntries}
+						pagination={false}
+						columns={[
+							{ title: 'Vật liệu', dataIndex: 'materialName', ellipsis: true },
+							{
+								title: 'Mã',
+								dataIndex: 'materialCode',
+								width: 110,
+								render: (v: string) => <code style={{ fontSize: 11 }}>{v}</code>,
+							},
+							{
+								title: 'SL',
+								dataIndex: 'quantityChange',
+								width: 90,
+								align: 'center' as const,
+								render: (v: number, r: StockLedger.ILedgerEntry) => (
+									<span style={{ color: '#DC2626', fontWeight: 600 }}>
+										{v} {r.materialUnit}
+									</span>
+								),
+							},
+							{
+								title: 'Tồn sau',
+								dataIndex: 'stockAfter',
+								width: 80,
+								align: 'center' as const,
+							},
+						]}
+					/>
+				</>
+			)}
 
 			<Modal
 				title='Huỷ hoá đơn'

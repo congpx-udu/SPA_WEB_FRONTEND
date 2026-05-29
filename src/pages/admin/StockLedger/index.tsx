@@ -1,8 +1,9 @@
-// Lịch sử kho — ADMIN. List ledger entries với filter material/loại/ngày.
+// Lịch sử kho — ADMIN. List ledger entries với filter material/loại/ngày + summary cards.
 import { useEffect, useMemo, useState } from 'react';
-import { Table, Select, DatePicker, Tag, Tooltip } from 'antd';
+import { Table, Select, DatePicker, Tag, Tooltip, Row, Col, Card } from 'antd';
 import { useModel } from 'umi';
 import moment from 'moment';
+import { ArrowDownToLine, ArrowUpFromLine, Wrench, Receipt } from 'lucide-react';
 import PageHeader from '@/components/PageHeader';
 import {
 	TRANSACTION_TYPE_OPTIONS,
@@ -12,17 +13,64 @@ import '@/pages/admin/Employees/styles.less';
 
 const { RangePicker } = DatePicker;
 
+const fmtVnd = (v?: number | null) => (v != null ? `${v.toLocaleString('vi-VN')}đ` : '0đ');
+
 export default function StockLedgerPage() {
-	const { list, total, loading, query, fetch } = useModel('stockLedger') as any;
+	const { list, total, loading, summary, query, fetch, fetchSummary } = useModel(
+		'stockLedger',
+	) as any;
 	const { list: materials, fetch: fetchMaterials } = useModel('materials') as any;
 
 	useEffect(() => {
 		fetch();
 		fetchMaterials({ limit: 100 });
+		fetchSummary();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
+
+	const summaryCards = useMemo(() => {
+		const s: StockLedger.ISummary | null = summary;
+		return [
+			{
+				key: 'in',
+				label: 'Nhập kho',
+				icon: <ArrowDownToLine size={20} color='#059669' />,
+				bg: '#ECFDF5',
+				count: s?.totalIn.count ?? 0,
+				quantity: s?.totalIn.quantity ?? 0,
+				cost: s?.totalIn.cost ?? 0,
+			},
+			{
+				key: 'out-invoice',
+				label: 'Xuất theo HĐ',
+				icon: <Receipt size={20} color='#2563EB' />,
+				bg: '#EFF6FF',
+				count: s?.totalOutInvoice.count ?? 0,
+				quantity: s?.totalOutInvoice.quantity ?? 0,
+				cost: s?.totalOutInvoice.cost ?? 0,
+			},
+			{
+				key: 'out-manual',
+				label: 'Xuất thủ công',
+				icon: <ArrowUpFromLine size={20} color='#DC2626' />,
+				bg: '#FEF2F2',
+				count: s?.totalOutManual.count ?? 0,
+				quantity: s?.totalOutManual.quantity ?? 0,
+				cost: s?.totalOutManual.cost ?? 0,
+			},
+			{
+				key: 'adjustment',
+				label: 'Điều chỉnh',
+				icon: <Wrench size={20} color='#D97706' />,
+				bg: '#FEF3C7',
+				count: s?.totalAdjustment.count ?? 0,
+				quantity: s?.totalAdjustment.quantity ?? 0,
+				cost: s?.totalAdjustment.cost ?? 0,
+			},
+		];
+	}, [summary]);
 
 	const columns = useMemo(
 		() => [
@@ -134,7 +182,36 @@ export default function StockLedgerPage() {
 		<div className='employees-page'>
 			<PageHeader title='Lịch sử kho' subtitle='Audit trail mọi giao dịch nhập / xuất vật liệu' />
 
-			<div className='employees-page__toolbar'>
+			<Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
+				{summaryCards.map((c) => (
+					<Col xs={12} md={6} key={c.key}>
+						<Card bodyStyle={{ padding: 14 }} style={{ borderRadius: 12 }}>
+							<div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+								<div
+									style={{
+										width: 36,
+										height: 36,
+										background: c.bg,
+										borderRadius: 8,
+										display: 'flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+									}}
+								>
+									{c.icon}
+								</div>
+								<div style={{ fontSize: 13, color: '#6B7280', fontWeight: 500 }}>{c.label}</div>
+							</div>
+							<div style={{ fontSize: 22, fontWeight: 700 }}>{c.count}</div>
+							<div style={{ fontSize: 12, color: '#6B7280', marginTop: 2 }}>
+								SL: {c.quantity} · {fmtVnd(c.cost)}
+							</div>
+						</Card>
+					</Col>
+				))}
+			</Row>
+
+			<div className='employees-page__toolbar' style={{ marginBottom: 16 }}>
 				<Select
 					allowClear
 					showSearch
@@ -156,11 +233,10 @@ export default function StockLedgerPage() {
 					format='DD/MM/YYYY'
 					onChange={(range) => {
 						setDateRange(range as any);
-						fetch({
-							fromDate: range?.[0]?.startOf('day').toISOString(),
-							toDate: range?.[1]?.endOf('day').toISOString(),
-							page: 1,
-						});
+						const from = range?.[0]?.startOf('day').toISOString();
+						const to = range?.[1]?.endOf('day').toISOString();
+						fetch({ fromDate: from, toDate: to, page: 1 });
+						fetchSummary(from, to);
 					}}
 				/>
 			</div>

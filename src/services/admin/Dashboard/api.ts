@@ -2,6 +2,8 @@
 // và compute KPI / chart data client-side.
 import * as ordersApi from '@/services/ServiceOrders/api';
 import * as customersApi from '@/services/Customers/api';
+import * as invoicesApi from '@/services/Invoices/api';
+import * as stockApi from '@/services/StockLedger/api';
 
 const startOfDay = (d: Date) => {
 	const r = new Date(d);
@@ -25,6 +27,7 @@ export interface IDashboardData {
 	completedToday: number;
 	newCustomersToday: number;
 	totalCustomers: number;
+	lowStockCount: number;
 	revenue7days: Dashboard.IRevenueData[];
 	statusBreakdown: Dashboard.IAppointmentStatus[];
 	recentAppointments: Dashboard.IAppointment[];
@@ -62,13 +65,23 @@ export async function getDashboard(): Promise<IDashboardData> {
 	const yesterdayEnd = endOfDay(new Date(now.getTime() - 86400000));
 	const sevenDaysAgo = startOfDay(new Date(now.getTime() - 6 * 86400000));
 
-	const [ordersRes, customersRes] = await Promise.all([
+	const [ordersRes, customersRes, paidInvoicesRes, lowStockRes] = await Promise.all([
 		ordersApi.getServiceOrders({ page: 1, limit: 100, sortBy: 'createdAt', sortOrder: 'desc' }),
 		customersApi.getCustomers({ page: 1, limit: 1 }),
+		invoicesApi.getInvoices({
+			status: 'PAID',
+			fromDate: sevenDaysAgo.toISOString(),
+			limit: 100,
+			sortBy: 'paidAt',
+			sortOrder: 'desc',
+		}),
+		stockApi.getLowStock(),
 	]);
 
 	const orders = ordersRes.items;
+	const paidInvoices = paidInvoicesRes.items;
 	const totalCustomers = (customersRes.data as any).meta?.total ?? 0;
+	const lowStockCount = lowStockRes.data?.length ?? 0;
 
 	let revenueToday = 0;
 	let revenueYesterday = 0;
@@ -79,6 +92,17 @@ export async function getDashboard(): Promise<IDashboardData> {
 	const revenueByDay = new Map<string, number>();
 	const serviceCount = new Map<string, { name: string; price: number; count: number }>();
 
+	// Doanh thu lấy từ invoice PAID (source of truth).
+	for (const inv of paidInvoices) {
+		const paidAt = inv.paidAt ? new Date(inv.paidAt) : new Date(inv.createdAt);
+		if (paidAt >= todayStart && paidAt <= todayEnd) revenueToday += inv.totalAmount;
+		if (paidAt >= yesterdayStart && paidAt <= yesterdayEnd) revenueYesterday += inv.totalAmount;
+		if (paidAt >= sevenDaysAgo) {
+			const key = startOfDay(paidAt).toISOString();
+			revenueByDay.set(key, (revenueByDay.get(key) || 0) + inv.totalAmount);
+		}
+	}
+
 	for (const o of orders) {
 		const created = new Date(o.createdAt);
 		if (created >= todayStart && created <= todayEnd) ordersToday++;
@@ -86,20 +110,10 @@ export async function getDashboard(): Promise<IDashboardData> {
 
 		statusCount[o.status] = (statusCount[o.status] || 0) + 1;
 
-		const isRevenue = o.status === 'COMPLETED' || o.status === 'INVOICED';
-		if (isRevenue) {
+		const isCompleted = o.status === 'COMPLETED' || o.status === 'INVOICED';
+		if (isCompleted) {
 			const completedAt = o.completedAt ? new Date(o.completedAt) : created;
-			if (completedAt >= todayStart && completedAt <= todayEnd) {
-				revenueToday += o.totalAmount;
-				completedToday++;
-			}
-			if (completedAt >= yesterdayStart && completedAt <= yesterdayEnd) {
-				revenueYesterday += o.totalAmount;
-			}
-			if (completedAt >= sevenDaysAgo) {
-				const key = startOfDay(completedAt).toISOString();
-				revenueByDay.set(key, (revenueByDay.get(key) || 0) + o.totalAmount);
-			}
+			if (completedAt >= todayStart && completedAt <= todayEnd) completedToday++;
 		}
 
 		for (const it of o.items) {
@@ -157,6 +171,7 @@ export async function getDashboard(): Promise<IDashboardData> {
 		completedToday,
 		newCustomersToday,
 		totalCustomers,
+		lowStockCount,
 		revenue7days,
 		statusBreakdown,
 		recentAppointments,

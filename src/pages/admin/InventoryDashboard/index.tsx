@@ -15,20 +15,33 @@ export default function InventoryDashboardPage() {
 	const [materials, setMaterials] = useState<MaterialMgmt.IMaterial[]>([]);
 	const [orders, setOrders] = useState<SvcOrderMgmt.IServiceOrder[]>([]);
 	const [lowStockItems, setLowStockItems] = useState<StockLedger.ILowStockItem[]>([]);
+	const [outLedger, setOutLedger] = useState<StockLedger.ILedgerEntry[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		(async () => {
 			setLoading(true);
 			try {
-				const [mRes, oRes, lRes] = await Promise.all([
+				const today = new Date();
+				today.setHours(0, 0, 0, 0);
+				const last30 = new Date(today.getTime() - 30 * 86400000);
+
+				const [mRes, oRes, lRes, ledgerRes] = await Promise.all([
 					materialsApi.getMaterials({ page: 1, limit: 100 }),
 					ordersApi.getServiceOrders({ page: 1, limit: 100, sortBy: 'createdAt', sortOrder: 'desc' }),
 					stockApi.getLowStock(),
+					stockApi.getLedger({
+						transactionType: 'OUT_INVOICE',
+						fromDate: last30.toISOString(),
+						limit: 100,
+						sortBy: 'createdAt',
+						sortOrder: 'desc',
+					}),
 				]);
 				setMaterials((mRes.data as any).data ?? []);
 				setOrders(oRes.items ?? []);
 				setLowStockItems(lRes.data ?? []);
+				setOutLedger(ledgerRes.items ?? []);
 			} finally {
 				setLoading(false);
 			}
@@ -41,40 +54,36 @@ export default function InventoryDashboardPage() {
 
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
-		const completedToday = orders.filter((o) => {
-			if (o.status !== 'COMPLETED' && o.status !== 'INVOICED') return false;
-			const t = o.completedAt ? new Date(o.completedAt) : new Date(o.createdAt);
-			return t >= today;
-		});
-		const consumedToday = completedToday.reduce(
-			(s, o) => s + o.items.reduce((ss, i) => ss + i.quantity, 0),
-			0,
-		);
 
-		const svcCount = new Map<string, { name: string; count: number }>();
-		for (const o of orders) {
-			if (o.status !== 'COMPLETED' && o.status !== 'INVOICED') continue;
-			for (const it of o.items) {
-				const cur = svcCount.get(it.serviceId) || { name: it.serviceName, count: 0 };
-				cur.count += it.quantity;
-				svcCount.set(it.serviceId, cur);
-			}
+		// Tiêu thụ HÔM NAY — đếm số đơn vị vật liệu xuất theo invoice (BOM).
+		let consumedTodayUnits = 0;
+		const materialUsage = new Map<string, { name: string; count: number; unit: string }>();
+		for (const e of outLedger) {
+			const t = new Date(e.createdAt);
+			if (t >= today) consumedTodayUnits += Math.abs(e.quantityChange);
+			const cur = materialUsage.get(e.materialId) || {
+				name: e.materialName,
+				count: 0,
+				unit: e.materialUnit,
+			};
+			cur.count += Math.abs(e.quantityChange);
+			materialUsage.set(e.materialId, cur);
 		}
-		const topServices = Array.from(svcCount.values())
+		const topMaterials = Array.from(materialUsage.values())
 			.sort((a, b) => b.count - a.count)
 			.slice(0, 4);
-		const maxSvc = topServices[0]?.count || 1;
+		const maxMat = topMaterials[0]?.count || 1;
 
 		return {
 			total,
 			lowStockCount: lowStockItems.length,
 			lowStockItems: lowStockItems.slice(0, 4),
 			totalValue,
-			consumedToday,
-			topServices,
-			maxSvc,
+			consumedToday: consumedTodayUnits,
+			topMaterials,
+			maxMat,
 		};
-	}, [materials, orders, lowStockItems]);
+	}, [materials, outLedger, lowStockItems]);
 
 	const kpis = [
 		{
@@ -100,7 +109,7 @@ export default function InventoryDashboardPage() {
 		},
 		{
 			key: 'consumed',
-			label: 'Tiêu thụ hôm nay',
+			label: 'Đơn vị vật liệu tiêu thụ hôm nay',
 			value: String(stats.consumedToday),
 			icon: <TrendingUp size={22} color='#c47070' />,
 			iconBg: '#FFF0F0',
@@ -267,22 +276,22 @@ export default function InventoryDashboardPage() {
 								<div className='inv-card__header'>
 									<div className='inv-card__title'>
 										<TrendingUp size={18} color='#c47070' />
-										<span>Tiêu thụ theo dịch vụ</span>
+										<span>Vật liệu tiêu thụ nhiều nhất (30 ngày)</span>
 									</div>
 								</div>
 								<div className='inv-bars'>
-									{stats.topServices.length === 0 ? (
+									{stats.topMaterials.length === 0 ? (
 										<div style={{ padding: 12, textAlign: 'center', color: '#9CA3AF' }}>
 											Chưa có dữ liệu
 										</div>
 									) : (
-										stats.topServices.map((s) => {
-											const pct = Math.round((s.count / stats.maxSvc) * 100);
+										stats.topMaterials.map((s) => {
+											const pct = Math.round((s.count / stats.maxMat) * 100);
 											return (
 												<div key={s.name} className='inv-bar'>
 													<div className='inv-bar__top'>
 														<span>{s.name}</span>
-														<span style={{ color: '#6B7280' }}>{s.count}</span>
+														<span style={{ color: '#6B7280' }}>{s.count} {s.unit}</span>
 													</div>
 													<div className='inv-bar__track'>
 														<div className='inv-bar__fill' style={{ width: `${pct}%` }} />

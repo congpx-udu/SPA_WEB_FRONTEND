@@ -1,7 +1,9 @@
-// Modal xem hồ sơ nhân viên — chi tiết readonly (ID, liên hệ, công việc, lương, trạng thái).
-import { Modal, Tag, Descriptions, Avatar } from 'antd';
+// Modal xem hồ sơ nhân viên — chi tiết readonly (ID, liên hệ, công việc, lương, trạng thái) + DV phụ trách.
+import { useEffect, useState } from 'react';
+import { Modal, Tag, Descriptions, Avatar, Divider, Table, Empty, Spin } from 'antd';
 import moment from 'moment';
-import { User } from 'lucide-react';
+import { User, Sparkles } from 'lucide-react';
+import * as ssaApi from '@/services/StaffServiceAssignments/api';
 
 type Props = {
 	open: boolean;
@@ -39,6 +41,21 @@ export default function StaffProfileModal({ open, staff, onCancel }: Props) {
 	const role = staff ? ROLE_LABEL[staff.role] : null;
 	const work = staff ? WORK_STATUS_LABEL[staff.workStatus] : null;
 	const acc = staff ? ACCOUNT_STATUS_LABEL[staff.accountStatus] : null;
+	const [assignments, setAssignments] = useState<AssignMgmt.IAssignment[]>([]);
+	const [loadingAssign, setLoadingAssign] = useState(false);
+
+	useEffect(() => {
+		if (!open || !staff) {
+			setAssignments([]);
+			return;
+		}
+		setLoadingAssign(true);
+		ssaApi
+			.getAssignmentsByStaff(staff.id)
+			.then((r) => setAssignments(r.data ?? []))
+			.catch(() => setAssignments([]))
+			.finally(() => setLoadingAssign(false));
+	}, [open, staff]);
 
 	return (
 		<Modal
@@ -124,6 +141,63 @@ export default function StaffProfileModal({ open, staff, onCancel }: Props) {
 							{staff.updatedAt ? moment(staff.updatedAt).format('DD/MM/YYYY HH:mm') : '—'}
 						</Descriptions.Item>
 					</Descriptions>
+
+					<Divider style={{ margin: '20px 0 12px' }} />
+					<div
+						style={{
+							display: 'flex',
+							alignItems: 'center',
+							gap: 8,
+							marginBottom: 12,
+							fontSize: 14,
+							fontWeight: 500,
+						}}
+					>
+						<Sparkles size={16} color='#c47070' />
+						<span>Dịch vụ phụ trách</span>
+						<span style={{ color: '#6B7280', fontWeight: 400, fontSize: 12 }}>
+							({assignments.length})
+						</span>
+					</div>
+					<Spin spinning={loadingAssign}>
+						{assignments.length === 0 ? (
+							<Empty
+								description='Chưa được phân công dịch vụ nào'
+								image={Empty.PRESENTED_IMAGE_SIMPLE}
+								style={{ padding: 16 }}
+							/>
+						) : (
+							<Table
+								rowKey='id'
+								size='small'
+								dataSource={assignments}
+								pagination={false}
+								columns={[
+									{
+										title: 'Dịch vụ',
+										dataIndex: ['service', 'name'],
+										render: (_: any, r: AssignMgmt.IAssignment) => r.service?.name || '—',
+									},
+									{
+										title: 'Hoa hồng',
+										dataIndex: 'commissionRate',
+										width: 110,
+										align: 'center' as const,
+										render: (v: number) => <strong>{v}%</strong>,
+									},
+									{
+										title: 'Trạng thái',
+										dataIndex: 'isActive',
+										width: 110,
+										align: 'center' as const,
+										render: (v: boolean) => (
+											<Tag color={v ? '#059669' : '#9CA3AF'}>{v ? 'Active' : 'Ngưng'}</Tag>
+										),
+									},
+								]}
+							/>
+						)}
+					</Spin>
 				</>
 			)}
 		</Modal>
