@@ -9,6 +9,7 @@ import {
 	CUSTOMER_STATUS_OPTIONS,
 } from '@/services/Customers/constant';
 import CustomerFormModal from './components/CustomerFormModal';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 export default function CustomersPage() {
@@ -183,23 +184,23 @@ export default function CustomersPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Khách hàng</h1>
-					<p>Danh sách khách hàng và lịch sử nguồn</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm khách hàng
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Khách hàng'
+				subtitle='Danh sách khách hàng và lịch sử nguồn'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm khách hàng
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input

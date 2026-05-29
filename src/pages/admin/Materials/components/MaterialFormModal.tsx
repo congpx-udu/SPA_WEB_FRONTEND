@@ -158,7 +158,7 @@ export default function MaterialFormModal({ open, editing, suppliers, loading, o
 							min={0}
 							step={1000}
 							formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-							parser={(v) => Number(`${v}`.replace(/,/g, ''))}
+							parser={((v: string | undefined) => Number(`${v}`.replace(/,/g, ''))) as any}
 						/>
 					</Form.Item>
 				</div>

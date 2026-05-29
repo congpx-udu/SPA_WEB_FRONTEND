@@ -1,10 +1,10 @@
 // Footer của sidebar (ProLayout menuFooterRender):
-//  - Cài đặt
+//  - Hồ sơ của tôi
 //  - Thu gọn / Mở rộng
 //  - Đăng xuất (đỏ, có confirm)
 import { Modal } from 'antd';
 import { history, useModel } from 'umi';
-import { LogOut, Settings, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { LogOut, UserCircle, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
 export default function AuthFloatingMenu({ collapsed = false }: { collapsed?: boolean }) {
 	const { currentUser, logout } = useModel('auth') as {
@@ -49,10 +49,10 @@ export default function AuthFloatingMenu({ collapsed = false }: { collapsed?: bo
 			}}
 		>
 			<FooterItem
-				icon={<Settings size={18} />}
-				label='Cài đặt'
+				icon={<UserCircle size={18} />}
+				label='Hồ sơ của tôi'
 				collapsed={collapsed}
-				onClick={() => history.push('/change-password')}
+				onClick={() => history.push('/ho-so-cua-toi')}
 			/>
 			<FooterItem
 				icon={collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}

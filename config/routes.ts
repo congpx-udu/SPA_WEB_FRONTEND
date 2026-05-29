@@ -38,6 +38,13 @@ export default [
 		hideInMenu: true,
 	},
 	{
+		path: '/ho-so-cua-toi',
+		name: 'Hồ sơ của tôi',
+		component: './MyProfile',
+		hideInMenu: true,
+		access: 'canAny',
+	},
+	{
 		path: '/feedback',
 		name: 'Feedback',
 		component: './landingPage/components/FeedbackPage',
@@ -111,6 +118,20 @@ export default [
 		name: 'Vật liệu',
 		component: './admin/Materials',
 		icon: 'InboxOutlined',
+		access: 'canAdmin',
+	},
+	{
+		path: '/kho-dashboard',
+		name: 'Kho vật liệu',
+		component: './admin/InventoryDashboard',
+		icon: 'AppstoreOutlined',
+		access: 'canAdmin',
+	},
+	{
+		path: '/lich-su-kho',
+		name: 'Lịch sử kho',
+		component: './admin/StockLedger',
+		icon: 'HistoryOutlined',
 		access: 'canAdmin',
 	},
 	{

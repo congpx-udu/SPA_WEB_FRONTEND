@@ -9,6 +9,7 @@ import {
 } from '@/services/Materials/constant';
 import MaterialFormModal from './components/MaterialFormModal';
 import StockAdjustModal from './components/StockAdjustModal';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 export default function MaterialsPage() {
@@ -183,23 +184,23 @@ export default function MaterialsPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Vật liệu</h1>
-					<p>Quản lý kho vật liệu và nguyên liệu spa</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm vật liệu
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Vật liệu'
+				subtitle='Quản lý kho vật liệu và nguyên liệu spa'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm vật liệu
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input
@@ -266,20 +267,15 @@ export default function MaterialsPage() {
 			<StockAdjustModal
 				open={stockModalOpen}
 				material={adjustingStock}
-				loading={submitting}
+				suppliers={suppliers}
 				onCancel={() => {
 					setStockModalOpen(false);
 					setAdjustingStock(null);
 				}}
-				onSubmit={async (id, payload) => {
-					setSubmitting(true);
-					try {
-						await update(id, payload);
-						setStockModalOpen(false);
-						setAdjustingStock(null);
-					} finally {
-						setSubmitting(false);
-					}
+				onSuccess={() => {
+					setStockModalOpen(false);
+					setAdjustingStock(null);
+					fetch();
 				}}
 			/>
 		</div>
