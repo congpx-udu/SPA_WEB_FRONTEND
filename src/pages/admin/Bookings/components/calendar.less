@@ -1,0 +1,142 @@
+// Tinh chỉnh react-big-calendar khớp UI SPA.
+.bookings-calendar {
+	background: #FFFFFF;
+	border-radius: 12px;
+	padding: 16px;
+	border: 1px solid #F3F4F6;
+
+	.rbc-toolbar {
+		margin-bottom: 16px;
+
+		button {
+			border-radius: 8px !important;
+			font-weight: 500;
+			padding: 6px 14px;
+			color: #4B5563;
+
+			&:hover {
+				background: #F3F4F6;
+				color: #1F2937;
+			}
+
+			&.rbc-active {
+				background: #c47070 !important;
+				color: #FFFFFF !important;
+				box-shadow: none;
+				border-color: #c47070;
+
+				&:hover {
+					background: #b85f5f !important;
+					color: #FFFFFF !important;
+				}
+			}
+		}
+
+		.rbc-toolbar-label {
+			font-weight: 600;
+			color: #1F2937;
+			font-size: 15px;
+		}
+	}
+
+	.rbc-header {
+		padding: 10px 6px;
+		font-weight: 500;
+		font-size: 12px;
+		color: #6B7280;
+		border-bottom: 1px solid #E5E7EB;
+		text-transform: capitalize;
+	}
+
+	.rbc-today {
+		background: #FEF2F2;
+	}
+
+	.rbc-time-view,
+	.rbc-month-view {
+		border-radius: 8px;
+		border: 1px solid #E5E7EB;
+	}
+
+	.rbc-time-header-content {
+		border-left: 1px solid #E5E7EB;
+	}
+
+	.rbc-timeslot-group {
+		border-bottom: 1px solid #F3F4F6;
+		min-height: 88px;
+	}
+
+	.rbc-time-slot {
+		color: #9CA3AF;
+		font-size: 11px;
+		min-height: 44px;
+	}
+
+	.rbc-time-gutter .rbc-timeslot-group {
+		min-height: 88px;
+	}
+
+	.rbc-time-gutter .rbc-time-slot {
+		padding: 0 8px;
+		display: flex;
+		align-items: flex-start;
+		justify-content: flex-end;
+	}
+
+	// Sự kiện chiếm trọn cột — không margin/padding lateral.
+	.rbc-day-slot .rbc-events-container {
+		margin-right: 0 !important;
+	}
+
+	.rbc-day-slot .rbc-event,
+	.rbc-day-slot .rbc-background-event {
+		left: 0 !important;
+		width: 100% !important;
+		margin: 0 !important;
+		border-radius: 4px !important;
+	}
+
+	.rbc-event {
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+		padding: 8px 10px !important;
+		min-height: 40px;
+		border: none !important;
+	}
+
+	.rbc-event-label {
+		font-size: 11px;
+		opacity: 0.85;
+		margin-bottom: 8px;
+		font-weight: 500;
+	}
+
+	// Thanh xanh lá hiển thị giờ hiện tại — làm mờ + mảnh để không cấn vào event.
+	.rbc-current-time-indicator {
+		background-color: rgba(16, 185, 129, 0.45) !important;
+		height: 1px !important;
+		pointer-events: none;
+	}
+
+	.rbc-event-content {
+		font-size: 12px;
+		font-weight: 500;
+		line-height: 1.35;
+		white-space: normal;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.rbc-event.rbc-selected {
+		box-shadow: 0 0 0 2px rgba(196, 112, 112, 0.5);
+	}
+
+	.rbc-show-more {
+		color: #c47070;
+		font-weight: 500;
+	}
+
+	.rbc-off-range-bg {
+		background: #FAFBFD;
+	}
+}

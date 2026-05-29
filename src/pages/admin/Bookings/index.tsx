@@ -1,55 +1,60 @@
-// Quản lý lịch hẹn — ADMIN/OPERATOR.
+// Lịch hẹn — ADMIN/OPERATOR. View-only.
+// Mọi thao tác (check-in, huỷ, vắng, tạo lịch) nằm ở /le-tan và /thu-ngan.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Table, Tag, Input, Select, DatePicker, Button, Dropdown, Menu, Tooltip, Modal } from 'antd';
-import { useModel, history } from 'umi';
-import {
-	Plus,
-	Search,
-	MoreHorizontal,
-	LogIn,
-	XCircle,
-	UserX,
-	Eye,
-} from 'lucide-react';
+import { Table, Tag, Input, Select, DatePicker, Tabs } from 'antd';
+import { useModel } from 'umi';
+import { Search, CalendarDays, List as ListIcon } from 'lucide-react';
 import moment from 'moment';
+import { View } from 'react-big-calendar';
 import PageHeader from '@/components/PageHeader';
 import { BOOKING_STATUS_OPTIONS, BOOKING_SOURCE_LABEL } from '@/services/Bookings/constant';
 import BookingDetailModal from './components/BookingDetailModal';
-import CreateBookingModal from './components/CreateBookingModal';
+import BookingsCalendar from './components/BookingsCalendar';
 import '@/pages/admin/Employees/styles.less';
 
 const { RangePicker } = DatePicker;
 
 export default function BookingsPage() {
-	const {
-		list,
-		total,
-		loading,
-		submitting,
-		detail,
-		query,
-		fetch,
-		loadDetail,
-		setDetail,
-		createOperator,
-		update,
-		checkIn,
-		cancel,
-		noShow,
-	} = useModel('bookings') as any;
+	const { list, total, loading, detail, query, fetch, loadDetail, setDetail } = useModel(
+		'bookings',
+	) as any;
 
 	const [searchInput, setSearchInput] = useState('');
 	const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
-	const [createOpen, setCreateOpen] = useState(false);
 	const [detailOpen, setDetailOpen] = useState(false);
-	const [cancelTarget, setCancelTarget] = useState<BookingMgmt.IBooking | null>(null);
-	const [cancelReason, setCancelReason] = useState('');
+	const [activeTab, setActiveTab] = useState<'calendar' | 'list'>('calendar');
+	const [calView, setCalView] = useState<View>('week');
+	const [calDate, setCalDate] = useState<Date>(new Date());
 	const searchTimerRef = useRef<number | undefined>();
 
 	useEffect(() => {
 		fetch();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	useEffect(() => {
+		if (activeTab !== 'calendar') return;
+		const d = moment(calDate);
+		let from: moment.Moment;
+		let to: moment.Moment;
+		if (calView === 'month') {
+			from = d.clone().startOf('month').startOf('week');
+			to = d.clone().endOf('month').endOf('week');
+		} else if (calView === 'day') {
+			from = d.clone().startOf('day');
+			to = d.clone().endOf('day');
+		} else {
+			from = d.clone().startOf('week');
+			to = d.clone().endOf('week');
+		}
+		fetch({
+			fromDate: from.format('YYYY-MM-DD'),
+			toDate: to.format('YYYY-MM-DD'),
+			limit: 100,
+			page: 1,
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [calView, calDate, activeTab]);
 
 	useEffect(() => {
 		if (searchTimerRef.current) window.clearTimeout(searchTimerRef.current);
@@ -70,30 +75,6 @@ export default function BookingsPage() {
 	const closeDetail = () => {
 		setDetailOpen(false);
 		setDetail(null);
-	};
-
-	const handleCheckIn = async (b: BookingMgmt.IBooking) => {
-		const r = await checkIn(b.id);
-		if (r?.data?.serviceOrder?.id) {
-			Modal.confirm({
-				title: 'Đã check-in & tạo phiếu DV',
-				content: 'Mở phiếu dịch vụ vừa tạo?',
-				okText: 'Mở phiếu DV',
-				cancelText: 'Ở lại',
-				onOk: () => history.push('/phieu-dich-vu'),
-			});
-			fetch();
-		}
-	};
-
-	const submitCancel = async () => {
-		if (!cancelTarget || !cancelReason.trim()) return;
-		const r = await cancel(cancelTarget.id, cancelReason.trim());
-		if (r) {
-			setCancelTarget(null);
-			setCancelReason('');
-			fetch();
-		}
 	};
 
 	const columns = useMemo(
@@ -158,68 +139,7 @@ export default function BookingsPage() {
 					return <Tag color={opt?.color}>{opt?.label}</Tag>;
 				},
 			},
-			{
-				title: 'Thao tác',
-				key: 'actions',
-				width: 90,
-				align: 'center' as const,
-				render: (_: any, r: BookingMgmt.IBooking) => {
-					const canCheckIn = r.status === 'CONFIRMED';
-					const canCancel = ['CONFIRMED', 'CHECKED_IN', 'PENDING_OTP'].includes(r.status);
-					const canNoShow = r.status === 'CONFIRMED';
-					return (
-						<Dropdown
-							overlay={
-								<Menu>
-									<Menu.Item key='view' icon={<Eye size={14} />} onClick={() => openDetail(r.id)}>
-										Xem chi tiết
-									</Menu.Item>
-									{canCheckIn && (
-										<Menu.Item
-											key='checkin'
-											icon={<LogIn size={14} />}
-											onClick={() => handleCheckIn(r)}
-										>
-											Check-in & tạo phiếu DV
-										</Menu.Item>
-									)}
-									{canNoShow && (
-										<Menu.Item
-											key='noshow'
-											icon={<UserX size={14} />}
-											onClick={async () => {
-												const ok = await noShow(r.id);
-												if (ok) fetch();
-											}}
-										>
-											Khách không đến
-										</Menu.Item>
-									)}
-									{canCancel && (
-										<Menu.Item
-											key='cancel'
-											icon={<XCircle size={14} />}
-											onClick={() => {
-												setCancelTarget(r);
-												setCancelReason('');
-											}}
-										>
-											Huỷ lịch…
-										</Menu.Item>
-									)}
-								</Menu>
-							}
-							trigger={['click']}
-						>
-							<Tooltip title='Tuỳ chọn'>
-								<Button type='text' icon={<MoreHorizontal size={18} />} />
-							</Tooltip>
-						</Dropdown>
-					);
-				},
-			},
 		],
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[],
 	);
 
@@ -227,124 +147,92 @@ export default function BookingsPage() {
 		<div className='employees-page'>
 			<PageHeader
 				title='Lịch hẹn'
-				subtitle='Quản lý lịch hẹn — khách tự đặt hoặc lễ tân đặt giúp'
-				extras={
-					<Button
-						type='primary'
-						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-						className='employees-page__add-btn'
-						onClick={() => setCreateOpen(true)}
-					>
-						Tạo lịch hẹn
-					</Button>
-				}
+				subtitle='Xem nhanh toàn bộ lịch — thao tác check-in/huỷ ở Lễ tân & Thu ngân'
 			/>
 
-			<div className='employees-page__toolbar'>
-				<Input
-					prefix={<Search size={14} color='#9B9B9B' />}
-					placeholder='Tìm theo SĐT hoặc tên khách...'
-					allowClear
-					value={searchInput}
-					onChange={(e) => setSearchInput(e.target.value)}
-					style={{ width: 260, borderRadius: 10 }}
-				/>
-				<Select
-					allowClear
-					placeholder='Trạng thái'
-					style={{ width: 180 }}
-					options={BOOKING_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
-					onChange={(v) => fetch({ status: v, page: 1 })}
-				/>
-				<RangePicker
-					value={dateRange as any}
-					format='DD/MM/YYYY'
-					onChange={(range) => {
-						setDateRange(range as any);
-						fetch({
-							fromDate: range?.[0]?.startOf('day').format('YYYY-MM-DD'),
-							toDate: range?.[1]?.endOf('day').format('YYYY-MM-DD'),
-							page: 1,
-						});
-					}}
-				/>
-			</div>
-
-			<Table
-				rowKey='id'
-				loading={loading}
-				dataSource={list}
-				columns={columns as any}
-				scroll={{ x: 1400 }}
-				pagination={{
-					current: query.page,
-					pageSize: query.limit,
-					total,
-					showSizeChanger: true,
-					onChange: (page, limit) => fetch({ page, limit }),
-				}}
-				className='employees-page__table'
-			/>
-
-			<CreateBookingModal
-				open={createOpen}
-				loading={submitting}
-				onCancel={() => setCreateOpen(false)}
-				onSubmit={async (payload) => {
-					const r = await createOperator(payload);
-					if (r) {
-						setCreateOpen(false);
-						fetch({ page: 1 });
+			<Tabs activeKey={activeTab} onChange={(k) => setActiveTab(k as 'calendar' | 'list')}>
+				<Tabs.TabPane
+					key='calendar'
+					tab={
+						<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+							<CalendarDays size={14} /> Lịch
+						</span>
 					}
-					return r;
-				}}
-			/>
-
-			<BookingDetailModal
-				open={detailOpen}
-				booking={detail}
-				loading={submitting}
-				onCancel={closeDetail}
-				onUpdate={update}
-				onAfterAction={async () => {
-					if (detail?.id) await loadDetail(detail.id);
-					fetch();
-				}}
-			/>
-
-			<Modal
-				title='Huỷ lịch hẹn'
-				visible={!!cancelTarget}
-				centered
-				onCancel={() => {
-					setCancelTarget(null);
-					setCancelReason('');
-				}}
-				onOk={submitCancel}
-				okButtonProps={{ danger: true, disabled: !cancelReason.trim(), loading: submitting }}
-				okText='Xác nhận huỷ'
-				cancelText='Đóng'
-			>
-				{cancelTarget && (
-					<>
-						<div style={{ marginBottom: 12, padding: 10, background: '#FAFBFD', borderRadius: 8 }}>
-							<strong>{cancelTarget.bookingCode}</strong> — {cancelTarget.customerSnapshot.fullName}
-							<div style={{ color: '#6B7280', fontSize: 12 }}>
-								{cancelTarget.serviceSnapshot.name} ·{' '}
-								{moment(cancelTarget.scheduledStart).format('DD/MM/YYYY HH:mm')}
-							</div>
-						</div>
-						<div style={{ marginBottom: 8 }}>Lý do huỷ (bắt buộc):</div>
-						<Input.TextArea
-							rows={3}
-							value={cancelReason}
-							onChange={(e) => setCancelReason(e.target.value)}
-							placeholder='VD: Khách báo huỷ lịch'
-							maxLength={500}
+				>
+					<BookingsCalendar
+						bookings={list}
+						loading={loading}
+						view={calView}
+						date={calDate}
+						onView={setCalView}
+						onDate={setCalDate}
+						onSelectEvent={(b) => openDetail(b.id)}
+					/>
+				</Tabs.TabPane>
+				<Tabs.TabPane
+					key='list'
+					tab={
+						<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+							<ListIcon size={14} /> Danh sách
+						</span>
+					}
+				>
+					<div className='employees-page__toolbar' style={{ marginBottom: 16 }}>
+						<Input
+							prefix={<Search size={14} color='#9B9B9B' />}
+							placeholder='Tìm theo SĐT hoặc tên khách...'
+							allowClear
+							value={searchInput}
+							onChange={(e) => setSearchInput(e.target.value)}
+							style={{ width: 260, borderRadius: 10 }}
 						/>
-					</>
-				)}
-			</Modal>
+						<Select
+							allowClear
+							placeholder='Trạng thái'
+							style={{ width: 180 }}
+							options={BOOKING_STATUS_OPTIONS.map((s) => ({
+								value: s.value,
+								label: s.label,
+							}))}
+							onChange={(v) => fetch({ status: v, page: 1 })}
+						/>
+						<RangePicker
+							value={dateRange as any}
+							format='DD/MM/YYYY'
+							onChange={(range) => {
+								setDateRange(range as any);
+								fetch({
+									fromDate: range?.[0]?.startOf('day').format('YYYY-MM-DD'),
+									toDate: range?.[1]?.endOf('day').format('YYYY-MM-DD'),
+									page: 1,
+								});
+							}}
+						/>
+					</div>
+
+					<Table
+						rowKey='id'
+						loading={loading}
+						dataSource={list}
+						columns={columns as any}
+						scroll={{ x: 1300 }}
+						onRow={(r: BookingMgmt.IBooking) => ({
+							onClick: () => openDetail(r.id),
+							style: { cursor: 'pointer' },
+						})}
+						pagination={{
+							current: query.page,
+							pageSize: query.limit,
+							total,
+							showSizeChanger: true,
+							onChange: (page, limit) => fetch({ page, limit }),
+						}}
+						className='employees-page__table'
+					/>
+				</Tabs.TabPane>
+			</Tabs>
+
+			<BookingDetailModal open={detailOpen} booking={detail} onCancel={closeDetail} />
 		</div>
 	);
 }

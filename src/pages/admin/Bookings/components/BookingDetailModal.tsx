@@ -1,8 +1,6 @@
-// Chi tiết booking + edit note.
-import { useEffect } from 'react';
-import { Modal, Tag, Form, Input, Button, Divider } from 'antd';
+// Chi tiết booking — read-only view.
+import { Modal, Tag, Button, Divider } from 'antd';
 import moment from 'moment';
-import { Save } from 'lucide-react';
 import { BOOKING_STATUS_OPTIONS, BOOKING_SOURCE_LABEL } from '@/services/Bookings/constant';
 
 type Props = {
@@ -10,36 +8,16 @@ type Props = {
 	booking: BookingMgmt.IBooking | null;
 	loading?: boolean;
 	onCancel: () => void;
-	onUpdate: (id: string, payload: BookingMgmt.IUpdatePayload) => Promise<any>;
-	onAfterAction: () => void;
+	onUpdate?: (id: string, payload: BookingMgmt.IUpdatePayload) => Promise<any>;
+	onAfterAction?: () => void;
 };
 
 const fmtTime = (v?: string | null) => (v ? moment(v).format('DD/MM/YYYY HH:mm') : '—');
 
-export default function BookingDetailModal({
-	open,
-	booking,
-	loading,
-	onCancel,
-	onUpdate,
-	onAfterAction,
-}: Props) {
-	const [form] = Form.useForm();
-
-	useEffect(() => {
-		if (open && booking) form.setFieldsValue({ note: booking.note });
-	}, [open, booking, form]);
-
+export default function BookingDetailModal({ open, booking, onCancel }: Props) {
 	if (!booking) return null;
 
 	const statusOpt = BOOKING_STATUS_OPTIONS.find((s) => s.value === booking.status);
-	const editable = ['CONFIRMED', 'CHECKED_IN'].includes(booking.status);
-
-	const handleSave = async () => {
-		const values = await form.validateFields();
-		const r = await onUpdate(booking.id, { note: values.note ?? '' });
-		if (r) onAfterAction();
-	};
 
 	return (
 		<Modal
@@ -56,22 +34,7 @@ export default function BookingDetailModal({
 			centered
 			width={680}
 			onCancel={onCancel}
-			footer={
-				<div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-					<Button onClick={onCancel}>Đóng</Button>
-					{editable && (
-						<Button
-							type='primary'
-							icon={<Save size={14} />}
-							onClick={handleSave}
-							loading={loading}
-							style={{ background: '#059669', borderColor: '#059669' }}
-						>
-							Lưu thay đổi
-						</Button>
-					)}
-				</div>
-			}
+			footer={<Button onClick={onCancel}>Đóng</Button>}
 		>
 			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 13 }}>
 				<div>
@@ -118,13 +81,15 @@ export default function BookingDetailModal({
 				)}
 			</div>
 
-			<Divider style={{ margin: '14px 0' }} />
-
-			<Form form={form} layout='vertical' disabled={!editable}>
-				<Form.Item name='note' label='Ghi chú'>
-					<Input.TextArea rows={3} maxLength={500} />
-				</Form.Item>
-			</Form>
+			{booking.note && (
+				<>
+					<Divider style={{ margin: '14px 0' }} />
+					<div style={{ fontSize: 13 }}>
+						<div style={{ color: '#6B7280', marginBottom: 4 }}>Ghi chú</div>
+						<div style={{ whiteSpace: 'pre-wrap' }}>{booking.note}</div>
+					</div>
+				</>
+			)}
 		</Modal>
 	);
 }

@@ -61,11 +61,34 @@ export default [
 		icon: 'DashboardOutlined',
 		access: 'canAdmin',
 	},
+	// OPERATOR kiêm Lễ tân + Thu ngân (xem docs/role-decision.md). Đưa lên đầu
+	// vì là tác vụ vận hành hằng ngày tại quầy.
+	{
+		path: '/le-tan',
+		name: 'Lễ tân',
+		component: './staff/LeTan',
+		icon: 'UserSwitchOutlined',
+		access: 'canOperator',
+	},
+	{
+		path: '/thu-ngan',
+		name: 'Thu ngân',
+		component: './staff/ThuNgan',
+		icon: 'DollarOutlined',
+		access: 'canOperator',
+	},
 	{
 		path: '/lich-hen',
 		name: 'Lịch hẹn',
 		component: './admin/Bookings',
 		icon: 'CalendarOutlined',
+		access: 'canAdminOrOperator',
+	},
+	{
+		path: '/phieu-dich-vu',
+		name: 'Phiếu dịch vụ',
+		component: './admin/ServiceOrders',
+		icon: 'FileDoneOutlined',
 		access: 'canAdminOrOperator',
 	},
 	{
@@ -89,29 +112,6 @@ export default [
 		component: './admin/Employees',
 		icon: 'TeamOutlined',
 		access: 'canAdmin',
-	},
-	// OPERATOR kiêm Lễ tân + Thu ngân (xem docs/role-decision.md). ADMIN xem
-	// được để giám sát (readonly).
-	{
-		path: '/le-tan',
-		name: 'Lễ tân',
-		component: './staff/LeTan',
-		icon: 'UserSwitchOutlined',
-		access: 'canOperator',
-	},
-	{
-		path: '/phieu-dich-vu',
-		name: 'Phiếu dịch vụ',
-		component: './admin/ServiceOrders',
-		icon: 'FileDoneOutlined',
-		access: 'canAdminOrOperator',
-	},
-	{
-		path: '/thu-ngan',
-		name: 'Thu ngân',
-		component: './staff/ThuNgan',
-		icon: 'DollarOutlined',
-		access: 'canOperator',
 	},
 	{
 		path: '/vat-lieu',
