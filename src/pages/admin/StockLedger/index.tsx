@@ -185,7 +185,7 @@ export default function StockLedgerPage() {
 			<Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
 				{summaryCards.map((c) => (
 					<Col xs={12} md={6} key={c.key}>
-						<Card bodyStyle={{ padding: 14 }} style={{ borderRadius: 12 }}>
+						<Card bodyStyle={{ padding: '22px 24px' }}>
 							<div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
 								<div
 									style={{

@@ -51,11 +51,14 @@ export const Navbar: React.FC = () => {
         right: 0,
         zIndex: 1000,
         padding: "16px 80px",
-        fontFamily: "Inter, sans-serif",
-        backgroundColor: scrolled ? "rgba(255,255,255,0.95)" : "var(--bg-card)",
-        borderColor: "var(--border-light)",
-        backdropFilter: scrolled ? "blur(8px)" : "none",
-        boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.06)" : "none",
+        fontFamily: "Nunito, sans-serif",
+        backgroundColor: scrolled ? "rgba(255,255,255,0.85)" : "rgba(255, 255, 255, 0.65)",
+        borderColor: "transparent",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        boxShadow: scrolled
+          ? "0 4px 24px rgba(180, 150, 150, 0.18)"
+          : "none",
         transition: "all 0.3s ease",
       }}
     >
@@ -64,8 +67,14 @@ export const Navbar: React.FC = () => {
           src="/spalogo.png"
           alt="Luna Spa Logo"
           className="w-[48px] h-[48px] rounded-full object-cover"
+          style={{
+            boxShadow: "6px 6px 12px rgba(196, 112, 112, 0.22), -4px -4px 10px rgba(255, 255, 255, 0.85)",
+          }}
         />
-        <span className="text-[20px] font-semibold" style={{ color: "var(--text-primary)" }}>
+        <span
+          className="text-[20px] font-black"
+          style={{ fontFamily: "Nunito, sans-serif", color: "var(--clay-foreground)" }}
+        >
           Luna Spa
         </span>
       </div>
@@ -76,8 +85,10 @@ export const Navbar: React.FC = () => {
             key={link.label}
             href={link.href}
             onClick={(e) => handleClick(e, link.href)}
-            className="text-[14px] font-medium tracking-wide cursor-pointer transition-colors"
-            style={{ color: "var(--text-secondary)" }}
+            className="text-[14px] font-bold tracking-wide cursor-pointer transition-colors"
+            style={{ fontFamily: "Nunito, sans-serif", color: "var(--clay-muted)" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--clay-accent)")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "var(--clay-muted)")}
           >
             {link.label}
           </a>
@@ -85,8 +96,21 @@ export const Navbar: React.FC = () => {
       </div>
 
       <button
-        className="rounded-xl px-8 py-3 font-semibold shadow transition-colors cursor-pointer"
-        style={{ backgroundColor: "var(--accent)", color: "var(--text-primary)" }}
+        className="px-8 py-3 font-bold cursor-pointer transition-all"
+        style={{
+          borderRadius: 20,
+          background: "linear-gradient(135deg, #d98b8b 0%, #c47070 100%)",
+          color: "#FFFFFF",
+          fontFamily: "Nunito, sans-serif",
+          fontSize: 14,
+          border: "none",
+          boxShadow:
+            "8px 8px 18px rgba(196, 112, 112, 0.32), -4px -4px 12px rgba(255, 255, 255, 0.5), inset 2px 2px 4px rgba(255, 255, 255, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.08)",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+        onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
+        onMouseUp={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
         onClick={() => {
           if (window.location.pathname === "/") {
             const el = document.querySelector("#booking");

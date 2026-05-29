@@ -42,10 +42,10 @@ export default function AuthFloatingMenu({ collapsed = false }: { collapsed?: bo
 			style={{
 				display: 'flex',
 				flexDirection: 'column',
-				gap: 2,
+				gap: 4,
 				padding: '12px',
-				borderTop: '1px solid #F0F0F0',
-				fontFamily: 'Inter, sans-serif',
+				borderTop: '1px solid rgba(196, 112, 112, 0.1)',
+				fontFamily: 'Nunito, sans-serif',
 			}}
 		>
 			<FooterItem
@@ -87,8 +87,10 @@ function FooterItem({
 	muted?: boolean;
 	onClick: () => void;
 }) {
-	const color = danger ? '#DC2626' : muted ? 'var(--text-muted)' : 'var(--sidebar-text)';
-	const iconColor = danger ? '#DC2626' : 'var(--sidebar-icon)';
+	const color = danger ? '#c44545' : muted ? 'var(--clay-muted)' : 'var(--clay-foreground)';
+	const iconColor = danger ? '#c44545' : 'var(--clay-muted)';
+	const hoverBg = danger ? 'rgba(196, 69, 69, 0.08)' : 'rgba(196, 112, 112, 0.08)';
+	const hoverColor = danger ? '#a33333' : 'var(--clay-accent)';
 	return (
 		<button
 			onClick={onClick}
@@ -101,21 +103,26 @@ function FooterItem({
 				padding: collapsed ? '10px 0' : '10px 14px',
 				background: 'transparent',
 				border: 'none',
-				borderRadius: 10,
+				borderRadius: 14,
 				color,
 				fontSize: 14,
+				fontWeight: 700,
 				cursor: 'pointer',
-				transition: 'background 0.15s',
+				transition: 'all 0.2s ease',
 				width: '100%',
 			}}
 			onMouseEnter={(e) => {
-				e.currentTarget.style.background = danger ? '#FEF2F2' : '#FFF6F6';
+				e.currentTarget.style.background = hoverBg;
+				e.currentTarget.style.color = hoverColor;
+				(e.currentTarget.firstChild as HTMLElement).style.color = hoverColor;
 			}}
 			onMouseLeave={(e) => {
 				e.currentTarget.style.background = 'transparent';
+				e.currentTarget.style.color = color;
+				(e.currentTarget.firstChild as HTMLElement).style.color = iconColor;
 			}}
 		>
-			<span style={{ display: 'flex', color: iconColor }}>{icon}</span>
+			<span style={{ display: 'flex', color: iconColor, transition: 'color 0.2s ease' }}>{icon}</span>
 			{!collapsed && <span>{label}</span>}
 		</button>
 	);

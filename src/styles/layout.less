@@ -86,10 +86,12 @@
 		padding: 8px 14px;
 		padding-left: 14px !important;
 		line-height: 1.5;
-		border-radius: 10px;
-		margin-bottom: 2px;
+		border-radius: 16px;
+		margin-bottom: 4px;
+		font-family: 'Nunito', sans-serif;
 		font-size: 14px;
-		color: #2D2D2D;
+		font-weight: 700;
+		color: var(--clay-muted);
 		transition: all 0.2s;
 
 		&::after {
@@ -97,12 +99,16 @@
 		}
 
 		.anticon {
-			color: #6B6B6B;
+			color: var(--clay-muted);
 			font-size: 16px;
 		}
 
 		&:hover {
-			background-color: #F8F9FC;
+			background-color: rgba(196, 112, 112, 0.08);
+			color: var(--clay-accent);
+			.anticon {
+				color: var(--clay-accent);
+			}
 		}
 	}
 
@@ -112,12 +118,17 @@
 
 	li.ant-menu-item-selected {
 		padding-left: 14px !important;
-		color: #c47070;
-		background-color: #f9dede !important;
-		font-weight: 600;
+		color: #FFFFFF !important;
+		background: linear-gradient(135deg, #d98b8b 0%, #c47070 100%) !important;
+		font-weight: 800;
+		box-shadow:
+			8px 8px 16px rgba(196, 112, 112, 0.32),
+			-4px -4px 12px rgba(255, 255, 255, 0.5),
+			inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+			inset -2px -2px 4px rgba(0, 0, 0, 0.08);
 
 		.anticon {
-			color: #c47070;
+			color: #FFFFFF !important;
 		}
 	}
 
@@ -193,11 +204,15 @@
 		}
 
 		li.ant-menu-item-selected {
-			background-color: #f9dede !important;
-			color: #c47070 !important;
+			background: linear-gradient(135deg, #d98b8b 0%, #c47070 100%) !important;
+			color: #FFFFFF !important;
+			box-shadow:
+				6px 6px 12px rgba(196, 112, 112, 0.3),
+				-3px -3px 8px rgba(255, 255, 255, 0.5),
+				inset 2px 2px 4px rgba(255, 255, 255, 0.3);
 
 			.anticon {
-				color: #c47070 !important;
+				color: #FFFFFF !important;
 			}
 		}
 	}
@@ -241,7 +256,7 @@
 }
 
 .ant-layout {
-	background: #F8F9FC;
+	background: var(--clay-canvas);
 }
 
 .ant-layout {

@@ -17,26 +17,42 @@ export function ReviewForm() {
     <section
       id="feedback"
       className="flex flex-col items-center gap-12 px-[120px] py-20"
-      style={{ backgroundColor: 'var(--bg-primary)', fontFamily: 'Inter, sans-serif' }}
+      style={{ backgroundColor: 'var(--clay-canvas)', fontFamily: 'DM Sans, sans-serif' }}
     >
       <div className="flex flex-col items-center gap-3">
-        <span className="text-[13px] font-semibold tracking-[4px]" style={{ color: 'var(--accent-deep)' }}>
+        <span
+          className="text-[13px] font-bold tracking-[4px]"
+          style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-accent)' }}
+        >
           GỬI ĐÁNH GIÁ
         </span>
-        <h2 className="text-[40px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+        <h2
+          className="text-[40px] font-black tracking-tight"
+          style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-foreground)' }}
+        >
           Chia Sẻ Trải Nghiệm
         </h2>
-        <p className="text-[15px]" style={{ color: 'var(--text-secondary)' }}>
+        <p
+          className="text-[15px]"
+          style={{
+            fontFamily: 'DM Sans, sans-serif',
+            color: 'var(--clay-muted)',
+            fontWeight: 500,
+          }}
+        >
           Phản hồi của bạn giúp chúng tôi cải thiện và giúp mọi người biết đến Luna Spa
         </p>
       </div>
 
       <div
-        className="w-[680px] rounded-3xl p-10"
+        className="w-[680px] p-10"
         style={{
-          backgroundColor: 'var(--bg-card)',
-          border: '1px solid var(--border-light)',
-          boxShadow: '0 4px 24px #f4c2c212',
+          borderRadius: 24,
+          background: 'rgba(255, 255, 255, 0.75)',
+          backdropFilter: 'blur(16px)',
+          boxShadow:
+            '16px 16px 32px rgba(180, 150, 150, 0.22), -10px -10px 24px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(196, 112, 112, 0.03), inset -4px -4px 8px rgba(255, 255, 255, 1)',
+          border: 'none',
         }}
       >
         <Form form={form} layout="vertical" onFinish={onFinish} requiredMark={false}>

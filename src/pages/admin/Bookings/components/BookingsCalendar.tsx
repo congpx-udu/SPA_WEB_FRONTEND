@@ -44,6 +44,17 @@ const MESSAGES = {
 	showMore: (n: number) => `+ ${n} lịch khác`,
 };
 
+// Format date label trên toolbar — rõ ràng, dễ đọc.
+const FORMATS = {
+	dayHeaderFormat: (d: Date) =>
+		`${moment(d).format('dddd')} · ${moment(d).format('DD/MM/YYYY')}`,
+	dayRangeHeaderFormat: ({ start, end }: { start: Date; end: Date }) =>
+		`${moment(start).format('DD/MM')} – ${moment(end).format('DD/MM/YYYY')}`,
+	monthHeaderFormat: (d: Date) => moment(d).format('MMMM YYYY'),
+	weekdayFormat: (d: Date) => moment(d).format('ddd · DD/MM'),
+	dayFormat: (d: Date) => moment(d).format('DD ddd'),
+};
+
 export default function BookingsCalendar({
 	bookings,
 	loading,
@@ -102,6 +113,7 @@ export default function BookingsCalendar({
 				max={moment().hour(22).minute(0).toDate()}
 				culture='vi'
 				messages={MESSAGES}
+				formats={FORMATS as any}
 				eventPropGetter={eventStyleGetter as any}
 				onSelectEvent={(ev) => onSelectEvent((ev as CalEvent).resource)}
 				selectable={!!onSelectSlot}

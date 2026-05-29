@@ -66,32 +66,46 @@ export function BookingSection() {
 		<section
 			id='booking'
 			className='flex gap-[72px] px-[120px] py-[100px]'
-			style={{ backgroundColor: 'var(--bg-secondary)', fontFamily: 'Inter, sans-serif' }}
+			style={{ backgroundColor: 'var(--clay-canvas)', fontFamily: 'DM Sans, sans-serif' }}
 		>
 			<div className='flex-1 flex flex-col gap-6'>
 				<span
-					className='text-[13px] font-semibold tracking-[4px]'
-					style={{ color: 'var(--accent-deep)' }}
+					className='text-[13px] font-bold tracking-[4px]'
+					style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-accent)' }}
 				>
 					ĐẶT LỊCH
 				</span>
 				<h2
-					className='text-[40px] font-semibold leading-[1.2]'
-					style={{ color: 'var(--text-primary)' }}
+					className='text-[40px] font-black leading-[1.2] tracking-tight'
+					style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-foreground)' }}
 				>
 					Đặt Lịch
 					<br />
 					Thư Giãn
 				</h2>
-				<p className='text-base leading-relaxed' style={{ color: 'var(--text-secondary)' }}>
+				<p
+					className='text-base leading-relaxed'
+					style={{
+						fontFamily: 'DM Sans, sans-serif',
+						color: 'var(--clay-muted)',
+						fontWeight: 500,
+					}}
+				>
 					Hãy bắt đầu hành trình thư giãn tuyệt đối. Đặt lịch hẹn trực tuyến và để chúng tôi lo
 					liệu phần còn lại. Chọn dịch vụ, ngày giờ và chuyên viên trị liệu mà bạn yêu thích.
 				</p>
 				<div className='flex flex-col gap-4'>
 					{perks.map((perk) => (
 						<div key={perk} className='flex items-center gap-3'>
-							<CheckCircleOutlined style={{ color: 'var(--accent-deep)', fontSize: 20 }} />
-							<span className='text-sm' style={{ color: 'var(--text-secondary)' }}>
+							<CheckCircleOutlined style={{ color: 'var(--clay-accent)', fontSize: 20 }} />
+							<span
+								className='text-sm'
+								style={{
+									fontFamily: 'DM Sans, sans-serif',
+									color: 'var(--clay-muted)',
+									fontWeight: 500,
+								}}
+							>
 								{perk}
 							</span>
 						</div>
@@ -100,14 +114,23 @@ export function BookingSection() {
 			</div>
 
 			<div
-				className='flex-1 rounded-3xl p-10'
+				className='flex-1 p-10'
 				style={{
-					backgroundColor: 'var(--bg-card)',
-					border: '1px solid var(--border-light)',
-					boxShadow: '0 8px 30px #f4c2c215',
+					borderRadius: 24,
+					background: 'rgba(255, 255, 255, 0.75)',
+					backdropFilter: 'blur(16px)',
+					boxShadow:
+						'16px 16px 32px rgba(180, 150, 150, 0.22), -10px -10px 24px rgba(255, 255, 255, 0.95), inset 4px 4px 8px rgba(196, 112, 112, 0.03), inset -4px -4px 8px rgba(255, 255, 255, 1)',
+					border: 'none',
 				}}
 			>
-				<h3 className='text-[22px] font-semibold mb-6' style={{ color: 'var(--text-primary)' }}>
+				<h3
+					className='text-[22px] font-extrabold mb-6'
+					style={{
+						fontFamily: 'Nunito, sans-serif',
+						color: 'var(--clay-foreground)',
+					}}
+				>
 					Đặt Lịch Hẹn
 				</h3>
 				<Form form={form} layout='vertical' onFinish={onFinish} requiredMark={false}>
