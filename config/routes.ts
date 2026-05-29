@@ -64,9 +64,9 @@ export default [
 	{
 		path: '/lich-hen',
 		name: 'Lịch hẹn',
-		component: './admin/Dashboard',
+		component: './admin/Bookings',
 		icon: 'CalendarOutlined',
-		access: 'canAny',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/dich-vu',
