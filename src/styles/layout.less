@@ -248,15 +248,21 @@
 }
 
 .ant-layout-content {
-	margin: 24px 28px !important;
-
-	@media (max-width: @screen-xs) {
-		margin: 12px !important;
-	}
+	margin: 0 !important;
+	background: var(--clay-canvas) !important;
 }
 
-.ant-layout {
-	background: var(--clay-canvas);
+.ant-layout,
+.ant-layout-has-sider,
+.ant-pro-basicLayout,
+.ant-pro-basicLayout .ant-layout,
+.ant-pro-basicLayout-content {
+	background: var(--clay-canvas) !important;
+}
+
+body,
+html {
+	background: var(--clay-canvas) !important;
 }
 
 .ant-layout {
