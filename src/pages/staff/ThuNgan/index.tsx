@@ -1,106 +1,289 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Modal, Form, Select, message } from 'antd';
-import { getTickets, saveTickets } from '@/services/staff/ThuNgan/api';
-import ThuNganHeader from './components/ThuNganHeader';
-import KpiCards from './components/KpiCards';
-import TicketTable from './components/TicketTable';
-import QuickActionsPayment from './components/QuickActionsPayment';
-import './styles.less';
+// Thu ngân — OPERATOR. Quản lý hoá đơn từ Service Order.
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Table, Tag, Input, Select, DatePicker, Button, Dropdown, Menu, Tooltip } from 'antd';
+import { useModel } from 'umi';
+import { Plus, Search, MoreHorizontal, Eye, CreditCard, XCircle, CheckCircle2 } from 'lucide-react';
+import moment from 'moment';
+import PageHeader from '@/components/PageHeader';
+import { INVOICE_STATUS_OPTIONS } from '@/services/Invoices/constant';
+import CreateInvoiceModal from './components/CreateInvoiceModal';
+import InvoiceDetailModal from './components/InvoiceDetailModal';
+import '@/pages/admin/Employees/styles.less';
 
-const ThuNganDashboard: React.FC = () => {
-	const [tickets, setTickets] = useState<ThuNgan.ITicket[]>([]);
-	const [payModal, setPayModal] = useState(false);
-	const [selectedTicket, setSelectedTicket] = useState<string | null>(null);
-	const [payForm] = Form.useForm();
+const { RangePicker } = DatePicker;
+
+const fmtVnd = (v: number) => `${v.toLocaleString('vi-VN')}đ`;
+
+export default function ThuNganPage() {
+	const {
+		list,
+		total,
+		loading,
+		submitting,
+		detail,
+		query,
+		fetch,
+		loadDetail,
+		setDetail,
+		create,
+		update,
+		finalize,
+		markPaid,
+		cancel,
+	} = useModel('invoices') as any;
+
+	const [createOpen, setCreateOpen] = useState(false);
+	const [detailOpen, setDetailOpen] = useState(false);
+	const [searchInput, setSearchInput] = useState('');
+	const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
+	const searchTimerRef = useRef<number | undefined>();
 
 	useEffect(() => {
-		try {
-			setTickets(getTickets());
-		} catch (e) {
-			message.error('Không tải được dữ liệu thu ngân');
-		}
+		fetch();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
-		if (tickets.length) saveTickets(tickets);
-	}, [tickets]);
+		if (searchTimerRef.current) window.clearTimeout(searchTimerRef.current);
+		searchTimerRef.current = window.setTimeout(() => {
+			fetch({ invoiceCode: searchInput.trim() || undefined, page: 1 });
+		}, 300);
+		return () => {
+			if (searchTimerRef.current) window.clearTimeout(searchTimerRef.current);
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [searchInput]);
 
-	const handleOpenPay = (key: string) => {
-		setSelectedTicket(key);
-		setPayModal(true);
+	const openDetail = async (id: string) => {
+		const inv = await loadDetail(id);
+		if (inv) setDetailOpen(true);
 	};
 
-	const handlePay = (values: any) => {
-		if (!selectedTicket) return;
-		setTickets((prev) =>
-			prev.map((t) => (t.key === selectedTicket ? { ...t, status: 'da_thanh_toan' as const } : t)),
-		);
-		setPayModal(false);
-		setSelectedTicket(null);
-		payForm.resetFields();
-		try {
-			message.success(`Thanh toán thành công (${values.method})`);
-		} catch {
-			message.error('Thanh toán thất bại');
-		}
+	const closeDetail = () => {
+		setDetailOpen(false);
+		setDetail(null);
 	};
 
-	const ticket = tickets.find((t) => t.key === selectedTicket);
+	const columns = useMemo(
+		() => [
+			{
+				title: 'Mã HĐ',
+				dataIndex: 'invoiceCode',
+				width: 170,
+				render: (v: string) => <code style={{ fontSize: 12, fontWeight: 600 }}>{v}</code>,
+			},
+			{
+				title: 'Khách hàng',
+				dataIndex: ['customerSnapshot', 'fullName'],
+				width: 200,
+				ellipsis: true,
+				render: (_: any, r: InvoiceMgmt.IInvoice) => (
+					<div>
+						<div style={{ fontWeight: 500 }}>{r.customerSnapshot.fullName}</div>
+						<div style={{ color: '#6B7280', fontSize: 12 }}>{r.customerSnapshot.phone}</div>
+					</div>
+				),
+			},
+			{
+				title: 'Số DV',
+				dataIndex: 'items',
+				width: 70,
+				align: 'center' as const,
+				render: (items: InvoiceMgmt.IItem[]) => items.length,
+			},
+			{
+				title: 'Tạm tính',
+				dataIndex: 'itemsSubtotal',
+				width: 110,
+				align: 'center' as const,
+				render: (v: number) => fmtVnd(v),
+			},
+			{
+				title: 'Giảm giá',
+				dataIndex: 'discountAmount',
+				width: 100,
+				align: 'center' as const,
+				render: (v: number) => (v > 0 ? <span style={{ color: '#DC2626' }}>-{fmtVnd(v)}</span> : '—'),
+			},
+			{
+				title: 'Tổng',
+				dataIndex: 'totalAmount',
+				width: 120,
+				align: 'center' as const,
+				render: (v: number) => <strong>{fmtVnd(v)}</strong>,
+			},
+			{
+				title: 'Trạng thái',
+				dataIndex: 'status',
+				width: 150,
+				align: 'center' as const,
+				render: (v: InvoiceMgmt.TStatus) => {
+					const opt = INVOICE_STATUS_OPTIONS.find((s) => s.value === v);
+					return <Tag color={opt?.color}>{opt?.label}</Tag>;
+				},
+			},
+			{
+				title: 'Tạo lúc',
+				dataIndex: 'createdAt',
+				width: 130,
+				render: (v: string) => moment(v).format('DD/MM/YYYY HH:mm'),
+			},
+			{
+				title: 'Thao tác',
+				key: 'actions',
+				width: 90,
+				align: 'center' as const,
+				render: (_: any, r: InvoiceMgmt.IInvoice) => {
+					const isDraft = r.status === 'DRAFT';
+					const isPending = r.status === 'PENDING_PAYMENT';
+					return (
+						<Dropdown
+							overlay={
+								<Menu>
+									<Menu.Item key='view' icon={<Eye size={14} />} onClick={() => openDetail(r.id)}>
+										Xem chi tiết
+									</Menu.Item>
+									{isDraft && (
+										<Menu.Item
+											key='finalize'
+											icon={<CheckCircle2 size={14} />}
+											onClick={async () => {
+												const ok = await finalize(r.id);
+												if (ok) fetch();
+											}}
+										>
+											Chốt hoá đơn
+										</Menu.Item>
+									)}
+									{isPending && (
+										<Menu.Item
+											key='pay'
+											icon={<CreditCard size={14} />}
+											onClick={async () => {
+												const ok = await markPaid(r.id);
+												if (ok) fetch();
+											}}
+										>
+											Ghi nhận thanh toán
+										</Menu.Item>
+									)}
+									{(isDraft || isPending) && (
+										<Menu.Item
+											key='cancel'
+											icon={<XCircle size={14} />}
+											onClick={() => openDetail(r.id)}
+										>
+											Huỷ hoá đơn…
+										</Menu.Item>
+									)}
+								</Menu>
+							}
+							trigger={['click']}
+						>
+							<Tooltip title='Tuỳ chọn'>
+								<Button type='text' icon={<MoreHorizontal size={18} />} />
+							</Tooltip>
+						</Dropdown>
+					);
+				},
+			},
+		],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[],
+	);
 
 	return (
-		<div className='thu-ngan-dashboard'>
-			<ThuNganHeader />
-
-			<KpiCards />
-
-			<Row gutter={[20, 20]}>
-				<Col xs={24} lg={15}>
-					<TicketTable tickets={tickets} onPay={handleOpenPay} />
-				</Col>
-				<Col xs={24} lg={9}>
-					<QuickActionsPayment />
-				</Col>
-			</Row>
-
-			<Modal
-				title='Thanh toán phiếu dịch vụ'
-				visible={payModal}
-				onCancel={() => {
-					setPayModal(false);
-					setSelectedTicket(null);
-					payForm.resetFields();
-				}}
-				onOk={() => payForm.submit()}
-				okText='Xác nhận thanh toán'
-				cancelText='Hủy'
-			>
-				{ticket && (
-					<div style={{ marginBottom: 16, padding: 12, background: '#F8F9FC', borderRadius: 10 }}>
-						<div style={{ fontSize: 13, fontWeight: 600, color: '#2D2D2D' }}>
-							{ticket.code} – {ticket.customer}
-						</div>
-						<div style={{ fontSize: 12, color: '#6B6B6B', marginTop: 4 }}>
-							{ticket.service} · {ticket.total.toLocaleString('vi-VN')}đ
-						</div>
-					</div>
-				)}
-				<Form form={payForm} layout='vertical' onFinish={handlePay}>
-					<Form.Item
-						name='method'
-						label='Phương thức thanh toán'
-						rules={[{ required: true, message: 'Chọn phương thức' }]}
+		<div className='employees-page'>
+			<PageHeader
+				title='Thu ngân'
+				subtitle='Quản lý hoá đơn dịch vụ — chốt, thanh toán, huỷ'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => setCreateOpen(true)}
 					>
-						<Select placeholder='Chọn phương thức'>
-							<Select.Option value='Tiền mặt'>Tiền mặt</Select.Option>
-							<Select.Option value='Chuyển khoản'>Chuyển khoản</Select.Option>
-							<Select.Option value='VNPay'>VNPay</Select.Option>
-							<Select.Option value='Thẻ'>Thẻ tín dụng/ghi nợ</Select.Option>
-						</Select>
-					</Form.Item>
-				</Form>
-			</Modal>
+						Tạo hoá đơn
+					</Button>
+				}
+			/>
+
+			<div className='employees-page__toolbar'>
+				<Input
+					prefix={<Search size={14} color='#9B9B9B' />}
+					placeholder='Tìm theo mã HĐ...'
+					allowClear
+					value={searchInput}
+					onChange={(e) => setSearchInput(e.target.value)}
+					style={{ width: 240, borderRadius: 10 }}
+				/>
+				<Select
+					allowClear
+					placeholder='Trạng thái'
+					style={{ width: 180 }}
+					options={INVOICE_STATUS_OPTIONS.map((s) => ({ value: s.value, label: s.label }))}
+					onChange={(v) => fetch({ status: v, page: 1 })}
+				/>
+				<RangePicker
+					value={dateRange as any}
+					format='DD/MM/YYYY'
+					onChange={(range) => {
+						setDateRange(range as any);
+						fetch({
+							fromDate: range?.[0]?.startOf('day').toISOString(),
+							toDate: range?.[1]?.endOf('day').toISOString(),
+							page: 1,
+						});
+					}}
+				/>
+			</div>
+
+			<Table
+				rowKey='id'
+				loading={loading}
+				dataSource={list}
+				columns={columns as any}
+				scroll={{ x: 1200 }}
+				pagination={{
+					current: query.page,
+					pageSize: query.limit,
+					total,
+					showSizeChanger: true,
+					onChange: (page, limit) => fetch({ page, limit }),
+				}}
+				className='employees-page__table'
+			/>
+
+			<CreateInvoiceModal
+				open={createOpen}
+				loading={submitting}
+				onCancel={() => setCreateOpen(false)}
+				onSubmit={async (payload) => {
+					const r = await create(payload);
+					if (r) {
+						setCreateOpen(false);
+						fetch({ page: 1 });
+						if (r.id) openDetail(r.id);
+					}
+					return r;
+				}}
+			/>
+
+			<InvoiceDetailModal
+				open={detailOpen}
+				invoice={detail}
+				loading={submitting}
+				onCancel={closeDetail}
+				onUpdate={update}
+				onFinalize={finalize}
+				onMarkPaid={markPaid}
+				onCancelInvoice={cancel}
+				onAfterAction={async () => {
+					if (detail?.id) await loadDetail(detail.id);
+					fetch();
+				}}
+			/>
 		</div>
 	);
-};
-
-export default ThuNganDashboard;
+}

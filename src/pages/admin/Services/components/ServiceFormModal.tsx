@@ -111,7 +111,7 @@ export default function ServiceFormModal({ open, editing, loading, onCancel, onS
 						min={0}
 						step={50000}
 						formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-						parser={(v) => Number(`${v}`.replace(/,/g, ''))}
+						parser={((v: string | undefined) => Number(`${v}`.replace(/,/g, ''))) as any}
 					/>
 				</Form.Item>
 

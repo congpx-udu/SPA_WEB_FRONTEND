@@ -7,6 +7,7 @@ import { Plus, Eye, MoreHorizontal } from 'lucide-react';
 import { SERVICE_ORDER_STATUS_OPTIONS } from '@/services/ServiceOrders/constant';
 import CreateOrderModal from './components/CreateOrderModal';
 import OrderDetailDrawer from './components/OrderDetailDrawer';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 const { RangePicker } = DatePicker;
@@ -120,20 +121,20 @@ export default function ServiceOrdersPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Phiếu dịch vụ</h1>
-					<p>Tạo và quản lý phiếu dịch vụ tại quầy</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => setCreateOpen(true)}
-				>
-					Tạo phiếu
-				</Button>
-			</div>
+			<PageHeader
+				title='Phiếu dịch vụ'
+				subtitle='Tạo và quản lý phiếu dịch vụ tại quầy'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => setCreateOpen(true)}
+					>
+						Tạo phiếu
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Select

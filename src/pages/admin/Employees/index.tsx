@@ -3,16 +3,18 @@
 //  - Table: tên, email, SĐT, role chip, trạng thái chip, ngày bắt đầu, actions
 //  - Modal Tạo/Sửa + actions Lock/Unlock/Reset/Delete (Popconfirm)
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Space, Tooltip } from 'antd';
+import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
 import moment from 'moment';
-import { Plus, Search, MoreHorizontal, Lock, Unlock, KeyRound, Trash2, Pencil } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Lock, Unlock, KeyRound, Trash2, Pencil, Eye } from 'lucide-react';
 import {
 	ACCOUNT_STATUS_OPTIONS,
 	ROLE_OPTIONS,
 	WORK_STATUS_OPTIONS,
 } from '@/services/Employees/constant';
 import EmployeeFormModal from './components/EmployeeFormModal';
+import StaffProfileModal from './components/StaffProfileModal';
+import PageHeader from '@/components/PageHeader';
 import './styles.less';
 
 export default function EmployeesPage() {
@@ -37,6 +39,7 @@ export default function EmployeesPage() {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [editing, setEditing] = useState<Employees.IEmployee | null>(null);
 	const [submitting, setSubmitting] = useState(false);
+	const [profileStaff, setProfileStaff] = useState<Employees.IEmployee | null>(null);
 
 	useEffect(() => {
 		fetch();
@@ -135,6 +138,13 @@ export default function EmployeesPage() {
 						overlay={
 							<Menu>
 								<Menu.Item
+									key='view'
+									icon={<Eye size={14} />}
+									onClick={() => setProfileStaff(r)}
+								>
+									Xem hồ sơ
+								</Menu.Item>
+								<Menu.Item
 									key='edit'
 									icon={<Pencil size={14} />}
 									onClick={() => {
@@ -212,23 +222,23 @@ export default function EmployeesPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Nhân viên</h1>
-					<p>Danh sách nhân viên hệ thống</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm nhân viên
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Nhân viên'
+				subtitle='Danh sách nhân viên hệ thống'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm nhân viên
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input
@@ -280,6 +290,12 @@ export default function EmployeesPage() {
 					setEditing(null);
 				}}
 				onSubmit={onSubmit}
+			/>
+
+			<StaffProfileModal
+				open={!!profileStaff}
+				staff={profileStaff}
+				onCancel={() => setProfileStaff(null)}
 			/>
 		</div>
 	);

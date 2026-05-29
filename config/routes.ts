@@ -38,6 +38,13 @@ export default [
 		hideInMenu: true,
 	},
 	{
+		path: '/ho-so-cua-toi',
+		name: 'Hồ sơ của tôi',
+		component: './MyProfile',
+		hideInMenu: true,
+		access: 'canAny',
+	},
+	{
 		path: '/feedback',
 		name: 'Feedback',
 		component: './landingPage/components/FeedbackPage',
@@ -54,12 +61,35 @@ export default [
 		icon: 'DashboardOutlined',
 		access: 'canAdmin',
 	},
+	// OPERATOR kiêm Lễ tân + Thu ngân (xem docs/role-decision.md). Đưa lên đầu
+	// vì là tác vụ vận hành hằng ngày tại quầy.
+	{
+		path: '/le-tan',
+		name: 'Lễ tân',
+		component: './staff/LeTan',
+		icon: 'UserSwitchOutlined',
+		access: 'canOperator',
+	},
+	{
+		path: '/thu-ngan',
+		name: 'Thu ngân',
+		component: './staff/ThuNgan',
+		icon: 'DollarOutlined',
+		access: 'canOperator',
+	},
 	{
 		path: '/lich-hen',
 		name: 'Lịch hẹn',
-		component: './admin/Dashboard',
+		component: './admin/Bookings',
 		icon: 'CalendarOutlined',
-		access: 'canAny',
+		access: 'canAdminOrOperator',
+	},
+	{
+		path: '/phieu-dich-vu',
+		name: 'Phiếu dịch vụ',
+		component: './admin/ServiceOrders',
+		icon: 'FileDoneOutlined',
+		access: 'canAdminOrOperator',
 	},
 	{
 		path: '/dich-vu',
@@ -83,34 +113,25 @@ export default [
 		icon: 'TeamOutlined',
 		access: 'canAdmin',
 	},
-	// OPERATOR kiêm Lễ tân + Thu ngân (xem docs/role-decision.md). ADMIN xem
-	// được để giám sát (readonly).
-	{
-		path: '/le-tan',
-		name: 'Lễ tân',
-		component: './staff/LeTan',
-		icon: 'UserSwitchOutlined',
-		access: 'canOperator',
-	},
-	{
-		path: '/phieu-dich-vu',
-		name: 'Phiếu dịch vụ',
-		component: './admin/ServiceOrders',
-		icon: 'FileDoneOutlined',
-		access: 'canAdminOrOperator',
-	},
-	{
-		path: '/thu-ngan',
-		name: 'Thu ngân',
-		component: './staff/ThuNgan',
-		icon: 'DollarOutlined',
-		access: 'canOperator',
-	},
 	{
 		path: '/vat-lieu',
 		name: 'Vật liệu',
 		component: './admin/Materials',
 		icon: 'InboxOutlined',
+		access: 'canAdmin',
+	},
+	{
+		path: '/kho-dashboard',
+		name: 'Kho vật liệu',
+		component: './admin/InventoryDashboard',
+		icon: 'AppstoreOutlined',
+		access: 'canAdmin',
+	},
+	{
+		path: '/lich-su-kho',
+		name: 'Lịch sử kho',
+		component: './admin/StockLedger',
+		icon: 'HistoryOutlined',
 		access: 'canAdmin',
 	},
 	{
@@ -125,7 +146,7 @@ export default [
 		name: 'Đánh giá',
 		component: './admin/Dashboard',
 		icon: 'StarOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canAdmin',
 	},
 	{
 		path: '/bao-cao',

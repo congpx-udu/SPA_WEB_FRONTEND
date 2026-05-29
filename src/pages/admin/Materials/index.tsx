@@ -2,13 +2,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
-import { Plus, Search, MoreHorizontal, Pencil, Power, PackagePlus } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Pencil, Power, PackagePlus, Eye } from 'lucide-react';
 import {
 	MATERIAL_TYPE_OPTIONS,
 	MATERIAL_STATUS_OPTIONS,
 } from '@/services/Materials/constant';
 import MaterialFormModal from './components/MaterialFormModal';
 import StockAdjustModal from './components/StockAdjustModal';
+import MaterialDetailDrawer from './components/MaterialDetailDrawer';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 export default function MaterialsPage() {
@@ -34,6 +36,8 @@ export default function MaterialsPage() {
 	const [submitting, setSubmitting] = useState(false);
 	const [stockModalOpen, setStockModalOpen] = useState(false);
 	const [adjustingStock, setAdjustingStock] = useState<MaterialMgmt.IMaterial | null>(null);
+	const [detailOpen, setDetailOpen] = useState(false);
+	const [viewingMaterial, setViewingMaterial] = useState<MaterialMgmt.IMaterial | null>(null);
 
 	useEffect(() => {
 		fetch();
@@ -138,6 +142,16 @@ export default function MaterialsPage() {
 						overlay={
 							<Menu>
 								<Menu.Item
+									key='view'
+									icon={<Eye size={14} />}
+									onClick={() => {
+										setViewingMaterial(r);
+										setDetailOpen(true);
+									}}
+								>
+									Xem chi tiết
+								</Menu.Item>
+								<Menu.Item
 									key='edit'
 									icon={<Pencil size={14} />}
 									onClick={() => {
@@ -183,23 +197,23 @@ export default function MaterialsPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Vật liệu</h1>
-					<p>Quản lý kho vật liệu và nguyên liệu spa</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm vật liệu
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Vật liệu'
+				subtitle='Quản lý kho vật liệu và nguyên liệu spa'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm vật liệu
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input
@@ -266,20 +280,24 @@ export default function MaterialsPage() {
 			<StockAdjustModal
 				open={stockModalOpen}
 				material={adjustingStock}
-				loading={submitting}
+				suppliers={suppliers}
 				onCancel={() => {
 					setStockModalOpen(false);
 					setAdjustingStock(null);
 				}}
-				onSubmit={async (id, payload) => {
-					setSubmitting(true);
-					try {
-						await update(id, payload);
-						setStockModalOpen(false);
-						setAdjustingStock(null);
-					} finally {
-						setSubmitting(false);
-					}
+				onSuccess={() => {
+					setStockModalOpen(false);
+					setAdjustingStock(null);
+					fetch();
+				}}
+			/>
+
+			<MaterialDetailDrawer
+				open={detailOpen}
+				material={viewingMaterial}
+				onClose={() => {
+					setDetailOpen(false);
+					setViewingMaterial(null);
 				}}
 			/>
 		</div>

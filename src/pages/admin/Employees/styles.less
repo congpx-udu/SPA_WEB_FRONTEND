@@ -3,12 +3,14 @@
   background: #F8F9FC;
   min-height: 100%;
   font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 
   &__header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
 
     h1 {
       margin: 0;
@@ -38,71 +40,67 @@
     background: #FFFFFF;
     padding: 16px;
     border-radius: 12px;
-    margin-bottom: 16px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   &__table {
     background: #FFFFFF;
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
 
-    .ant-table-thead > tr > th:first-child,
-    .ant-table-tbody > tr:not(.ant-table-measure-row) > td:first-child {
-      padding-left: 28px !important;
-    }
-    .ant-table-thead > tr > th:last-child,
-    .ant-table-tbody > tr:not(.ant-table-measure-row) > td:last-child {
-      padding-right: 28px !important;
-    }
-
-    // Quy chuẩn: TẤT CẢ cột căn giữa (header + body)
+    // Header row — bg xám nhạt, bo tròn 8, chữ 12px gray, không uppercase
     .ant-table-thead > tr > th {
-      background: #FAFBFD;
-      color: #6B7280;
+      background: #F8F9FC !important;
+      color: #9CA3AF;
       font-size: 12px;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      padding: 14px 12px !important;
-      text-align: center !important;
+      text-transform: none;
+      letter-spacing: 0;
+      padding: 12px 16px !important;
       white-space: nowrap;
-      border-bottom: 1px solid #E5E7EB;
-      border-right: 1px solid #EEF0F4;
+      border-bottom: none !important;
+      border-right: none !important;
 
-      &:last-child { border-right: none; }
       &::before { display: none; }
+      &:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+      &:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
     }
 
+    // Body rows — border bottom mảnh, padding nhẹ, hover hồng nhạt
     .ant-table-tbody > tr:not(.ant-table-measure-row) > td {
-      padding: 14px 28px !important;
-      font-size: 13.5px;
-      color: #1F2937;
-      border-bottom: 1px solid #EEF0F4;
-      border-right: 1px solid #F3F4F8;
+      padding: 14px 16px !important;
+      font-size: 13px;
+      color: #111827;
+      border-bottom: 1px solid #F0F0F0 !important;
+      border-right: none !important;
       vertical-align: middle;
+    }
 
-      &:last-child { border-right: none; }
+    .ant-table-tbody > tr:not(.ant-table-measure-row):last-child > td {
+      border-bottom: none !important;
     }
 
     .ant-table-tbody > tr:not(.ant-table-measure-row):hover > td {
       background: #FFF9F9 !important;
     }
 
-    // Cột Thao tác: header căn giữa, nút ⋯ nhỏ gọn
-    .ant-table-cell {
-      .ant-btn-text {
-        width: 32px;
-        height: 32px;
-        padding: 0;
-        border-radius: 8px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        color: #6B7280;
-        &:hover { background: #F3F4F8; color: #c47070; }
-      }
+    // Cột Thao tác: nút ⋯ nhỏ gọn
+    .ant-table-cell .ant-btn-text {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #6B7280;
+      &:hover { background: #F3F4F8; color: #c47070; }
+    }
+
+    // Pagination căn nhẹ
+    .ant-pagination {
+      margin-top: 16px;
     }
   }
 }

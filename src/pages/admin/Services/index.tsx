@@ -2,13 +2,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
-import { Plus, Search, MoreHorizontal, Pencil, Power, Package } from 'lucide-react';
+import { Plus, Search, MoreHorizontal, Pencil, Power, Package, Users } from 'lucide-react';
 import {
 	SERVICE_CATEGORY_OPTIONS,
 	SERVICE_STATUS_OPTIONS,
 } from '@/services/Services/constant';
 import ServiceFormModal from './components/ServiceFormModal';
 import BomDrawer from './components/BomDrawer';
+import StaffAssignmentModal from './components/StaffAssignmentModal';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 export default function ServicesPage() {
@@ -31,6 +33,7 @@ export default function ServicesPage() {
 	const [editing, setEditing] = useState<SvcMgmt.IService | null>(null);
 	const [submitting, setSubmitting] = useState(false);
 	const [bomService, setBomService] = useState<SvcMgmt.IService | null>(null);
+	const [assignService, setAssignService] = useState<SvcMgmt.IService | null>(null);
 
 	useEffect(() => {
 		fetch();
@@ -123,6 +126,13 @@ export default function ServicesPage() {
 								>
 									Định mức nguyên liệu
 								</Menu.Item>
+								<Menu.Item
+									key='assign'
+									icon={<Users size={14} />}
+									onClick={() => setAssignService(r)}
+								>
+									Phân công chuyên viên
+								</Menu.Item>
 								<Menu.Item key='toggle' icon={<Power size={14} />}>
 									<Popconfirm
 										title={r.isActive ? 'Tạm ngưng dịch vụ này?' : 'Kích hoạt lại dịch vụ này?'}
@@ -149,23 +159,23 @@ export default function ServicesPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Dịch vụ</h1>
-					<p>Danh sách dịch vụ spa hệ thống</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm dịch vụ
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Dịch vụ'
+				subtitle='Danh sách dịch vụ spa hệ thống'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm dịch vụ
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input
@@ -212,6 +222,12 @@ export default function ServicesPage() {
 				open={!!bomService}
 				service={bomService}
 				onClose={() => setBomService(null)}
+			/>
+
+			<StaffAssignmentModal
+				open={!!assignService}
+				service={assignService}
+				onClose={() => setAssignService(null)}
 			/>
 
 			<ServiceFormModal

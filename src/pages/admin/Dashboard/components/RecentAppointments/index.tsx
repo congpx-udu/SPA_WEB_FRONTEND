@@ -1,10 +1,14 @@
 import React from 'react';
 import { Table, Tag } from 'antd';
 import { ArrowRightOutlined } from '@ant-design/icons';
-import { MOCK_APPOINTMENTS, STATUS_CONFIG } from '@/services/admin/Dashboard/constant';
+import { history } from 'umi';
+import { STATUS_CONFIG } from '@/services/admin/Dashboard/constant';
 import './style.less';
 
-const RecentAppointments: React.FC = () => {
+type Props = { data?: Dashboard.IAppointment[] };
+
+const RecentAppointments: React.FC<Props> = ({ data }) => {
+	const rows = data ?? [];
 	const columns = [
 		{
 			title: 'Khách hàng',
@@ -13,7 +17,7 @@ const RecentAppointments: React.FC = () => {
 			render: (name: string, record: Dashboard.IAppointment) => (
 				<div className='customer-cell'>
 					<div className='avatar-circle' style={{ background: record.avatarColor }}>
-						{name.charAt(name.lastIndexOf(' ') + 1)}
+						{name && name !== '—' ? name.charAt(name.lastIndexOf(' ') + 1) : '?'}
 					</div>
 					<span className='customer-name'>{name}</span>
 				</div>
@@ -27,7 +31,7 @@ const RecentAppointments: React.FC = () => {
 			key: 'status',
 			align: 'center' as const,
 			render: (status: string) => {
-				const config = STATUS_CONFIG[status];
+				const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
 				return (
 					<Tag
 						className='status-tag'
@@ -44,20 +48,21 @@ const RecentAppointments: React.FC = () => {
 		<div className='table-card'>
 			<div className='card-header'>
 				<div className='header-left'>
-					<h3>Lịch hẹn gần đây</h3>
-					<span className='count-badge'>{MOCK_APPOINTMENTS.length}</span>
+					<h3>Phiếu DV gần đây</h3>
+					<span className='count-badge'>{rows.length}</span>
 				</div>
-				<a className='view-all not-underline'>
+				<a className='view-all not-underline' onClick={() => history.push('/phieu-dich-vu')}>
 					Xem tất cả <ArrowRightOutlined />
 				</a>
 			</div>
 			<Table
-				dataSource={MOCK_APPOINTMENTS}
+				dataSource={rows}
 				columns={columns}
 				rowKey='_id'
 				pagination={false}
 				size='middle'
 				className='appointments-table'
+				locale={{ emptyText: 'Chưa có phiếu nào' }}
 			/>
 		</div>
 	);

@@ -5,6 +5,7 @@ import { useModel } from 'umi';
 import { Plus, Search, MoreHorizontal, Pencil, Power } from 'lucide-react';
 import { SUPPLIER_STATUS_OPTIONS } from '@/services/Suppliers/constant';
 import SupplierFormModal from './components/SupplierFormModal';
+import PageHeader from '@/components/PageHeader';
 import '@/pages/admin/Employees/styles.less';
 
 export default function SuppliersPage() {
@@ -113,23 +114,23 @@ export default function SuppliersPage() {
 
 	return (
 		<div className='employees-page'>
-			<div className='employees-page__header'>
-				<div>
-					<h1>Quản lý Nhà cung cấp</h1>
-					<p>Quản lý thông tin nhà cung cấp vật liệu</p>
-				</div>
-				<Button
-					type='primary'
-					icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-					className='employees-page__add-btn'
-					onClick={() => {
-						setEditing(null);
-						setModalOpen(true);
-					}}
-				>
-					Thêm NCC
-				</Button>
-			</div>
+			<PageHeader
+				title='Quản lý Nhà cung cấp'
+				subtitle='Quản lý thông tin nhà cung cấp vật liệu'
+				extras={
+					<Button
+						type='primary'
+						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+						className='employees-page__add-btn'
+						onClick={() => {
+							setEditing(null);
+							setModalOpen(true);
+						}}
+					>
+						Thêm NCC
+					</Button>
+				}
+			/>
 
 			<div className='employees-page__toolbar'>
 				<Input
