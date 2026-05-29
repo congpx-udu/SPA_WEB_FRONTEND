@@ -1,6 +1,7 @@
 // Lễ tân — OPERATOR. View tập trung lịch hẹn HÔM NAY + thao tác nhanh.
 import { useEffect, useMemo, useState } from 'react';
-import { Row, Col, Card, Tag, Button, Modal, Input, Empty, Spin } from 'antd';
+import { Row, Col, Card, Button, Modal, Input, Empty, Spin, Dropdown, Menu, Tooltip } from 'antd';
+import { MoreHorizontal } from 'lucide-react';
 import { useModel, history } from 'umi';
 import {
 	CalendarDays,
@@ -175,44 +176,85 @@ export default function LeTanPage() {
 													{b.serviceSnapshot.name} · CV {b.staffSnapshot.fullName}
 												</div>
 											</div>
-											<Tag color={statusOpt?.color}>{statusOpt?.label}</Tag>
-											<div style={{ display: 'flex', gap: 6 }}>
+											<span
+												style={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													gap: 6,
+													padding: '2px 10px',
+													fontSize: 12,
+													fontWeight: 500,
+													color: statusOpt?.color,
+													background: `${statusOpt?.color}14`,
+													borderRadius: 6,
+												}}
+											>
+												<span
+													style={{
+														width: 6,
+														height: 6,
+														borderRadius: '50%',
+														background: statusOpt?.color,
+													}}
+												/>
+												{statusOpt?.label}
+											</span>
+											<div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
 												{canCheckIn && (
 													<Button
 														type='primary'
 														size='small'
-														icon={<LogIn size={14} />}
 														loading={submitting}
 														onClick={() => handleCheckIn(b)}
-														style={{ background: '#059669', borderColor: '#059669' }}
-													>
-														Check-in
-													</Button>
-												)}
-												{canNoShow && (
-													<Button
-														size='small'
-														icon={<UserX size={14} />}
-														onClick={async () => {
-															const ok = await noShow(b.id);
-															if (ok) fetch();
+														style={{
+															background: '#059669',
+															borderColor: '#059669',
+															display: 'inline-flex',
+															alignItems: 'center',
+															gap: 6,
 														}}
 													>
-														Vắng
+														<LogIn size={14} />
+														<span>Check-in</span>
 													</Button>
 												)}
-												{canCancel && (
-													<Button
-														danger
-														size='small'
-														icon={<XCircle size={14} />}
-														onClick={() => {
-															setCancelTarget(b);
-															setCancelReason('');
-														}}
+												{(canNoShow || canCancel) && (
+													<Dropdown
+														trigger={['click']}
+														overlay={
+															<Menu>
+																{canNoShow && (
+																	<Menu.Item
+																		key='noshow'
+																		icon={<UserX size={14} />}
+																		onClick={async () => {
+																			const ok = await noShow(b.id);
+																			if (ok) fetch();
+																		}}
+																	>
+																		Khách không đến
+																	</Menu.Item>
+																)}
+																{canCancel && (
+																	<Menu.Item
+																		key='cancel'
+																		icon={<XCircle size={14} />}
+																		danger
+																		onClick={() => {
+																			setCancelTarget(b);
+																			setCancelReason('');
+																		}}
+																	>
+																		Huỷ lịch
+																	</Menu.Item>
+																)}
+															</Menu>
+														}
 													>
-														Huỷ
-													</Button>
+														<Tooltip title='Tuỳ chọn khác'>
+															<Button type='text' size='small' icon={<MoreHorizontal size={16} />} />
+														</Tooltip>
+													</Dropdown>
 												)}
 											</div>
 										</div>
