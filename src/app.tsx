@@ -159,6 +159,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 
 		menuFooterRender: (props: any) => <AuthFloatingMenu collapsed={!!props?.collapsed} />,
 
+		// Bấm logo trên sidebar không điều hướng (chặn hành vi mặc định của ProLayout).
+		onMenuHeaderClick: (e: any) => e?.preventDefault?.(),
+
 		childrenRender: (dom) => (
 			<OIDCBounder>
 				<ErrorBoundary>

@@ -17,6 +17,7 @@ import {
 	Divider,
 	Dropdown,
 	Menu,
+	message,
 } from 'antd';
 import { Plus, Trash2, Check, X, CheckCircle2, Ban, Save, MoreHorizontal, Pencil } from 'lucide-react';
 import * as servicesApi from '@/services/Services/api';
@@ -28,6 +29,7 @@ import {
 type Props = {
 	order: SvcOrderMgmt.IServiceOrder | null;
 	loading: boolean;
+	readOnly?: boolean;
 	onClose: () => void;
 	updateOrder: (id: string, payload: SvcOrderMgmt.IUpdatePayload) => Promise<any>;
 	addItem: (id: string, payload: SvcOrderMgmt.IAddItemPayload) => Promise<any>;
@@ -42,6 +44,7 @@ const fmtMoney = (v: number) => v?.toLocaleString('vi-VN');
 export default function OrderDetailDrawer({
 	order,
 	loading,
+	readOnly = false,
 	onClose,
 	updateOrder,
 	addItem,
@@ -59,18 +62,16 @@ export default function OrderDetailDrawer({
 	const [editNote, setEditNote] = useState<string>('');
 	const [extraCharge, setExtraCharge] = useState<number>(0);
 	const [note, setNote] = useState<string>('');
-	const [headerDirty, setHeaderDirty] = useState(false);
 
 	const [form] = Form.useForm();
 
 	const open = !!order;
-	const editable = order ? SERVICE_ORDER_EDITABLE_STATUSES.includes(order.status) : false;
+	const editable = !readOnly && order ? SERVICE_ORDER_EDITABLE_STATUSES.includes(order.status) : false;
 
 	useEffect(() => {
 		if (open) {
 			setExtraCharge(order!.extraCharge);
 			setNote(order!.note);
-			setHeaderDirty(false);
 			setAddOpen(false);
 			setEditingItemId(null);
 			(async () => {
@@ -121,9 +122,11 @@ export default function OrderDetailDrawer({
 		const payload: SvcOrderMgmt.IUpdatePayload = {};
 		if (extraCharge !== order.extraCharge) payload.extraCharge = extraCharge;
 		if (note !== order.note) payload.note = note;
-		if (!Object.keys(payload).length) return;
+		if (!Object.keys(payload).length) {
+			message.info('Không có thay đổi để lưu');
+			return;
+		}
 		await updateOrder(order.id, payload);
-		setHeaderDirty(false);
 	};
 
 	const moveInProgress = async () => {
@@ -135,7 +138,7 @@ export default function OrderDetailDrawer({
 		if (!order) return;
 		Modal.confirm({
 			title: 'Hoàn thành phiếu này?',
-			content: 'Sau khi hoàn thành, phiếu sẽ chuyển trạng thái COMPLETED và không sửa được items.',
+			content: 'Sau khi hoàn thành, phiếu sẽ chuyển sang trạng thái "Hoàn thành" và không thể chỉnh sửa danh sách dịch vụ nữa.',
 			okText: 'Hoàn thành',
 			cancelText: 'Huỷ',
 			onOk: () => complete(order.id),
@@ -171,6 +174,7 @@ export default function OrderDetailDrawer({
 			title: 'Mã DV',
 			dataIndex: 'serviceCode',
 			width: 130,
+			align: 'center' as const,
 			render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code>,
 		},
 		{
@@ -183,6 +187,7 @@ export default function OrderDetailDrawer({
 			title: 'NV thực hiện',
 			dataIndex: 'staffName',
 			width: 140,
+			align: 'center' as const,
 			render: (v: string, r: SvcOrderMgmt.IItem) => (
 				<div>
 					<div>{v}</div>
@@ -309,12 +314,12 @@ export default function OrderDetailDrawer({
 							</div>
 						</div>
 						<Space>
-							{order.status === 'DRAFT' && (
+							{!readOnly && order.status === 'DRAFT' && (
 								<Button type='primary' onClick={moveInProgress}>
 									Bắt đầu
 								</Button>
 							)}
-							{order.status === 'IN_PROGRESS' && order.items.length > 0 && (
+							{!readOnly && order.status === 'IN_PROGRESS' && order.items.length > 0 && (
 								<Button
 									type='primary'
 									icon={<CheckCircle2 size={14} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
@@ -423,6 +428,7 @@ export default function OrderDetailDrawer({
 					)}
 
 					<Table
+						className='so-items-table'
 						rowKey='id'
 						dataSource={order.items}
 						columns={itemColumns as any}
@@ -443,10 +449,7 @@ export default function OrderDetailDrawer({
 										step={10000}
 										value={extraCharge}
 										disabled={!editable}
-										onChange={(v) => {
-											setExtraCharge(Number(v ?? 0));
-											setHeaderDirty(true);
-										}}
+										onChange={(v) => setExtraCharge(Number(v ?? 0))}
 										style={{ width: 200 }}
 										formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
 										parser={(v) => Number(`${v}`.replace(/[^0-9]/g, ''))}
@@ -458,34 +461,17 @@ export default function OrderDetailDrawer({
 										maxLength={500}
 										value={note}
 										disabled={!editable}
-										onChange={(e) => {
-											setNote(e.target.value);
-											setHeaderDirty(true);
-										}}
+										onChange={(e) => setNote(e.target.value)}
 										showCount
 									/>
 								</Form.Item>
 								{editable && (
 									<Button
 										type='primary'
-										disabled={!headerDirty}
 										onClick={saveHeader}
-										style={{
-											background: headerDirty ? '#059669' : '#A7F3D0',
-											borderColor: headerDirty ? '#059669' : '#A7F3D0',
-											color: '#FFFFFF',
-											fontWeight: 500,
-											display: 'inline-flex',
-											alignItems: 'center',
-											gap: 6,
-											height: 36,
-											padding: '0 18px',
-											borderRadius: 8,
-											cursor: headerDirty ? 'pointer' : 'not-allowed',
-										}}
+										icon={<Save size={15} />}
 									>
-										<Save size={15} />
-										<span>Lưu thay đổi</span>
+										Lưu thay đổi
 									</Button>
 								)}
 							</Form>

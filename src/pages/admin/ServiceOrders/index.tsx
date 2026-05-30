@@ -32,6 +32,10 @@ export default function ServiceOrdersPage() {
 		cancel,
 	} = useModel('serviceOrders') as any;
 
+	const { initialState } = useModel('@@initialState') as any;
+	// ADMIN chỉ được xem; OPERATOR mới được thêm/sửa/xoá.
+	const canWrite = initialState?.currentUser?.role === 'OPERATOR';
+
 	const [createOpen, setCreateOpen] = useState(false);
 
 	useEffect(() => {
@@ -47,11 +51,13 @@ export default function ServiceOrdersPage() {
 			title: 'Mã phiếu',
 			dataIndex: 'orderCode',
 			width: 170,
+			align: 'center' as const,
 			render: (v: string) => <code style={{ fontSize: 12 }}>{v}</code>,
 		},
 		{
 			title: 'Khách hàng',
 			width: 220,
+			align: 'center' as const,
 			render: (_: any, r: SvcOrderMgmt.IServiceOrder) => (
 				<div>
 					<div style={{ fontWeight: 500 }}>{r.customer?.fullName ?? '—'}</div>
@@ -87,12 +93,14 @@ export default function ServiceOrdersPage() {
 			title: 'Người tạo',
 			dataIndex: 'createdByName',
 			width: 160,
+			align: 'center' as const,
 			ellipsis: true,
 		},
 		{
 			title: 'Tạo lúc',
 			dataIndex: 'createdAt',
 			width: 170,
+			align: 'center' as const,
 			render: (v: string) => <span style={{ fontSize: 12 }}>{fmtDate(v)}</span>,
 		},
 		{
@@ -105,7 +113,7 @@ export default function ServiceOrdersPage() {
 					overlay={
 						<Menu>
 							<Menu.Item key='view' icon={<Eye size={14} />} onClick={() => loadDetail(r.id)}>
-								Xem / Sửa phiếu
+								{canWrite ? 'Xem / Sửa phiếu' : 'Xem phiếu dịch vụ'}
 							</Menu.Item>
 						</Menu>
 					}
@@ -125,14 +133,16 @@ export default function ServiceOrdersPage() {
 				title='Phiếu dịch vụ'
 				subtitle='Tạo và quản lý phiếu dịch vụ tại quầy'
 				extras={
-					<Button
-						type='primary'
-						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-						className='employees-page__add-btn'
-						onClick={() => setCreateOpen(true)}
-					>
-						Tạo phiếu
-					</Button>
+					canWrite ? (
+						<Button
+							type='primary'
+							icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+							className='employees-page__add-btn'
+							onClick={() => setCreateOpen(true)}
+						>
+							Tạo phiếu
+						</Button>
+					) : undefined
 				}
 			/>
 
@@ -196,6 +206,7 @@ export default function ServiceOrdersPage() {
 			<OrderDetailDrawer
 				order={detail}
 				loading={detailLoading}
+				readOnly={!canWrite}
 				onClose={closeDetail}
 				updateOrder={updateOrder}
 				addItem={addItem}

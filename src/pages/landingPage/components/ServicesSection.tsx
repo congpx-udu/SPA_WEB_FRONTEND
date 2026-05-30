@@ -31,7 +31,6 @@ const getIcon = (service: DichVu.IRecord, idx: number): React.ReactNode =>
   (service.category && categoryIconMap[service.category]) ||
   fallbackIcons[idx % fallbackIcons.length];
 
-// Gradient pool cho icon orbs — giữ tone rose/coral
 const ORB_GRADIENTS = [
   'linear-gradient(135deg, #d98b8b 0%, #c47070 100%)',
   'linear-gradient(135deg, #E2C2C2 0%, #d98b8b 100%)',

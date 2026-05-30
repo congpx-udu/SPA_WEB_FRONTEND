@@ -4,6 +4,7 @@ import { CheckCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import MyDatePicker from '@/components/MyDatePicker';
 import { useModel } from 'umi';
 import moment from 'moment';
+import OtpModal from './OtpModal';
 
 const { TextArea } = Input;
 
@@ -13,11 +14,17 @@ export function BookingSection() {
 		loading,
 		perks,
 		services,
-		availability,
+		grid,
 		loadingSlots,
 		loadServices,
-		loadAvailability,
-		submitBooking,
+		loadGrid,
+		requestOtp,
+		verifyOtp,
+		resendOtp,
+		closeOtp,
+		otpBooking,
+		verifying,
+		resending,
 	} = useModel('landingPage.booking');
 
 	useEffect(() => {
@@ -26,13 +33,19 @@ export function BookingSection() {
 
 	const serviceId = Form.useWatch('serviceId', form);
 	const dateValue = Form.useWatch('date', form);
+	const selectedSlot = Form.useWatch('slot', form);
 
 	useEffect(() => {
 		if (!serviceId || !dateValue) return;
 		const d = moment.isMoment(dateValue) ? dateValue : moment(dateValue);
-		loadAvailability(serviceId, d.format('YYYY-MM-DD'));
+		loadGrid(serviceId, d.format('YYYY-MM-DD'));
 		form.setFieldsValue({ slot: undefined });
-	}, [serviceId, dateValue, loadAvailability, form]);
+	}, [serviceId, dateValue, loadGrid, form]);
+
+	const selectSlot = (time: string) => {
+		form.setFieldsValue({ slot: time });
+		form.setFields([{ name: 'slot', errors: [] }]);
+	};
 
 	const onFinish = async (values: any) => {
 		const phone = String(values.phone || '').replace(/\D/g, '');
@@ -51,15 +64,20 @@ export function BookingSection() {
 			.toISOString();
 
 		const fullName = [values.firstName, values.lastName].filter(Boolean).join(' ').trim();
-		const ok = await submitBooking({
+		// Tạo booking PENDING_OTP + gửi mã; form giữ nguyên đến khi xác thực xong.
+		const res = await requestOtp({
 			serviceId: values.serviceId,
 			scheduledStart,
 			fullName,
 			phone,
-			email: values.email || undefined,
+			email: values.email,
 			note: values.notes || undefined,
 		});
-		if (ok) form.resetFields();
+		// Slot vừa bị người khác đặt (409) → bỏ slot đã chọn và tải lại grid để hiện trạng thái mới.
+		if (!res.ok && res.conflict) {
+			form.setFieldsValue({ slot: undefined });
+			loadGrid(values.serviceId, d.format('YYYY-MM-DD'));
+		}
 	};
 
 	return (
@@ -155,7 +173,10 @@ export function BookingSection() {
 					<Form.Item
 						name='email'
 						label='Địa chỉ email'
-						rules={[{ type: 'email', message: 'Email không hợp lệ' }]}
+						rules={[
+							{ required: true, message: 'Nhập email để nhận mã xác thực' },
+							{ type: 'email', message: 'Email không hợp lệ' },
+						]}
 					>
 						<Input placeholder='email@example.com' className='landing-input' />
 					</Form.Item>
@@ -193,33 +214,71 @@ export function BookingSection() {
 
 					<Form.Item
 						name='slot'
-						label={
-							availability
-								? `Khung giờ gợi ý (${availability.serviceName} · ${availability.staffName})`
-								: 'Khung giờ'
-						}
+						label='Khung giờ'
 						rules={[{ required: true, message: 'Chọn khung giờ' }]}
 					>
 						{loadingSlots ? (
 							<div style={{ padding: 8 }}>
 								<Spin size='small' /> <span style={{ marginLeft: 8 }}>Đang tải slot...</span>
 							</div>
-						) : availability && availability.suggestedSlots.length > 0 ? (
-							<Select
-								className='landing-select'
-								placeholder='Chọn giờ'
-								options={availability.suggestedSlots.map((t) => ({ value: t, label: t }))}
-							/>
+						) : !serviceId || !dateValue ? (
+							<div style={{ color: 'var(--clay-muted)', fontSize: 13 }}>
+								Chọn dịch vụ và ngày để xem khung giờ trống.
+							</div>
+						) : !grid || grid.slots.length === 0 ? (
+							<div style={{ color: 'var(--clay-muted)', fontSize: 13 }}>
+								Không có khung giờ nào trong ngày — vui lòng chọn ngày khác.
+							</div>
 						) : (
-							<Select
-								className='landing-select'
-								placeholder={
-									serviceId && dateValue
-										? 'Không còn slot trống — chọn ngày khác'
-										: 'Chọn dịch vụ + ngày trước'
-								}
-								disabled
-							/>
+							<div
+								style={{
+									display: 'grid',
+									gridTemplateColumns: 'repeat(4, 1fr)',
+									gap: 8,
+									maxHeight: 200,
+									overflowY: 'auto',
+									paddingRight: 2,
+								}}
+							>
+								{grid.slots.map((s) => {
+									const isFree = s.status === 'FREE';
+									const isSelected = selectedSlot === s.time;
+									return (
+										<button
+											key={s.time}
+											type='button'
+											disabled={!isFree}
+											title={isFree ? 'Còn trống' : 'Đã có lịch'}
+											onClick={() => selectSlot(s.time)}
+											style={{
+												padding: '8px 4px',
+												borderRadius: 12,
+												border: isSelected
+													? '2px solid var(--clay-accent)'
+													: '1px solid rgba(196, 112, 112, 0.18)',
+												background: isSelected
+													? 'rgba(196, 112, 112, 0.12)'
+													: isFree
+													? 'rgba(255, 255, 255, 0.7)'
+													: 'rgba(0, 0, 0, 0.04)',
+												color: isSelected
+													? 'var(--clay-accent)'
+													: isFree
+													? 'var(--clay-foreground)'
+													: '#B0A8A8',
+												fontSize: 14,
+												fontWeight: 600,
+												fontFamily: 'Nunito, sans-serif',
+												cursor: isFree ? 'pointer' : 'not-allowed',
+												opacity: isFree ? 1 : 0.6,
+												transition: 'all 0.15s ease',
+											}}
+										>
+											{s.time}
+										</button>
+									);
+								})}
+							</div>
 						)}
 					</Form.Item>
 
@@ -244,6 +303,20 @@ export function BookingSection() {
 					</Form.Item>
 				</Form>
 			</div>
+
+			<OtpModal
+				open={!!otpBooking}
+				email={otpBooking?.customerSnapshot?.email}
+				verifying={verifying}
+				resending={resending}
+				onVerify={async (code) => {
+					const ok = await verifyOtp(code);
+					if (ok) form.resetFields();
+					return ok;
+				}}
+				onResend={resendOtp}
+				onClose={closeOtp}
+			/>
 		</section>
 	);
 }

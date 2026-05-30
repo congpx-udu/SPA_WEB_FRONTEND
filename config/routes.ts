@@ -96,7 +96,7 @@ export default [
 		name: 'Dịch vụ',
 		component: './admin/Services',
 		icon: 'StarOutlined',
-		access: 'canAdminOrOperator',
+		access: 'canAdmin',
 	},
 	{
 		path: '/khach-hang',
@@ -114,17 +114,17 @@ export default [
 		access: 'canAdmin',
 	},
 	{
-		path: '/vat-lieu',
-		name: 'Vật liệu',
-		component: './admin/Materials',
-		icon: 'InboxOutlined',
-		access: 'canAdmin',
-	},
-	{
 		path: '/kho-dashboard',
 		name: 'Kho vật liệu',
 		component: './admin/InventoryDashboard',
 		icon: 'AppstoreOutlined',
+		access: 'canAdmin',
+	},
+	{
+		path: '/vat-lieu',
+		name: 'Vật liệu',
+		component: './admin/Materials',
+		icon: 'InboxOutlined',
 		access: 'canAdmin',
 	},
 	{

@@ -1,6 +1,6 @@
-// Modal tạo phiếu DV mới — chọn khách hàng (search by phone/name) + note. Dùng find-or-create để hỗ trợ walk-in.
+// Modal tạo phiếu DV mới — chọn khách hàng có sẵn (search by phone/name) + note.
 import { useEffect, useState } from 'react';
-import { Modal, Form, Input, Select, Spin, Switch, message } from 'antd';
+import { Modal, Form, Input, Select, Spin } from 'antd';
 import * as customersApi from '@/services/Customers/api';
 
 type Props = {
@@ -12,7 +12,6 @@ type Props = {
 
 export default function CreateOrderModal({ open, onCancel, onCreated, create }: Props) {
 	const [form] = Form.useForm();
-	const [walkin, setWalkin] = useState(false);
 	const [options, setOptions] = useState<CustomerMgmt.ICustomer[]>([]);
 	const [searching, setSearching] = useState(false);
 	const [submitting, setSubmitting] = useState(false);
@@ -21,7 +20,6 @@ export default function CreateOrderModal({ open, onCancel, onCreated, create }: 
 		if (!open) {
 			form.resetFields();
 			setOptions([]);
-			setWalkin(false);
 		}
 	}, [open, form]);
 
@@ -44,19 +42,7 @@ export default function CreateOrderModal({ open, onCancel, onCreated, create }: 
 		const values = await form.validateFields();
 		setSubmitting(true);
 		try {
-			let customerId: string = values.customerId;
-			if (walkin) {
-				const phone = (values.phone as string).trim();
-				const fullName = (values.fullName as string).trim();
-				const res = await customersApi.findOrCreateCustomer({
-					phone,
-					fullName,
-					source: 'WALK_IN',
-				});
-				customerId = res.data.id;
-				if (res.data.wasCreated) message.info('Đã tạo khách hàng mới (walk-in)');
-			}
-			const order = await create({ customerId, note: values.note?.trim() || undefined });
+			const order = await create({ customerId: values.customerId, note: values.note?.trim() || undefined });
 			await onCreated(order.id);
 		} catch (e: any) {
 			if (!e?.errorFields) {
@@ -79,52 +65,23 @@ export default function CreateOrderModal({ open, onCancel, onCreated, create }: 
 			destroyOnClose
 		>
 			<Form form={form} layout='vertical'>
-				<Form.Item label='Khách hàng walk-in?'>
-					<Switch checked={walkin} onChange={setWalkin} />
-					<span style={{ marginLeft: 8, color: '#6B7280', fontSize: 12 }}>
-						Bật để nhập thông tin nhanh, hệ thống tự tạo khách hàng mới nếu SĐT chưa có.
-					</span>
+				<Form.Item
+					name='customerId'
+					label='Khách hàng'
+					rules={[{ required: true, message: 'Chọn khách hàng' }]}
+				>
+					<Select
+						showSearch
+						placeholder='Tìm theo tên hoặc SĐT...'
+						filterOption={false}
+						onSearch={handleSearch}
+						notFoundContent={searching ? <Spin size='small' /> : 'Không tìm thấy'}
+						options={options.map((c) => ({
+							value: c.id,
+							label: `${c.fullName} — ${c.phone}`,
+						}))}
+					/>
 				</Form.Item>
-
-				{!walkin ? (
-					<Form.Item
-						name='customerId'
-						label='Khách hàng'
-						rules={[{ required: true, message: 'Chọn khách hàng' }]}
-					>
-						<Select
-							showSearch
-							placeholder='Tìm theo tên hoặc SĐT...'
-							filterOption={false}
-							onSearch={handleSearch}
-							notFoundContent={searching ? <Spin size='small' /> : 'Không tìm thấy'}
-							options={options.map((c) => ({
-								value: c.id,
-								label: `${c.fullName} — ${c.phone}`,
-							}))}
-						/>
-					</Form.Item>
-				) : (
-					<>
-						<Form.Item
-							name='fullName'
-							label='Họ tên'
-							rules={[{ required: true, message: 'Nhập họ tên' }]}
-						>
-							<Input maxLength={100} placeholder='Nguyễn Văn A' />
-						</Form.Item>
-						<Form.Item
-							name='phone'
-							label='Số điện thoại'
-							rules={[
-								{ required: true, message: 'Nhập SĐT' },
-								{ pattern: /^[0-9+\- ]{8,15}$/, message: 'SĐT không hợp lệ' },
-							]}
-						>
-							<Input maxLength={15} placeholder='0901234567' />
-						</Form.Item>
-					</>
-				)}
 
 				<Form.Item name='note' label='Ghi chú phiếu'>
 					<Input.TextArea rows={3} maxLength={500} placeholder='Tuỳ chọn' showCount />

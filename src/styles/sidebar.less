@@ -12,6 +12,12 @@
     align-items: center;
     justify-content: flex-start;
 
+    // Ẩn underline trượt (global a::after) khi hover logo.
+    a::after,
+    a:hover::after {
+      display: none !important;
+    }
+
     h1 {
       color: var(--clay-foreground) !important;
       font-family: 'Nunito', sans-serif;
