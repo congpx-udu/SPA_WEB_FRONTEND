@@ -1,7 +1,13 @@
 // https://umijs.org/config/
+import { join } from 'path';
 import { defineConfig } from 'umi';
 import defaultSettings from './defaultSettings';
 import routes from './routes';
+
+// Model admin thuần (an toàn để stub khi build landing). GIỮ THẬT: auth,
+// thongbao/noticeicon, tienich/phanhoi (global widget dùng) + landingServices,
+// landingPage/* (trang landing dùng).
+const ADMIN_ONLY_MODELS = /[\\/]src[\\/]models[\\/](bom|bookings|customers|dashboard|employees|import|invoices|materials|randomuser|serviceOrders|services|staffServiceAssignments|stockLedger|suppliers|danhmuc[\\/]chucvu|thongbao[\\/](nhansu|receiver|sinhvien|thongbao)|tienich[\\/](auditlog|caidat))(\.tsx?)?$/;
 // import proxy from './proxy';
 // const { REACT_APP_ENV } = process.env;
 
@@ -48,6 +54,17 @@ export default defineConfig({
 	},
 	// Fast Refresh 热更新
 	fastRefresh: {},
+
+	// Build landing: thay model admin bằng stub rỗng để webpack loại code model
+	// quản lý + service API kéo theo khỏi bundle landing (plugin-model bundle mọi
+	// model global nên không tự tách theo route).
+	chainWebpack(memo: any, { webpack }: any) {
+		if (process.env.APP_CONFIG_TARGET === 'landing') {
+			memo
+				.plugin('stub-admin-models')
+				.use(webpack.NormalModuleReplacementPlugin, [ADMIN_ONLY_MODELS, join(__dirname, 'emptyModel.ts')]);
+		}
+	},
 
 	extraPostCSSPlugins: [require('@tailwindcss/postcss7-compat'), require('autoprefixer')],
 	nodeModulesTransform: {

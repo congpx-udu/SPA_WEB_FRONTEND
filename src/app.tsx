@@ -13,7 +13,6 @@ import OneSignalBounder from './components/OneSignalBounder';
 import AuthFloatingMenu from './components/AuthFloatingMenu';
 import TechnicalSupportBounder from './components/TechnicalSupportBounder';
 import NotAccessible from './pages/exception/403';
-import NotFoundContent from './pages/exception/404';
 import type { IInitialState } from './services/base/typing';
 import './styles/global.less';
 import './styles/tailwind.css';
@@ -93,7 +92,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 				</TechnicalSupportBounder>
 			</OIDCBounder>
 		),
-		noFound: <NotFoundContent />,
 		rightContentRender: false,
 		headerRender: false,
 		disableContentMargin: true,
@@ -104,7 +102,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 		onPageChange: () => {
 			const { location } = history;
 			const path = location.pathname;
-			const PUBLIC_PATHS = ['/', '/login', '/feedback', '/403', '/hold-on'];
+			const PUBLIC_PATHS = ['/', '/login', '/feedback', '/403', '/hold-on', '/404'];
 			const isPublic = PUBLIC_PATHS.includes(path);
 			const user = (initialState as any)?.currentUser as Auth.IStaff | undefined;
 

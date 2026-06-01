@@ -14,10 +14,10 @@ export function BookingSection() {
 		loading,
 		perks,
 		services,
-		grid,
+		slots,
 		loadingSlots,
 		loadServices,
-		loadGrid,
+		loadSlots,
 		requestOtp,
 		verifyOtp,
 		resendOtp,
@@ -38,9 +38,9 @@ export function BookingSection() {
 	useEffect(() => {
 		if (!serviceId || !dateValue) return;
 		const d = moment.isMoment(dateValue) ? dateValue : moment(dateValue);
-		loadGrid(serviceId, d.format('YYYY-MM-DD'));
+		loadSlots(serviceId, d.format('YYYY-MM-DD'));
 		form.setFieldsValue({ slot: undefined });
-	}, [serviceId, dateValue, loadGrid, form]);
+	}, [serviceId, dateValue, loadSlots, form]);
 
 	const selectSlot = (time: string) => {
 		form.setFieldsValue({ slot: time });
@@ -73,10 +73,10 @@ export function BookingSection() {
 			email: values.email,
 			note: values.notes || undefined,
 		});
-		// Slot vừa bị người khác đặt (409) → bỏ slot đã chọn và tải lại grid để hiện trạng thái mới.
+		// Slot vừa bị người khác đặt (409) → bỏ slot đã chọn và tải lại khung giờ trống mới.
 		if (!res.ok && res.conflict) {
 			form.setFieldsValue({ slot: undefined });
-			loadGrid(values.serviceId, d.format('YYYY-MM-DD'));
+			loadSlots(values.serviceId, d.format('YYYY-MM-DD'));
 		}
 	};
 
@@ -225,9 +225,9 @@ export function BookingSection() {
 							<div style={{ color: 'var(--clay-muted)', fontSize: 13 }}>
 								Chọn dịch vụ và ngày để xem khung giờ trống.
 							</div>
-						) : !grid || grid.slots.length === 0 ? (
+						) : slots.length === 0 ? (
 							<div style={{ color: 'var(--clay-muted)', fontSize: 13 }}>
-								Không có khung giờ nào trong ngày — vui lòng chọn ngày khác.
+								Không có khung giờ trống trong ngày — vui lòng chọn ngày khác.
 							</div>
 						) : (
 							<div
@@ -240,16 +240,14 @@ export function BookingSection() {
 									paddingRight: 2,
 								}}
 							>
-								{grid.slots.map((s) => {
-									const isFree = s.status === 'FREE';
-									const isSelected = selectedSlot === s.time;
+								{slots.map((time) => {
+									const isSelected = selectedSlot === time;
 									return (
 										<button
-											key={s.time}
+											key={time}
 											type='button'
-											disabled={!isFree}
-											title={isFree ? 'Còn trống' : 'Đã có lịch'}
-											onClick={() => selectSlot(s.time)}
+											title='Còn trống'
+											onClick={() => selectSlot(time)}
 											style={{
 												padding: '8px 4px',
 												borderRadius: 12,
@@ -258,23 +256,16 @@ export function BookingSection() {
 													: '1px solid rgba(196, 112, 112, 0.18)',
 												background: isSelected
 													? 'rgba(196, 112, 112, 0.12)'
-													: isFree
-													? 'rgba(255, 255, 255, 0.7)'
-													: 'rgba(0, 0, 0, 0.04)',
-												color: isSelected
-													? 'var(--clay-accent)'
-													: isFree
-													? 'var(--clay-foreground)'
-													: '#B0A8A8',
+													: 'rgba(255, 255, 255, 0.7)',
+												color: isSelected ? 'var(--clay-accent)' : 'var(--clay-foreground)',
 												fontSize: 14,
 												fontWeight: 600,
 												fontFamily: 'Nunito, sans-serif',
-												cursor: isFree ? 'pointer' : 'not-allowed',
-												opacity: isFree ? 1 : 0.6,
+												cursor: 'pointer',
 												transition: 'all 0.15s ease',
 											}}
 										>
-											{s.time}
+											{time}
 										</button>
 									);
 								})}
