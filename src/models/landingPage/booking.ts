@@ -12,8 +12,8 @@ export const perks = [
 export default () => {
 	const [loading, setLoading] = useState(false);
 	const [services, setServices] = useState<{ id: string; name: string }[]>([]);
-	// Grid toàn bộ khung giờ FREE/BUSY trong ngày (giống modal tạo lịch hẹn của operator).
-	const [grid, setGrid] = useState<BookingMgmt.IAvailabilityGrid | null>(null);
+	// Các khung giờ TRỐNG gợi ý cho khách — endpoint public /availability (tối đa 8 slot).
+	const [slots, setSlots] = useState<string[]>([]);
 	const [loadingSlots, setLoadingSlots] = useState(false);
 	// Booking PENDING_OTP đang chờ nhập mã (null = modal OTP đóng).
 	const [otpBooking, setOtpBooking] = useState<BookingMgmt.IBooking | null>(null);
@@ -29,17 +29,17 @@ export default () => {
 		}
 	}, []);
 
-	const loadGrid = useCallback(async (serviceId: string, date: string) => {
+	const loadSlots = useCallback(async (serviceId: string, date: string) => {
 		if (!serviceId || !date) {
-			setGrid(null);
+			setSlots([]);
 			return;
 		}
 		setLoadingSlots(true);
 		try {
-			const res = await bookingsApi.getAvailabilityGrid(serviceId, date);
-			setGrid(res.data);
+			const res = await bookingsApi.getAvailability(serviceId, date);
+			setSlots(res.data.suggestedSlots ?? []);
 		} catch (e: any) {
-			setGrid(null);
+			setSlots([]);
 			const msg = e?.response?.data?.message;
 			if (msg) message.warning(Array.isArray(msg) ? msg.join(', ') : msg);
 		} finally {
@@ -54,7 +54,7 @@ export default () => {
 	};
 
 	// Submit form → tạo booking PENDING_OTP + gửi mã OTP qua email, mở modal nhập mã.
-	// Trả { ok, conflict }: conflict = true khi slot vừa bị đặt (409) để FE tải lại grid.
+	// Trả { ok, conflict }: conflict = true khi slot vừa bị đặt (409) để FE tải lại khung giờ.
 	const requestOtp = useCallback(async (payload: BookingMgmt.IRequestOtpPayload) => {
 		setLoading(true);
 		try {
@@ -83,7 +83,7 @@ export default () => {
 				if (res.data?.confirmed) {
 					message.success('Xác thực thành công! Lịch hẹn của bạn đã được xác nhận.');
 					setOtpBooking(null);
-					setGrid(null);
+					setSlots([]);
 					return true;
 				}
 				return false;
@@ -121,10 +121,10 @@ export default () => {
 		loading,
 		perks,
 		services,
-		grid,
+		slots,
 		loadingSlots,
 		loadServices,
-		loadGrid,
+		loadSlots,
 		requestOtp,
 		verifyOtp,
 		resendOtp,

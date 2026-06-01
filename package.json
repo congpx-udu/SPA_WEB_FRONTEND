@@ -6,6 +6,8 @@
   "scripts": {
     "analyze": "cross-env ANALYZE=1 umi build",
     "build": "umi build",
+    "build:landing": "cross-env APP_CONFIG_TARGET=landing umi build",
+    "build:admin": "cross-env APP_CONFIG_TARGET=admin umi build",
     "dev": "npm run start:dev",
     "push-rsync": "rsync -avzhe ssh --delete-before dist/ ubuntu@203.162.10.113:/var/www/slink.ptit.edu.vn/",
     "push-rsync-win": "rsync -avzh --chmod=755 --no-perms --delete-before dist/ ubuntu@203.162.10.113:/var/www/slink.ptit.edu.vn/",
