@@ -1,34 +1,42 @@
-// Restyle ProLayout sider để khớp design Pencil (Luna Spa).
-// Token màu lấy từ tailwind.css: --sidebar-* / --accent-* / --text-*
+// Restyle ProLayout sider → claymorphism. Giữ nguyên layout/dimensions, chỉ đổi visual.
 
 .ant-pro-sider {
-  background: #FFFFFF !important;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.04);
+  background: var(--clay-canvas) !important;
+  box-shadow: 4px 0 24px rgba(180, 150, 150, 0.12);
 
   .ant-pro-sider-logo {
     padding: 24px 20px 12px !important;
-    border-bottom: 1px solid #F0F0F0;
-    background: #FFFFFF !important;
+    border-bottom: 1px solid rgba(196, 112, 112, 0.1);
+    background: transparent !important;
     display: flex;
     align-items: center;
     justify-content: flex-start;
 
+    // Ẩn underline trượt (global a::after) khi hover logo.
+    a::after,
+    a:hover::after {
+      display: none !important;
+    }
+
     h1 {
-      color: var(--text-primary) !important;
-      font-family: 'Inter', sans-serif;
+      color: var(--clay-foreground) !important;
+      font-family: 'Nunito', sans-serif;
       font-size: 20px !important;
-      font-weight: 700 !important;
-      letter-spacing: 0.5px;
+      font-weight: 900 !important;
+      letter-spacing: -0.01em;
     }
 
     img {
       width: 32px;
       height: 32px;
       border-radius: 18px;
+      box-shadow:
+        6px 6px 12px rgba(196, 112, 112, 0.22),
+        -3px -3px 8px rgba(255, 255, 255, 0.9);
     }
   }
 
-  // Collapsed state — center logo, ẩn tiêu đề, padding gọn để khớp giữa sider 64px
+  // Collapsed state — giữ nguyên layout.
   &.ant-layout-sider-collapsed {
     .ant-pro-sider-logo {
       padding: 16px 0 12px !important;
@@ -64,59 +72,71 @@
     background: transparent !important;
     border-right: 0 !important;
     padding: 16px 12px 0;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Nunito', sans-serif;
   }
 
   .ant-menu-item,
   .ant-menu-submenu-title {
     height: 44px !important;
     line-height: 44px !important;
-    margin: 4px 0 !important;
+    margin: 6px 0 !important;
     padding: 0 14px !important;
-    border-radius: 10px !important;
-    color: var(--sidebar-text) !important;
+    border-radius: 16px !important;
+    color: var(--clay-muted) !important;
     font-size: 14px !important;
-    font-weight: 400 !important;
+    font-weight: 700 !important;
     display: flex;
     align-items: center;
+    transition: all 0.2s ease;
 
     .anticon {
-      color: var(--sidebar-icon) !important;
+      color: var(--clay-muted) !important;
       font-size: 18px !important;
       min-width: 20px;
     }
 
     &:hover {
-      background: #FFF6F6 !important;
-      color: var(--accent-deep) !important;
+      background: rgba(196, 112, 112, 0.08) !important;
+      color: var(--clay-accent) !important;
+      transform: translateX(2px);
       .anticon {
-        color: var(--accent-deep) !important;
+        color: var(--clay-accent) !important;
       }
     }
   }
 
   .ant-menu-item-selected {
-    background: var(--sidebar-active-bg) !important;
-    color: var(--sidebar-active-text) !important;
-    font-weight: 600 !important;
+    background: linear-gradient(135deg, #d98b8b 0%, #c47070 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 800 !important;
+    box-shadow:
+      8px 8px 16px rgba(196, 112, 112, 0.32),
+      -4px -4px 12px rgba(255, 255, 255, 0.5),
+      inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+      inset -2px -2px 4px rgba(0, 0, 0, 0.08);
 
     &::after {
-      display: none !important; // ẩn border phải mặc định
+      display: none !important;
     }
 
     .anticon {
-      color: var(--sidebar-active-text) !important;
+      color: #FFFFFF !important;
     }
 
     a {
-      color: var(--sidebar-active-text) !important;
+      color: #FFFFFF !important;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #e09a9a 0%, #b85f5f 100%) !important;
+      transform: translateX(0);
     }
   }
 
   .ant-menu-submenu-selected > .ant-menu-submenu-title {
-    color: var(--sidebar-active-text) !important;
+    color: var(--clay-accent) !important;
     .anticon {
-      color: var(--sidebar-active-text) !important;
+      color: var(--clay-accent) !important;
     }
   }
 
@@ -125,7 +145,6 @@
   }
 }
 
-// Footer container (menuFooterRender) — bám sát chân
 .ant-pro-sider-links {
-  display: none !important; // ẩn link copyright mặc định
+  display: none !important;
 }

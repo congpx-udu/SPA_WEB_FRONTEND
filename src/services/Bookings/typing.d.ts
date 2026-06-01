@@ -104,6 +104,16 @@ declare namespace BookingMgmt {
 		note?: string;
 	}
 
+	// Đặt lịch qua OTP email: email bắt buộc (BE gửi mã về email này).
+	export interface IRequestOtpPayload {
+		serviceId: string;
+		scheduledStart: string;
+		fullName: string;
+		phone: string;
+		email: string;
+		note?: string;
+	}
+
 	export interface ICreateOperatorPayload {
 		customerId: string;
 		serviceId: string;

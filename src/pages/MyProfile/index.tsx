@@ -9,21 +9,21 @@ import { changePassword } from '@/services/Auth/api';
 import { AUTH_TOKEN_KEY } from '@/services/Auth/constant';
 
 const ROLE_LABEL: Record<Auth.TStaffRole, { label: string; color: string }> = {
-	ADMIN: { label: 'Quản trị', color: '#7C3AED' },
-	OPERATOR: { label: 'Vận hành', color: '#2563EB' },
-	STAFF: { label: 'Nhân viên', color: '#059669' },
+	ADMIN: { label: 'Quản trị', color: '#c47070' },
+	OPERATOR: { label: 'Vận hành', color: '#7e6a8a' },
+	STAFF: { label: 'Nhân viên', color: '#6b8e6f' },
 };
 
 const WORK_STATUS_LABEL: Record<Auth.TWorkStatus, { label: string; color: string }> = {
-	ACTIVE: { label: 'Đang làm', color: '#059669' },
-	ON_LEAVE: { label: 'Tạm nghỉ', color: '#D97706' },
-	RESIGNED: { label: 'Đã nghỉ', color: '#9CA3AF' },
+	ACTIVE: { label: 'Đang làm', color: '#6b8e6f' },
+	ON_LEAVE: { label: 'Tạm nghỉ', color: '#d4805b' },
+	RESIGNED: { label: 'Đã nghỉ', color: '#948683' },
 };
 
 const ACCOUNT_STATUS_LABEL: Record<Auth.TAccountStatus, { label: string; color: string }> = {
-	ACTIVE: { label: 'Hoạt động', color: '#059669' },
-	LOCKED: { label: 'Đã khoá', color: '#DC2626' },
-	DELETED: { label: 'Đã xoá', color: '#6B7280' },
+	ACTIVE: { label: 'Hoạt động', color: '#6b8e6f' },
+	LOCKED: { label: 'Đã khoá', color: '#b85c5c' },
+	DELETED: { label: 'Đã xoá', color: '#948683' },
 };
 
 const initials = (name?: string) =>
@@ -67,7 +67,7 @@ export default function MyProfilePage() {
 	};
 
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+		<div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: '24px 32px' }}>
 			<PageHeader title='Hồ sơ của tôi' subtitle='Thông tin cá nhân và cài đặt tài khoản' />
 
 			{user && (
@@ -77,25 +77,47 @@ export default function MyProfilePage() {
 						alignItems: 'center',
 						gap: 16,
 						padding: 24,
-						background: '#FFFFFF',
-						borderRadius: 16,
-						boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+						background: '#fff5f5',
+						borderRadius: 28,
+						boxShadow:
+							'0 6px 16px rgba(180, 130, 130, 0.18), 0 2px 4px rgba(180, 130, 130, 0.08)',
 					}}
 				>
 					<Avatar
 						size={80}
 						style={{
-							background: 'linear-gradient(135deg, #c47070 0%, #f9a8a8 100%)',
+							background: 'linear-gradient(135deg, #d98b8b 0%, #c47070 100%)',
+							fontFamily: 'Nunito, sans-serif',
 							fontSize: 28,
-							fontWeight: 600,
+							fontWeight: 800,
+							boxShadow:
+								'0 6px 14px rgba(196, 112, 112, 0.28), -2px -2px 8px rgba(255, 255, 255, 0.8)',
 						}}
 						icon={!user.fullName ? <User /> : undefined}
 					>
 						{initials(user.fullName)}
 					</Avatar>
 					<div style={{ flex: 1 }}>
-						<div style={{ fontSize: 22, fontWeight: 600, color: '#111827' }}>{user.fullName}</div>
-						<div style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
+						<div
+							style={{
+								fontFamily: 'Nunito, sans-serif',
+								fontSize: 22,
+								fontWeight: 900,
+								color: 'var(--clay-foreground)',
+								letterSpacing: '-0.01em',
+							}}
+						>
+							{user.fullName}
+						</div>
+						<div
+							style={{
+								fontFamily: 'DM Sans, sans-serif',
+								fontSize: 13,
+								fontWeight: 500,
+								color: 'var(--clay-muted)',
+								marginTop: 4,
+							}}
+						>
 							{user.email} · {user.phone}
 						</div>
 						<div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -109,10 +131,11 @@ export default function MyProfilePage() {
 
 			<div
 				style={{
-					background: '#FFFFFF',
-					borderRadius: 16,
+					background: '#fff5f5',
+					borderRadius: 28,
 					padding: 24,
-					boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+					boxShadow:
+						'0 6px 16px rgba(180, 130, 130, 0.18), 0 2px 4px rgba(180, 130, 130, 0.08)',
 				}}
 			>
 				<Tabs defaultActiveKey='profile'>
@@ -122,7 +145,12 @@ export default function MyProfilePage() {
 								column={2}
 								size='small'
 								bordered
-								labelStyle={{ width: 180, color: '#6B7280' }}
+								labelStyle={{
+								width: 180,
+								color: 'var(--clay-muted)',
+								fontFamily: 'Nunito, sans-serif',
+								fontWeight: 700,
+							}}
 							>
 								<Descriptions.Item label='Mã NV'>
 									<code>{user.id}</code>
@@ -134,7 +162,7 @@ export default function MyProfilePage() {
 								<Descriptions.Item label='Email'>{user.email}</Descriptions.Item>
 								<Descriptions.Item label='SĐT'>{user.phone}</Descriptions.Item>
 								<Descriptions.Item label='Lương cơ bản'>
-									<strong style={{ color: '#DC2626' }}>
+									<strong style={{ color: 'var(--clay-accent)' }}>
 										{user.baseSalary?.toLocaleString('vi-VN')} ₫
 									</strong>
 								</Descriptions.Item>

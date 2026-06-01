@@ -1,9 +1,10 @@
-// Style chung cho RevenueChart và AppointmentStatusChart
 .chart-card {
-	background: #fff;
-	border-radius: 16px;
+	background: #fff5f5;
+	border-radius: 28px;
 	padding: 24px;
-	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+	box-shadow:
+		0 6px 16px rgba(180, 130, 130, 0.18),
+		0 2px 4px rgba(180, 130, 130, 0.08);
 	height: 100%;
 
 	.chart-header {
@@ -13,19 +14,21 @@
 		margin-bottom: 8px;
 
 		h3 {
+			font-family: 'Nunito', sans-serif;
 			font-size: 16px;
-			font-weight: 600;
-			color: #2D2D2D;
+			font-weight: 800;
+			color: var(--clay-foreground);
 			margin: 0;
 		}
 	}
 
 	.chart-badge {
+		font-family: 'Nunito', sans-serif;
 		font-size: 11px;
-		font-weight: 500;
-		color: #9B9B9B;
-		background: #F8F9FC;
+		font-weight: 700;
+		color: var(--clay-muted);
+		background: rgba(245, 233, 233, 0.6);
 		padding: 4px 10px;
-		border-radius: 8px;
+		border-radius: 999px;
 	}
 }

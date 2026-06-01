@@ -3,6 +3,7 @@ import axios from '@/utils/axios';
 import { authBaseUrl } from '@/services/Auth/api';
 
 const BASE = `${authBaseUrl}/bookings`;
+const OTP_BASE = `${authBaseUrl}/public/bookings`;
 
 type Envelope<T> = { success: boolean; data: T };
 
@@ -27,6 +28,19 @@ export function getAvailabilityGrid(serviceId: string, date: string) {
 
 export function createPublic(payload: BookingMgmt.ICreatePublicPayload) {
 	return unwrap<BookingMgmt.IBooking>(axios.post(BASE, payload));
+}
+
+// Luồng OTP đặt lịch (landing page) — endpoint @Public ở /public/bookings.
+export function requestBookingOtp(payload: BookingMgmt.IRequestOtpPayload) {
+	return unwrap<BookingMgmt.IBooking>(axios.post(`${OTP_BASE}/request-otp`, payload));
+}
+
+export function verifyBookingOtp(bookingId: string, code: string) {
+	return unwrap<{ confirmed: boolean }>(axios.post(`${OTP_BASE}/verify-otp`, { bookingId, code }));
+}
+
+export function resendBookingOtp(bookingId: string) {
+	return unwrap<{ resent: boolean }>(axios.post(`${OTP_BASE}/resend-otp`, { bookingId }));
 }
 
 export function createOperator(payload: BookingMgmt.ICreateOperatorPayload) {

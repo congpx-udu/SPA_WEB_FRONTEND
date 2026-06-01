@@ -1,5 +1,4 @@
-// Quản lý khách hàng — ADMIN. Dùng BE /customers (BE cho OPERATOR/ADMIN tạo+sửa,
-// chỉ ADMIN toggle active). FE giới hạn ở ADMIN cho mục đích menu.
+// Quản lý khách hàng. OPERATOR: thêm/sửa. ADMIN: chỉ đọc + toggle active (theo quyền BE).
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Table, Input, Select, Button, Tag, Dropdown, Menu, Popconfirm, Tooltip } from 'antd';
 import { useModel } from 'umi';
@@ -14,6 +13,12 @@ import '@/pages/admin/Employees/styles.less';
 
 export default function CustomersPage() {
 	const { list, total, loading, query, fetch, create, update, toggleActive } = useModel('customers') as any;
+
+	const { initialState } = useModel('@@initialState') as any;
+	const role = initialState?.currentUser?.role;
+	// OPERATOR: thêm + sửa khách hàng. ADMIN: chỉ đọc + toggle active (đúng quyền BE).
+	const canEdit = role === 'OPERATOR';
+	const canToggle = role === 'ADMIN';
 
 	const [searchInput, setSearchInput] = useState('');
 	const searchTimerRef = useRef<number | undefined>();
@@ -56,7 +61,8 @@ export default function CustomersPage() {
 	};
 
 	const columns = useMemo(
-		() => [
+		() => {
+			const base: any[] = [
 			{
 				title: 'Họ tên',
 				dataIndex: 'fullName',
@@ -139,7 +145,9 @@ export default function CustomersPage() {
 				align: 'center' as const,
 				render: (v?: string) => (v ? new Date(v).toLocaleDateString('vi-VN') : '—'),
 			},
-			{
+		];
+			if (canEdit || canToggle) {
+				base.push({
 				title: 'Thao tác',
 				key: 'actions',
 				width: 90,
@@ -148,26 +156,30 @@ export default function CustomersPage() {
 					<Dropdown
 						overlay={
 							<Menu>
-								<Menu.Item
-									key='edit'
-									icon={<Pencil size={14} />}
-									onClick={() => {
-										setEditing(r);
-										setModalOpen(true);
-									}}
-								>
-									Cập nhật
-								</Menu.Item>
-								<Menu.Item key='toggle' icon={<Power size={14} />}>
-									<Popconfirm
-										title={r.isActive ? 'Ngưng hoạt động khách hàng này?' : 'Kích hoạt lại?'}
-										onConfirm={() => toggleActive(r)}
-										okText='Đồng ý'
-										cancelText='Huỷ'
+								{canEdit && (
+									<Menu.Item
+										key='edit'
+										icon={<Pencil size={14} />}
+										onClick={() => {
+											setEditing(r);
+											setModalOpen(true);
+										}}
 									>
-										{r.isActive ? 'Ngưng' : 'Kích hoạt'}
-									</Popconfirm>
-								</Menu.Item>
+										Cập nhật
+									</Menu.Item>
+								)}
+								{canToggle && (
+									<Menu.Item key='toggle' icon={<Power size={14} />}>
+										<Popconfirm
+											title={r.isActive ? 'Ngưng hoạt động khách hàng này?' : 'Kích hoạt lại?'}
+											onConfirm={() => toggleActive(r)}
+											okText='Đồng ý'
+											cancelText='Huỷ'
+										>
+											{r.isActive ? 'Ngưng' : 'Kích hoạt'}
+										</Popconfirm>
+									</Menu.Item>
+								)}
 							</Menu>
 						}
 						trigger={['click']}
@@ -178,8 +190,11 @@ export default function CustomersPage() {
 					</Dropdown>
 				),
 			},
-		],
-		[toggleActive],
+				);
+			}
+			return base;
+		},
+		[toggleActive, canEdit, canToggle],
 	);
 
 	return (
@@ -188,17 +203,19 @@ export default function CustomersPage() {
 				title='Quản lý Khách hàng'
 				subtitle='Danh sách khách hàng và lịch sử nguồn'
 				extras={
-					<Button
-						type='primary'
-						icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
-						className='employees-page__add-btn'
-						onClick={() => {
-							setEditing(null);
-							setModalOpen(true);
-						}}
-					>
-						Thêm khách hàng
-					</Button>
+					canEdit ? (
+						<Button
+							type='primary'
+							icon={<Plus size={16} style={{ marginRight: 4, verticalAlign: 'middle' }} />}
+							className='employees-page__add-btn'
+							onClick={() => {
+								setEditing(null);
+								setModalOpen(true);
+							}}
+						>
+							Thêm khách hàng
+						</Button>
+					) : undefined
 				}
 			/>
 

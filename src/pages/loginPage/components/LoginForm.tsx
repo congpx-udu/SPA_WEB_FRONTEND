@@ -104,23 +104,39 @@ export default function LoginForm() {
 	return (
 		<div
 			className='w-full lg:w-1/2 min-h-screen flex items-center justify-center px-4 sm:px-6 py-10'
-			style={{ backgroundColor: 'var(--bg-primary)' }}
+			style={{ backgroundColor: 'var(--clay-canvas)' }}
 		>
 			<form onSubmit={handleSubmit} className='w-full max-w-[420px] flex flex-col items-center gap-6'>
-				<img src='/spalogo.png' alt='Luna Spa Logo' className='w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover' />
+				<img
+					src='/spalogo.png'
+					alt='Luna Spa Logo'
+					className='w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover'
+					style={{
+						boxShadow:
+							'8px 8px 18px rgba(196, 112, 112, 0.25), -4px -4px 12px rgba(255, 255, 255, 0.9)',
+					}}
+				/>
 
 				<div className='flex flex-col items-center gap-2 w-full text-center'>
-					<h2 className='login-form__title font-bold' style={{ color: 'var(--text-primary)' }}>
-						Đăng Nhập
-					</h2>
-					<p className='text-sm' style={{ color: 'var(--text-secondary)' }}>
+					<h2 className='login-form__title'>Đăng Nhập</h2>
+					<p
+						className='text-sm'
+						style={{
+							fontFamily: 'DM Sans, sans-serif',
+							color: 'var(--clay-muted)',
+							fontWeight: 500,
+						}}
+					>
 						Hệ thống quản lý nội bộ Luna Spa
 					</p>
 				</div>
 
 				<div className='flex flex-col gap-4 w-full'>
-					<div className='flex flex-col gap-1.5'>
-						<label className='text-[13px] font-medium' style={{ color: 'var(--text-primary)' }}>
+					<div className='flex flex-col gap-2'>
+						<label
+							className='text-[13px] font-bold'
+							style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-foreground)' }}
+						>
 							Địa chỉ email
 						</label>
 						<input
@@ -132,8 +148,11 @@ export default function LoginForm() {
 						/>
 					</div>
 
-					<div className='flex flex-col gap-1.5'>
-						<label className='text-[13px] font-medium' style={{ color: 'var(--text-primary)' }}>
+					<div className='flex flex-col gap-2'>
+						<label
+							className='text-[13px] font-bold'
+							style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-foreground)' }}
+						>
 							Mật khẩu
 						</label>
 						<div className='relative'>
@@ -163,14 +182,21 @@ export default function LoginForm() {
 								onChange={(e) => setRemember(e.target.checked)}
 								className='w-[18px] h-[18px] rounded accent-[var(--accent-deep)]'
 							/>
-							<span className='text-[13px]' style={{ color: 'var(--text-secondary)' }}>
+							<span
+								className='text-[13px]'
+								style={{
+									fontFamily: 'DM Sans, sans-serif',
+									color: 'var(--clay-muted)',
+									fontWeight: 500,
+								}}
+							>
 								Ghi nhớ đăng nhập
 							</span>
 						</label>
 						<a
 							href='#'
-							className='text-[13px] font-medium hover:opacity-80 transition-opacity'
-							style={{ color: 'var(--accent-deep)' }}
+							className='text-[13px] font-bold hover:opacity-80 transition-opacity'
+							style={{ fontFamily: 'Nunito, sans-serif', color: 'var(--clay-accent)' }}
 						>
 							Quên mật khẩu?
 						</a>
