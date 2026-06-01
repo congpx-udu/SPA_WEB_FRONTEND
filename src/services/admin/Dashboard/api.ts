@@ -3,7 +3,7 @@
 import * as ordersApi from '@/services/ServiceOrders/api';
 import * as customersApi from '@/services/Customers/api';
 import * as invoicesApi from '@/services/Invoices/api';
-import * as stockApi from '@/services/StockLedger/api';
+import * as reportsApi from '@/services/Reports/api';
 
 const startOfDay = (d: Date) => {
 	const r = new Date(d);
@@ -21,6 +21,7 @@ const DAY_LABELS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
 export interface IDashboardData {
 	revenueToday: number;
+	revenueThisMonth: number;
 	revenueYesterday: number;
 	ordersToday: number;
 	ordersYesterday: number;
@@ -65,7 +66,10 @@ export async function getDashboard(): Promise<IDashboardData> {
 	const yesterdayEnd = endOfDay(new Date(now.getTime() - 86400000));
 	const sevenDaysAgo = startOfDay(new Date(now.getTime() - 6 * 86400000));
 
-	const [ordersRes, customersRes, paidInvoicesRes, lowStockRes] = await Promise.all([
+	// `overview` là source of truth cho các số tổng hợp (BE tính trọn kho dữ liệu,
+	// không bị cap 100 như aggregate client-side). Các phần overview chưa expose
+	// (chuỗi 7 ngày, lịch hẹn gần đây, breakdown phiếu DV) vẫn tính client-side.
+	const [ordersRes, customersRes, paidInvoicesRes, overview] = await Promise.all([
 		ordersApi.getServiceOrders({ page: 1, limit: 100, sortBy: 'createdAt', sortOrder: 'desc' }),
 		customersApi.getCustomers({ page: 1, limit: 1 }),
 		invoicesApi.getInvoices({
@@ -75,13 +79,13 @@ export async function getDashboard(): Promise<IDashboardData> {
 			sortBy: 'paidAt',
 			sortOrder: 'desc',
 		}),
-		stockApi.getLowStock(),
+		reportsApi.getDashboardOverview(),
 	]);
 
 	const orders = ordersRes.items;
 	const paidInvoices = paidInvoicesRes.items;
 	const totalCustomers = (customersRes.data as any).meta?.total ?? 0;
-	const lowStockCount = lowStockRes.data?.length ?? 0;
+	const lowStockCount = overview.lowStockCount ?? 0;
 
 	let revenueToday = 0;
 	let revenueYesterday = 0;
@@ -102,6 +106,9 @@ export async function getDashboard(): Promise<IDashboardData> {
 			revenueByDay.set(key, (revenueByDay.get(key) || 0) + inv.totalAmount);
 		}
 	}
+
+	// Doanh thu hôm nay lấy số authoritative từ BE overview (không cap 100).
+	revenueToday = overview.revenue.today ?? revenueToday;
 
 	for (const o of orders) {
 		const created = new Date(o.createdAt);
@@ -165,6 +172,7 @@ export async function getDashboard(): Promise<IDashboardData> {
 
 	return {
 		revenueToday,
+		revenueThisMonth: overview.revenue.thisMonth ?? 0,
 		revenueYesterday,
 		ordersToday,
 		ordersYesterday,
