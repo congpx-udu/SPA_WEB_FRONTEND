@@ -142,21 +142,6 @@ export default [
 		access: 'canAdmin',
 	},
 	{
-		path: '/danh-gia',
-		name: 'Đánh giá',
-		component: './admin/Dashboard',
-		icon: 'StarOutlined',
-		access: 'canAdmin',
-	},
-	{
-		path: '/bao-cao',
-		name: 'Báo cáo',
-		component: './admin/Dashboard',
-		icon: 'BarChartOutlined',
-		access: 'canAdmin',
-	},
-
-	{
 		path: '/403',
 		component: './exception/403/403Page',
 		layout: false,
