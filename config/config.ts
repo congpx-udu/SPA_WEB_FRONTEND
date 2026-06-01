@@ -26,7 +26,7 @@ export default defineConfig({
 		// baseSeparator: '_',
 	},
 	dynamicImport: {
-		loading: '@ant-design/pro-layout/es/PageLoading',
+		loading: '@/components/Loading',
 	},
 	targets: {
 		ie: 11,

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import "./globals.css";
+import "./styles.less";
 import { Navbar } from "./components/Navbar";
 import { HeroSection } from "./components/HeroSection";
 import { AboutSection } from "./components/AboutSection";
@@ -23,7 +23,7 @@ export function LandingPage() {
   return (
     <div
       className="flex flex-col w-full min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)", fontFamily: "Inter, sans-serif", paddingTop: 80 }}
+      style={{ backgroundColor: "var(--clay-canvas)", fontFamily: "DM Sans, sans-serif", paddingTop: 80 }}
     >
       <Navbar />
       <HeroSection />
