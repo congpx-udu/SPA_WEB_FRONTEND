@@ -11,6 +11,7 @@ import { OIDCBounder } from './components/OIDCBounder';
 import { unCheckPermissionPaths } from './components/OIDCBounder/constant';
 import OneSignalBounder from './components/OneSignalBounder';
 import AuthFloatingMenu from './components/AuthFloatingMenu';
+import MobileTopBar from './components/MobileTopBar';
 import TechnicalSupportBounder from './components/TechnicalSupportBounder';
 import NotAccessible from './pages/exception/403';
 import type { IInitialState } from './services/base/typing';
@@ -46,6 +47,8 @@ export async function getInitialState(): Promise<IInitialState & { currentUser?:
 	return {
 		currentUser,
 		permissionLoading: false,
+		// Trạng thái thu/mở sidebar — mobile (<768px) mặc định đóng (Drawer).
+		collapsed: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
 	} as any;
 }
 
@@ -83,8 +86,14 @@ export const request: RequestConfig = {
 };
 
 // ProLayout  https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
 	return {
+		// Điều khiển thu/mở sidebar qua initialState để ProLayout re-render đúng.
+		// Desktop: luôn mở (collapsed=false) → giao diện không đổi.
+		// Mobile (<768px): ProLayout tự render sider thành Drawer theo collapsed.
+		collapsed: !!(initialState as any)?.collapsed,
+		onCollapse: (c: boolean) =>
+			setInitialState((s: any) => ({ ...(s ?? {}), collapsed: c })),
 		unAccessible: (
 			<OIDCBounder>
 				<TechnicalSupportBounder>
@@ -141,6 +150,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 				onClick={(e) => {
 					e.preventDefault();
 					history.push(item?.path ?? '/');
+					// Mobile: đóng Drawer sidebar sau khi chọn mục.
+					if (typeof window !== 'undefined' && window.innerWidth < 768) {
+						setInitialState((s: any) => ({ ...(s ?? {}), collapsed: true }));
+					}
 				}}
 				style={{ display: 'block' }}
 			>
@@ -164,6 +177,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 			<OIDCBounder>
 				<ErrorBoundary>
 					{/* <TechnicalSupportBounder> */}
+					{/* Top bar + hamburger chỉ hiện ở mobile (CSS), điều khiển Drawer sidebar */}
+					<MobileTopBar />
+					<div className="admin-mobile-topbar-spacer" />
 					<OneSignalBounder>{dom}</OneSignalBounder>
 					{/* </TechnicalSupportBounder> */}
 				</ErrorBoundary>

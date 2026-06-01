@@ -1,7 +1,7 @@
 // Lịch hẹn — ADMIN/OPERATOR. View-only.
 // Mọi thao tác (check-in, huỷ, vắng, tạo lịch) nằm ở /le-tan và /thu-ngan.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Table, Tag, Input, Select, DatePicker, Tabs } from 'antd';
+import { Table, Tag, Input, Select, DatePicker, Tabs, Tooltip } from 'antd';
 import { useModel } from 'umi';
 import { Search, CalendarDays, List as ListIcon } from 'lucide-react';
 import moment from 'moment';
@@ -130,6 +130,20 @@ export default function BookingsPage() {
 				),
 			},
 			{
+				title: 'Ghi chú',
+				dataIndex: 'note',
+				width: 200,
+				ellipsis: true,
+				render: (v: string) =>
+					v ? (
+						<Tooltip title={v}>
+							<span style={{ color: '#4B5563', fontSize: 12 }}>{v}</span>
+						</Tooltip>
+					) : (
+						<span style={{ color: '#D1D5DB' }}>—</span>
+					),
+			},
+			{
 				title: 'Trạng thái',
 				dataIndex: 'status',
 				width: 140,
@@ -215,7 +229,7 @@ export default function BookingsPage() {
 						loading={loading}
 						dataSource={list}
 						columns={columns as any}
-						scroll={{ x: 1300 }}
+						scroll={{ x: 1500 }}
 						onRow={(r: BookingMgmt.IBooking) => ({
 							onClick: () => openDetail(r.id),
 							style: { cursor: 'pointer' },
