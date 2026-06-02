@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Form, Input, Select, Button, Spin } from 'antd';
+import { useEffect, useState } from 'react';
+import { Form, Input, Select, Button, Spin, Alert } from 'antd';
 import { CheckCircleOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import MyDatePicker from '@/components/MyDatePicker';
 import { useModel } from 'umi';
@@ -10,6 +10,8 @@ const { TextArea } = Input;
 
 export function BookingSection() {
 	const [form] = Form.useForm();
+	// Lỗi đặt lịch hiển thị ngay trong form (trùng giờ / ngoài giờ / lỗi khác) — chắc chắn khách thấy.
+	const [bookingError, setBookingError] = useState<string>('');
 	const {
 		loading,
 		perks,
@@ -45,9 +47,11 @@ export function BookingSection() {
 	const selectSlot = (time: string) => {
 		form.setFieldsValue({ slot: time });
 		form.setFields([{ name: 'slot', errors: [] }]);
+		setBookingError('');
 	};
 
 	const onFinish = async (values: any) => {
+		setBookingError('');
 		const phone = String(values.phone || '').replace(/\D/g, '');
 		if (phone.length !== 10) {
 			form.setFields([{ name: 'phone', errors: ['Số điện thoại phải đủ 10 chữ số'] }]);
@@ -73,10 +77,14 @@ export function BookingSection() {
 			email: values.email,
 			note: values.notes || undefined,
 		});
-		// Slot vừa bị người khác đặt (409) → bỏ slot đã chọn và tải lại khung giờ trống mới.
-		if (!res.ok && res.conflict) {
-			form.setFieldsValue({ slot: undefined });
-			loadSlots(values.serviceId, d.format('YYYY-MM-DD'));
+		if (!res.ok) {
+			// Hiện alert ngay trong form để khách biết lý do không đặt được.
+			setBookingError(res.errorMsg || 'Không đặt được lịch, vui lòng thử lại.');
+			// Slot vừa bị người khác đặt (409) → bỏ slot đã chọn và tải lại khung giờ trống mới.
+			if (res.conflict) {
+				form.setFieldsValue({ slot: undefined });
+				loadSlots(values.serviceId, d.format('YYYY-MM-DD'));
+			}
 		}
 	};
 
@@ -151,6 +159,16 @@ export function BookingSection() {
 				>
 					Đặt Lịch Hẹn
 				</h3>
+				{bookingError && (
+					<Alert
+						type='error'
+						showIcon
+						closable
+						message={bookingError}
+						onClose={() => setBookingError('')}
+						style={{ marginBottom: 20, borderRadius: 14 }}
+					/>
+				)}
 				<Form form={form} layout='vertical' onFinish={onFinish} requiredMark={false}>
 					<div className='flex gap-4'>
 						<Form.Item
@@ -301,9 +319,11 @@ export function BookingSection() {
 				verifying={verifying}
 				resending={resending}
 				onVerify={async (code) => {
-					const ok = await verifyOtp(code);
-					if (ok) form.resetFields();
-					return ok;
+					const r = await verifyOtp(code);
+					if (r.ok) form.resetFields();
+					// Booking bị huỷ (closed) → modal đóng, báo lý do ngay trên form để khách đặt lại.
+					else if (r.closed) setBookingError(r.error);
+					return r;
 				}}
 				onResend={resendOtp}
 				onClose={closeOtp}
