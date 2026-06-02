@@ -23,7 +23,16 @@ const RevenueChart: React.FC<Props> = ({ data }) => {
 				formatY={(val) => `${(val / 1000000).toFixed(1)}M`}
 				otherOptions={{
 					chart: { toolbar: { show: false }, fontFamily: 'Inter, sans-serif' },
-					plotOptions: { bar: { borderRadius: 6, columnWidth: '60%' } },
+					plotOptions: { bar: { borderRadius: 6, columnWidth: '42%' } },
+						// ColumnChart có rule responsive (breakpoint 1600) ép columnWidth:100%
+						// → luôn kích hoạt vì chart hẹp hơn 1600, ghi đè columnWidth ở trên.
+						// Tắt đi để cột giữ 42% (có gap), tự set columnWidth theo breakpoint nhỏ.
+						responsive: [
+							{
+								breakpoint: 640,
+								options: { plotOptions: { bar: { columnWidth: '55%' } } },
+							},
+						],
 					fill: {
 						type: 'gradient',
 						gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 1, opacityTo: 0.85 },

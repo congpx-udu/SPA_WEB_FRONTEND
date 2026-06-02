@@ -73,6 +73,7 @@ const ServiceInvoicesModal: React.FC<Props> = ({ open, serviceId, serviceName, f
 			onCancel={onClose}
 			footer={null}
 			width={760}
+			className='reports-invoices-modal'
 			destroyOnClose
 		>
 			<Table
@@ -81,6 +82,7 @@ const ServiceInvoicesModal: React.FC<Props> = ({ open, serviceId, serviceName, f
 				dataSource={rows}
 				columns={columns}
 				size='small'
+				scroll={{ x: 660 }}
 				pagination={{
 					current: page,
 					pageSize: limit,

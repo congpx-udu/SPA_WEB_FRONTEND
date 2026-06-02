@@ -47,11 +47,34 @@ const ReportsPanel: React.FC = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	const applyRange = (a: Moment, b: Moment) => {
+		setRange([a, b]);
+		fetchAll(fmt(a), fmt(b));
+	};
+
 	const onRangeChange = (r: any) => {
 		if (!r || !r[0] || !r[1]) return;
-		const next: [Moment, Moment] = [r[0], r[1]];
-		setRange(next);
-		fetchAll(fmt(next[0]), fmt(next[1]));
+		applyRange(r[0], r[1]);
+	};
+
+	// Preset chip lọc nhanh (chủ yếu dùng trên mobile).
+	const presets: { key: string; label: string; range: () => [Moment, Moment] }[] = [
+		{ key: 'today', label: 'Hôm nay', range: () => [moment().startOf('day'), moment().endOf('day')] },
+		{ key: '7d', label: '7 ngày', range: () => [moment().subtract(6, 'day').startOf('day'), moment().endOf('day')] },
+		{ key: '30d', label: '30 ngày', range: () => [moment().subtract(29, 'day').startOf('day'), moment().endOf('day')] },
+		{ key: 'month', label: 'Tháng này', range: () => [moment().startOf('month'), moment().endOf('month')] },
+		{
+			key: 'lastMonth',
+			label: 'Tháng trước',
+			range: () => [
+				moment().subtract(1, 'month').startOf('month'),
+				moment().subtract(1, 'month').endOf('month'),
+			],
+		},
+	];
+	const isActivePreset = (p: { range: () => [Moment, Moment] }) => {
+		const [a, b] = p.range();
+		return a.isSame(range[0], 'day') && b.isSame(range[1], 'day');
 	};
 
 	const onExport = async () => {
@@ -123,6 +146,7 @@ const ReportsPanel: React.FC = () => {
 						value={range as any}
 						allowClear={false}
 						format='DD/MM/YYYY'
+						dropdownClassName='reports-range-dropdown'
 						onChange={onRangeChange}
 						ranges={{
 							'Tháng này': [moment().startOf('month'), moment().endOf('month')],
@@ -139,6 +163,23 @@ const ReportsPanel: React.FC = () => {
 				</div>
 			</div>
 
+			{/* Chip lọc nhanh — chỉ hiện ở mobile (ẩn desktop qua CSS) */}
+			<div className='reports-panel__quick'>
+				{presets.map((p) => (
+					<button
+						key={p.key}
+						type='button'
+						className={`reports-panel__chip${isActivePreset(p) ? ' is-active' : ''}`}
+						onClick={() => {
+							const [a, b] = p.range();
+							applyRange(a, b);
+						}}
+					>
+						{p.label}
+					</button>
+				))}
+			</div>
+
 			<Tabs defaultActiveKey='service'>
 				<TabPane tab='Theo dịch vụ' key='service'>
 					<Table
@@ -148,6 +189,7 @@ const ReportsPanel: React.FC = () => {
 						columns={serviceColumns}
 						size='small'
 						pagination={false}
+						scroll={{ x: 560 }}
 					/>
 				</TabPane>
 				<TabPane tab='Theo nhân viên' key='staff'>
@@ -158,6 +200,7 @@ const ReportsPanel: React.FC = () => {
 						columns={staffColumns}
 						size='small'
 						pagination={false}
+						scroll={{ x: 620 }}
 					/>
 				</TabPane>
 			</Tabs>

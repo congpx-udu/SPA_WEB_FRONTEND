@@ -1,0 +1,222 @@
+/* ============================================================
+   LANDING PAGE — RESPONSIVE (mobile / tablet)
+   Nguyên tắc:
+   - MỌI rule nằm trong @media max-width → desktop (>1024px) KHÔNG đổi.
+   - Scope dưới .landing-root để không ảnh hưởng app quản lý.
+   - Dùng !important vì các section đặt layout bằng inline-style/utility.
+   - Không sửa cấu trúc component, chỉ override bằng CSS.
+   ============================================================ */
+
+/* ---------- Hamburger: mặc định ẩn ở desktop (>768px) ---------- */
+.landing-root .lp-burger,
+.landing-root .lp-mobile-menu {
+	display: none;
+}
+
+/* ---------- TABLET (≤ 1024px): thu gọn padding ngang lớn ---------- */
+@media (max-width: 1024px) {
+	.landing-root {
+		nav {
+			padding: 16px 32px !important;
+		}
+		#about {
+			padding: 64px 40px !important;
+			gap: 40px !important;
+		}
+		#services {
+			padding: 64px 40px !important;
+		}
+		#feedback {
+			padding-left: 40px !important;
+			padding-right: 40px !important;
+		}
+		#booking {
+			padding: 72px 40px !important;
+			gap: 40px !important;
+		}
+		#contact {
+			padding-left: 40px !important;
+			padding-right: 40px !important;
+		}
+	}
+}
+
+/* ---------- MOBILE (≤ 768px) ---------- */
+@media (max-width: 768px) {
+	.landing-root {
+		/* ----- Navbar: ẩn menu link ngang, hiện hamburger ----- */
+		nav {
+			padding: 12px 18px !important;
+		}
+		/* div thứ 2 trong nav = danh sách link ngang (desktop) */
+		nav > div:nth-of-type(2) {
+			display: none !important;
+		}
+		/* nút Đặt lịch: thu nhỏ + đẩy sang phải, sát cạnh hamburger */
+		.lp-cta {
+			padding: 8px 16px !important;
+			font-size: 13px !important;
+			margin-left: auto !important;
+			margin-right: 10px !important;
+		}
+		/* hiện nút hamburger */
+		.lp-burger {
+			display: flex !important;
+		}
+		/* panel menu xổ xuống */
+		.lp-mobile-menu {
+			display: flex !important;
+		}
+
+		/* ----- Hero ----- */
+		section[class*='h-[700px]'] {
+			height: auto !important;
+			min-height: 78vh !important;
+			padding: 96px 20px 64px !important;
+		}
+		section[class*='h-[700px]'] h1 {
+			font-size: 34px !important;
+		}
+		section[class*='h-[700px]'] p {
+			font-size: 15px !important;
+		}
+		/* hàng 2 nút CTA → xếp dọc, full width */
+		section[class*='h-[700px]'] .gap-4 {
+			flex-direction: column !important;
+			width: 100% !important;
+			max-width: 320px;
+		}
+		section[class*='h-[700px]'] .gap-4 > button {
+			width: 100% !important;
+		}
+
+		/* ----- About: xếp dọc, ảnh full width ----- */
+		#about {
+			flex-direction: column !important;
+			padding: 56px 24px !important;
+			gap: 32px !important;
+		}
+		#about > img {
+			width: 100% !important;
+			max-width: 100% !important;
+			height: 260px !important;
+		}
+		#about h2 {
+			font-size: 30px !important;
+		}
+
+		/* ----- Services: 1 cột ----- */
+		#services {
+			padding: 56px 24px !important;
+		}
+		#services .grid {
+			grid-template-columns: 1fr !important;
+		}
+		#services h2 {
+			font-size: 30px !important;
+		}
+
+		/* ----- ReviewForm: card full width ----- */
+		#feedback {
+			padding: 56px 24px !important;
+		}
+		#feedback h2 {
+			font-size: 30px !important;
+			text-align: center;
+		}
+		/* card form = div con cuối của section */
+		#feedback > div:last-child {
+			width: 100% !important;
+			padding: 24px !important;
+		}
+		/* hàng 2 cột (Họ / SĐT) → xếp dọc */
+		#feedback .flex.gap-4 {
+			flex-direction: column !important;
+			gap: 0 !important;
+		}
+		#feedback .flex.gap-4 > .ant-form-item {
+			width: 100% !important;
+			flex: 0 0 auto !important;
+		}
+
+		/* ----- Booking: xếp dọc ----- */
+		#booking {
+			flex-direction: column !important;
+			padding: 56px 24px !important;
+			gap: 40px !important;
+		}
+		#booking h2 {
+			font-size: 30px !important;
+		}
+		/* card form = div con cuối của section */
+		#booking > div:last-child {
+			padding: 24px !important;
+		}
+		/* các hàng 2 cột trong form → xếp dọc */
+		#booking .flex.gap-4 {
+			flex-direction: column !important;
+			gap: 0 !important;
+		}
+		#booking .flex.gap-4 > .ant-form-item {
+			width: 100% !important;
+			flex: 0 0 auto !important;
+		}
+
+		/* ----- Footer: xếp dọc ----- */
+		#contact {
+			padding: 48px 24px 32px !important;
+			gap: 36px !important;
+		}
+		/* hàng cột nội dung (logo / liên kết / dịch vụ / liên hệ) */
+		#contact > div:first-child {
+			flex-direction: column !important;
+			gap: 32px !important;
+		}
+		/* thanh bản quyền dưới cùng */
+		#contact > div:last-child {
+			flex-direction: column !important;
+			align-items: flex-start !important;
+			gap: 16px !important;
+		}
+	}
+}
+
+/* ---------- MOBILE NHỎ (≤ 420px): tinh chỉnh chữ hero ---------- */
+@media (max-width: 420px) {
+	.landing-root section[class*='h-[700px]'] h1 {
+		font-size: 28px !important;
+	}
+}
+
+/* ============================================================
+   MODAL CHI TIẾT DỊCH VỤ (ServiceDetailModal)
+   antd render qua portal ở document.body → KHÔNG nằm trong .landing-root,
+   nên rule phải để ở phạm vi global (.service-detail-modal là class riêng).
+   ============================================================ */
+@media (max-width: 768px) {
+	/* width cố định 820px → vừa màn hình */
+	.ant-modal.service-detail-modal {
+		width: calc(100vw - 24px) !important;
+		max-width: calc(100vw - 24px) !important;
+	}
+	/* layout 2 cột ngang → xếp dọc */
+	.service-detail-modal .ant-modal-body > div {
+		flex-direction: column !important;
+		min-height: 0 !important;
+	}
+	/* ảnh trái → full width, thấp lại, bo góc trên */
+	.service-detail-modal .ant-modal-body > div > div:first-child {
+		width: 100% !important;
+		min-height: 200px !important;
+		height: 220px !important;
+		border-radius: 12px 12px 0 0 !important;
+	}
+	/* cột nội dung → giảm padding */
+	.service-detail-modal .ant-modal-body > div > div:last-child {
+		padding: 24px !important;
+		gap: 14px !important;
+	}
+	.service-detail-modal .ant-modal-body h2 {
+		font-size: 22px !important;
+	}
+}

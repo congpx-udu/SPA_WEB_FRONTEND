@@ -1,6 +1,6 @@
 // Modal Thêm / Sửa dịch vụ — khớp design Pencil (rounded-16, fields: Mã / Tên / Danh mục / Giá / Thời lượng / Buffer / Mô tả).
 import { useEffect } from 'react';
-import { Modal, Form, Input, Select, InputNumber, Switch } from 'antd';
+import { Modal, Form, Input, Select, InputNumber, Switch, Row, Col } from 'antd';
 import { SERVICE_CATEGORY_OPTIONS } from '@/services/Services/constant';
 
 type Props = {
@@ -115,20 +115,22 @@ export default function ServiceFormModal({ open, editing, loading, onCancel, onS
 					/>
 				</Form.Item>
 
-				<div style={{ display: 'flex', gap: 12 }}>
-					<Form.Item
-						name='durationMinutes'
-						label='Thời lượng (phút)'
-						rules={[{ required: true }]}
-						style={{ flex: 1 }}
-					>
-						<InputNumber style={{ width: '100%' }} min={1} max={480} />
-					</Form.Item>
-
-					<Form.Item name='bufferMinutes' label='Buffer (phút)' style={{ flex: 1 }}>
-						<InputNumber style={{ width: '100%' }} min={0} max={120} />
-					</Form.Item>
-				</div>
+				<Row gutter={12}>
+					<Col xs={24} md={12}>
+						<Form.Item
+							name='durationMinutes'
+							label='Thời lượng (phút)'
+							rules={[{ required: true }]}
+						>
+							<InputNumber style={{ width: '100%' }} min={1} max={480} />
+						</Form.Item>
+					</Col>
+					<Col xs={24} md={12}>
+						<Form.Item name='bufferMinutes' label='Buffer (phút)'>
+							<InputNumber style={{ width: '100%' }} min={0} max={120} />
+						</Form.Item>
+					</Col>
+				</Row>
 
 				<Form.Item name='description' label='Mô tả'>
 					<Input.TextArea rows={3} placeholder='Mô tả ngắn về dịch vụ' maxLength={1000} showCount />
