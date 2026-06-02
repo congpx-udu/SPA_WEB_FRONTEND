@@ -310,6 +310,43 @@
 			line-height: 1.25;
 		}
 	}
+
+	// View NGÀY trên mobile: chỉ 1 cột full màn hình → cho event TO & dễ đọc hơn,
+	// cột giờ thoáng hơn (ghi đè lại bản gọn của view Tuần ở trên).
+	.bookings-calendar.is-day {
+		.rbc-time-gutter,
+		.rbc-time-gutter .rbc-time-column,
+		.rbc-time-header-gutter {
+			width: 56px !important;
+			min-width: 56px !important;
+			max-width: 56px !important;
+			flex: 0 0 56px !important;
+		}
+		.rbc-time-gutter .rbc-time-slot {
+			font-size: 11px;
+		}
+
+		.rbc-timeslot-group {
+			min-height: 80px;
+		}
+		.rbc-time-slot {
+			min-height: 40px;
+		}
+
+		.rbc-event {
+			padding: 8px 12px !important;
+			min-height: 44px;
+			border-radius: 12px !important;
+		}
+		.rbc-event-label {
+			font-size: 12px;
+			margin-bottom: 6px;
+		}
+		.rbc-event-content {
+			font-size: 13px;
+			line-height: 1.35;
+		}
+	}
 }
 
 /* ============================================================

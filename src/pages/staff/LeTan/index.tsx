@@ -154,6 +154,7 @@ export default function LeTanPage() {
 									return (
 										<div
 											key={b.id}
+											className='le-tan-row'
 											style={{
 												display: 'flex',
 												alignItems: 'center',

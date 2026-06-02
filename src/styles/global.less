@@ -540,3 +540,39 @@ canvas {
 		color: var(--primary-color);
 	}
 }
+
+// Modal trên tablet/mobile (≤768px):
+// 1) Cap width vừa màn (nhiều modal đặt width cố định lớn vd 1040px → tràn ngang).
+// 2) Cap chiều cao body → cả modal gọn (≈ 60-70% màn) và CĂN GIỮA được an toàn:
+//    vì modal thấp nên khi căn giữa, header + nút X nằm ~17% từ trên xuống, vẫn dưới
+//    thanh top bar admin (56px) → luôn thấy & bấm được X. Nội dung dài cuộn trong body.
+@media (max-width: @screen-md) {
+	.ant-modal {
+		max-width: calc(100vw - 16px);
+		margin: 0 auto;
+		padding-bottom: 12px;
+	}
+
+	.ant-modal-body {
+		max-height: 58vh;
+		overflow-y: auto;
+	}
+
+	// Hàng 2 cột trong form-modal: nhiều form dùng <div style="display:flex;gap">
+	// chứa 2 Form.Item (vd Thời lượng + Buffer) → trên mobile bị bóp chồng lên nhau.
+	// Ép xếp DỌC. Các form CRUD đều layout='vertical' (Form.Item có margin-bottom lo
+	// khoảng cách) nên tắt gap để không hở gấp đôi.
+	.ant-modal-body .ant-form > div[style*='flex'] {
+		flex-direction: column;
+		gap: 0 !important;
+	}
+
+	// Drawer phải (nếu còn dùng nơi khác): trên mobile full-screen, dưới top bar admin
+	// (56px). Chỉ nhắm drawer PHẢI — KHÔNG đụng drawer sidebar (placement='left').
+	.ant-drawer-right .ant-drawer-content-wrapper {
+		width: 100% !important;
+		max-width: 100vw;
+		top: 56px;
+		height: calc(100% - 56px);
+	}
+}

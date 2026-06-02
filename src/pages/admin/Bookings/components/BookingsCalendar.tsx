@@ -181,7 +181,10 @@ export default function BookingsCalendar({
 	};
 
 	return (
-		<div className='bookings-calendar' style={{ opacity: loading ? 0.5 : 1 }}>
+		<div
+			className={`bookings-calendar${view === 'day' ? ' is-day' : ''}`}
+			style={{ opacity: loading ? 0.5 : 1 }}
+		>
 			<Calendar<CalEvent>
 				localizer={localizer}
 				events={events}

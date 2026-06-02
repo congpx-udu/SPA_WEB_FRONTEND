@@ -129,3 +129,42 @@
     }
   }
 }
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 768px)
+   Dùng CHUNG cho mọi trang xài class .employees-page__*:
+   Employees, Services, Suppliers, Materials, StockLedger,
+   ServiceOrders, Customers, ThuNgan + tab Danh sách của Bookings.
+   ============================================================ */
+@media (max-width: 768px) {
+  .employees-page {
+    padding: 14px;
+    gap: 12px;
+
+    // Thanh công cụ: xếp dọc, mọi ô lọc (Input/Select/DatePicker/RangePicker)
+    // full width. Inline width của antd → cần !important để phủ.
+    &__toolbar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 14px 16px;
+
+      > * {
+        width: 100% !important;
+      }
+    }
+
+    // Nút "Thêm" trong PageHeader gọn lại cho vừa màn nhỏ.
+    &__add-btn {
+      height: 38px !important;
+      padding: 0 14px !important;
+      font-size: 13px !important;
+    }
+
+    // Bảng: bớt padding/bo góc; bảng tự cuộn ngang nhờ scroll={{ x }}.
+    &__table {
+      padding: 12px;
+      border-radius: 20px;
+    }
+  }
+}

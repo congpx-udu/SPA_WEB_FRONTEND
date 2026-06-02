@@ -142,7 +142,7 @@ export default function MyProfilePage() {
 					<Tabs.TabPane tab='Thông tin' key='profile'>
 						{user && (
 							<Descriptions
-								column={2}
+								column={{ xs: 1, sm: 2 }}
 								size='small'
 								bordered
 								labelStyle={{

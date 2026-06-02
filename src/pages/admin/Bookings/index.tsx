@@ -24,9 +24,27 @@ export default function BookingsPage() {
 	const [dateRange, setDateRange] = useState<[moment.Moment, moment.Moment] | null>(null);
 	const [detailOpen, setDetailOpen] = useState(false);
 	const [activeTab, setActiveTab] = useState<'calendar' | 'list'>('calendar');
-	const [calView, setCalView] = useState<View>('week');
+	// Mobile (<768px) mặc định xem theo NGÀY cho dễ đọc; desktop xem Tuần.
+	const [calView, setCalView] = useState<View>(
+		typeof window !== 'undefined' && window.innerWidth < 768 ? 'day' : 'week',
+	);
 	const [calDate, setCalDate] = useState<Date>(new Date());
 	const searchTimerRef = useRef<number | undefined>();
+	const wasMobileRef = useRef<boolean | null>(null);
+
+	// Đổi view tự động khi vượt ngưỡng mobile/desktop (chỉ khi ĐỔI trạng thái, để
+	// không phá lựa chọn thủ công của người dùng trong cùng một chế độ màn hình).
+	useEffect(() => {
+		const onResize = () => {
+			const mobile = window.innerWidth < 768;
+			if (wasMobileRef.current === mobile) return;
+			wasMobileRef.current = mobile;
+			setCalView(mobile ? 'day' : 'week');
+		};
+		onResize();
+		window.addEventListener('resize', onResize);
+		return () => window.removeEventListener('resize', onResize);
+	}, []);
 
 	useEffect(() => {
 		if (activeTab !== 'calendar') return;

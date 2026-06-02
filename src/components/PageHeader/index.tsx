@@ -19,16 +19,14 @@ const PageHeader: React.FC<Props> = ({ title, subtitle, extras, showBell = true 
 				<h2>{title}</h2>
 				{subtitle && <span>{subtitle}</span>}
 			</div>
-			<div className='page-header-card__actions'>
-				{extras}
-				{showBell && (
-					<div className='page-header-card__icon-btn'>
-						<Badge dot color='#EF4444' offset={[-2, 2]}>
-							<BellOutlined style={{ fontSize: 16, color: '#4A4A4A' }} />
-						</Badge>
-					</div>
-				)}
-			</div>
+			{extras && <div className='page-header-card__extras'>{extras}</div>}
+			{showBell && (
+				<div className='page-header-card__icon-btn'>
+					<Badge dot color='#EF4444' offset={[-2, 2]}>
+						<BellOutlined style={{ fontSize: 16, color: '#4A4A4A' }} />
+					</Badge>
+				</div>
+			)}
 		</div>
 	);
 };

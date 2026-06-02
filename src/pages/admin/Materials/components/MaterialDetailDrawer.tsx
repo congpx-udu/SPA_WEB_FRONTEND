@@ -1,8 +1,9 @@
 // Drawer chi tiết vật liệu — thông tin + tab Lịch sử kho.
 import { useEffect, useState } from 'react';
-import { Drawer, Tabs, Tag, Empty, Table, Spin, Descriptions } from 'antd';
+import { Modal, Tabs, Tag, Empty, Table, Spin, Descriptions } from 'antd';
 import moment from 'moment';
 import { History, Info, Sparkles } from 'lucide-react';
+import './MaterialDetailDrawer.less';
 import * as ledgerApi from '@/services/StockLedger/api';
 import * as bomApi from '@/services/Bom/api';
 import {
@@ -57,18 +58,20 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 	const low = material.stockQuantity <= material.reorderLevel;
 
 	return (
-		<Drawer
+		<Modal
 			title={
 				<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 					<span style={{ fontWeight: 600 }}>{material.name}</span>
 					<code style={{ fontSize: 12, color: '#6B7280' }}>{material.code}</code>
 				</div>
 			}
-			placement='right'
 			width={720}
-			onClose={onClose}
+			centered
+			footer={null}
+			onCancel={onClose}
 			visible={open}
 			bodyStyle={{ padding: 0 }}
+			className='material-detail-modal'
 		>
 			<Tabs activeKey={activeTab} onChange={setActiveTab} style={{ padding: '0 24px' }}>
 				<Tabs.TabPane
@@ -79,7 +82,7 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 						</span>
 					}
 				>
-					<Descriptions column={2} bordered size='small' labelStyle={{ width: 140 }}>
+					<Descriptions column={{ xs: 1, sm: 2 }} bordered size='small' labelStyle={{ width: 140 }}>
 						<Descriptions.Item label='Mã'>
 							<code>{material.code}</code>
 						</Descriptions.Item>
@@ -252,6 +255,6 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 					</Spin>
 				</Tabs.TabPane>
 			</Tabs>
-		</Drawer>
+		</Modal>
 	);
 }
