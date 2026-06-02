@@ -11,6 +11,7 @@ import { BOOKING_STATUS_OPTIONS, BOOKING_SOURCE_LABEL } from '@/services/Booking
 import BookingDetailModal from './components/BookingDetailModal';
 import BookingsCalendar from './components/BookingsCalendar';
 import '@/pages/admin/Employees/styles.less';
+import './responsive.less';
 
 const { RangePicker } = DatePicker;
 
@@ -26,11 +27,6 @@ export default function BookingsPage() {
 	const [calView, setCalView] = useState<View>('week');
 	const [calDate, setCalDate] = useState<Date>(new Date());
 	const searchTimerRef = useRef<number | undefined>();
-
-	useEffect(() => {
-		fetch();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
 
 	useEffect(() => {
 		if (activeTab !== 'calendar') return;
@@ -56,7 +52,11 @@ export default function BookingsPage() {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [calView, calDate, activeTab]);
 
+	// Tìm kiếm CHỈ thuộc tab Danh sách. Trước đây effect này chạy cả khi ở tab Lịch
+	// → sau 300ms nó fetch không lọc ngày, đè mất dữ liệu cả tuần của lịch. Gate theo
+	// activeTab để không đụng tới dữ liệu calendar; đổi sang tab Danh sách thì tự nạp.
 	useEffect(() => {
+		if (activeTab !== 'list') return;
 		if (searchTimerRef.current) window.clearTimeout(searchTimerRef.current);
 		searchTimerRef.current = window.setTimeout(() => {
 			fetch({ search: searchInput.trim() || undefined, page: 1 });
@@ -65,7 +65,7 @@ export default function BookingsPage() {
 			if (searchTimerRef.current) window.clearTimeout(searchTimerRef.current);
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [searchInput]);
+	}, [searchInput, activeTab]);
 
 	const openDetail = async (id: string) => {
 		const b = await loadDetail(id);
@@ -158,7 +158,7 @@ export default function BookingsPage() {
 	);
 
 	return (
-		<div className='employees-page'>
+		<div className='employees-page bookings-page'>
 			<PageHeader
 				title='Lịch hẹn'
 				subtitle='Xem nhanh toàn bộ lịch — thao tác check-in/huỷ ở Lễ tân & Thu ngân'

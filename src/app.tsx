@@ -161,13 +161,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 			</a>
 		),
 
-		menuHeaderRender: (logo: any, title: any) => (
-			<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-				{logo}
-				{title}
-			</div>
-		),
-
 		menuFooterRender: (props: any) => <AuthFloatingMenu collapsed={!!props?.collapsed} />,
 
 		// Bấm logo trên sidebar không điều hướng (chặn hành vi mặc định của ProLayout).
