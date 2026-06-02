@@ -1,8 +1,7 @@
 // PageHeader dùng chung — card trắng bo tròn 16px chứa title + subtitle + actions phải.
 // Mặc định actions chỉ có chuông thông báo. Có thể truyền `extras` để thêm/đè actions.
 import React from 'react';
-import { Badge } from 'antd';
-import { BellOutlined } from '@ant-design/icons';
+import NotificationBell from '@/components/NotificationBell';
 import './style.less';
 
 type Props = {
@@ -20,13 +19,7 @@ const PageHeader: React.FC<Props> = ({ title, subtitle, extras, showBell = true 
 				{subtitle && <span>{subtitle}</span>}
 			</div>
 			{extras && <div className='page-header-card__extras'>{extras}</div>}
-			{showBell && (
-				<div className='page-header-card__icon-btn'>
-					<Badge dot color='#EF4444' offset={[-2, 2]}>
-						<BellOutlined style={{ fontSize: 16, color: '#4A4A4A' }} />
-					</Badge>
-				</div>
-			)}
+			{showBell && <NotificationBell />}
 		</div>
 	);
 };
