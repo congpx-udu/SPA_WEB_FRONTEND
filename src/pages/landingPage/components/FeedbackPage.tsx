@@ -13,7 +13,7 @@ export function FeedbackPage() {
 
   return (
     <div
-      className="flex flex-col min-h-screen"
+      className="landing-root flex flex-col min-h-screen"
       style={{ backgroundColor: 'var(--bg-primary)', fontFamily: 'Inter, sans-serif', paddingTop: 80 }}
     >
       <Navbar />

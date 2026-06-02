@@ -123,10 +123,13 @@ export async function getDashboard(): Promise<IDashboardData> {
 			if (completedAt >= todayStart && completedAt <= todayEnd) completedToday++;
 		}
 
-		for (const it of o.items) {
-			const cur = serviceCount.get(it.serviceId) || { name: it.serviceName, price: it.unitPrice, count: 0 };
-			cur.count += it.quantity;
-			serviceCount.set(it.serviceId, cur);
+		// Đếm dịch vụ cho "phổ biến" — BỎ phiếu đã huỷ để không thổi phồng số lượt.
+		if (o.status !== 'CANCELLED') {
+			for (const it of o.items) {
+				const cur = serviceCount.get(it.serviceId) || { name: it.serviceName, price: it.unitPrice, count: 0 };
+				cur.count += it.quantity;
+				serviceCount.set(it.serviceId, cur);
+			}
 		}
 	}
 
@@ -155,18 +158,32 @@ export async function getDashboard(): Promise<IDashboardData> {
 		avatarColor: AVATAR_COLORS[idx % AVATAR_COLORS.length],
 	}));
 
-	const popularServices: Dashboard.IPopularService[] = Array.from(serviceCount.entries())
-		.sort((a, b) => b[1].count - a[1].count)
-		.slice(0, 5)
-		.map(([id, v], idx) => ({
-			_id: id,
-			name: v.name,
-			bookings: v.count,
-			price: v.price,
-			icon: SVC_PALETTE[idx % SVC_PALETTE.length].icon,
-			color: SVC_PALETTE[idx % SVC_PALETTE.length].color,
-			bgColor: SVC_PALETTE[idx % SVC_PALETTE.length].bgColor,
-		}));
+	// Dịch vụ phổ biến (sắp theo lượt — khớp nhãn "Theo lượt đặt"):
+	// - Ưu tiên topServices CHUẨN từ BE (tính trên TOÀN BỘ dữ liệu) khi BE có trả.
+	// - BE rỗng → fallback đếm client-side (đã bỏ phiếu huỷ ở trên) để luôn có dữ liệu.
+	const beTop = (overview.topServices ?? []).filter((r) => r.count > 0);
+	const baseTop = beTop.length
+		? beTop
+				.slice()
+				.sort((a, b) => b.count - a.count)
+				.slice(0, 5)
+				.map((row) => ({
+					_id: row.serviceId,
+					name: row.serviceName,
+					bookings: row.count,
+					price: row.count > 0 ? Math.round(row.revenue / row.count) : 0,
+				}))
+		: Array.from(serviceCount.entries())
+				.sort((a, b) => b[1].count - a[1].count)
+				.slice(0, 5)
+				.map(([id, v]) => ({ _id: id, name: v.name, bookings: v.count, price: v.price }));
+
+	const popularServices: Dashboard.IPopularService[] = baseTop.map((s, idx) => ({
+		...s,
+		icon: SVC_PALETTE[idx % SVC_PALETTE.length].icon,
+		color: SVC_PALETTE[idx % SVC_PALETTE.length].color,
+		bgColor: SVC_PALETTE[idx % SVC_PALETTE.length].bgColor,
+	}));
 
 	const newCustomersToday = 0; // BE chưa expose filter created_at; sẽ wire khi BE bổ sung.
 

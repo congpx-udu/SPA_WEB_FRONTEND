@@ -148,7 +148,7 @@ export default function InventoryDashboardPage() {
 				<div className='inventory-dash__body'>
 					<Row gutter={[24, 24]}>
 						{kpis.map((k) => (
-							<Col xs={24} sm={12} lg={6} key={k.key}>
+							<Col xs={12} sm={12} lg={6} key={k.key}>
 								<div className='inv-kpi'>
 									<div className='inv-kpi__top'>
 										<div className='inv-kpi__icon' style={{ background: k.iconBg }}>
