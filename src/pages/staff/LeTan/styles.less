@@ -6,6 +6,14 @@
 	margin: 0;
 }
 
+// Cụm status + nút thao tác (gom chung). Desktop: nằm bên phải dòng.
+.le-tan-row__meta {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
 /* ============================================================
    RESPONSIVE — MOBILE (≤ 768px)
    KPI dùng Col xs=12 (2 cột) đã ổn. Dòng lịch hẹn là flex inline
@@ -20,6 +28,12 @@
 			flex-wrap: wrap;
 			gap: 8px 12px !important;
 			padding: 12px 14px !important;
+		}
+
+		// Cụm status + nút → chiếm trọn DÒNG 2, status trái, nút phải. Gọn gàng.
+		.le-tan-row__meta {
+			flex-basis: 100%;
+			justify-content: space-between;
 		}
 	}
 }

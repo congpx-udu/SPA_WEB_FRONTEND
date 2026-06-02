@@ -177,6 +177,7 @@ export default function LeTanPage() {
 													{b.serviceSnapshot.name} · CV {b.staffSnapshot.fullName}
 												</div>
 											</div>
+											<div className='le-tan-row__meta'>
 											<span
 												style={{
 													display: 'inline-flex',
@@ -259,8 +260,9 @@ export default function LeTanPage() {
 												)}
 											</div>
 										</div>
-									);
-								})}
+									</div>
+								);
+							})}
 						</div>
 					)}
 				</Spin>

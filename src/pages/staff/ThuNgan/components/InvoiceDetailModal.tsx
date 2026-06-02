@@ -111,9 +111,10 @@ export default function InvoiceDetailModal({
 			visible={open}
 			centered
 			width={920}
+			className='invoice-detail-modal'
 			onCancel={onCancel}
 			footer={
-				<div style={{ display: 'flex', justifyContent: 'space-between' }}>
+				<div className='inv-footer' style={{ display: 'flex', justifyContent: 'space-between' }}>
 					<div>
 						{canCancel && (
 							<Button danger icon={<XCircle size={14} />} onClick={() => setCancelOpen(true)}>
@@ -158,7 +159,7 @@ export default function InvoiceDetailModal({
 				</div>
 			}
 		>
-			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
+			<div className='inv-grid-2' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 13 }}>
 				<div>
 					<div style={{ color: '#6B7280' }}>Khách hàng</div>
 					<div style={{ fontWeight: 500 }}>{invoice.customerSnapshot.fullName}</div>
@@ -195,8 +196,9 @@ export default function InvoiceDetailModal({
 				size='small'
 				dataSource={invoice.items}
 				pagination={false}
+				scroll={{ x: 720 }}
 				columns={[
-					{ title: 'Dịch vụ', dataIndex: 'serviceName', ellipsis: true },
+					{ title: 'Dịch vụ', dataIndex: 'serviceName', width: 180, ellipsis: true },
 					{ title: 'NV', dataIndex: 'staffName', width: 130, ellipsis: true },
 					{ title: 'SL', dataIndex: 'quantity', width: 60, align: 'center' as const },
 					{
@@ -225,7 +227,7 @@ export default function InvoiceDetailModal({
 
 			<Divider style={{ margin: '14px 0' }} />
 
-			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+			<div className='inv-grid-2' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 				<Form form={form} layout='vertical' disabled={!isDraft}>
 					<Form.Item name='discountAmount' label='Giảm giá (VND)'>
 						<InputNumber
@@ -294,8 +296,9 @@ export default function InvoiceDetailModal({
 						loading={loadingStock}
 						dataSource={stockEntries}
 						pagination={false}
+						scroll={{ x: 440 }}
 						columns={[
-							{ title: 'Vật liệu', dataIndex: 'materialName', ellipsis: true },
+							{ title: 'Vật liệu', dataIndex: 'materialName', width: 160, ellipsis: true },
 							{
 								title: 'Mã',
 								dataIndex: 'materialCode',

@@ -580,4 +580,33 @@ canvas {
 	.auth-footer-collapse {
 		display: none !important;
 	}
+
+	// Chi tiết hoá đơn (InvoiceDetailModal): grid 2 cột → 1 cột; footer nút xếp DỌC
+	// full-width (cụm hành động lên trên, "Huỷ hoá đơn" xuống dưới). Để ở global.less
+	// cho chắc được nạp (import file .less MỚI hay bị umi bỏ qua khi HMR).
+	.invoice-detail-modal {
+		.inv-grid-2 {
+			grid-template-columns: 1fr !important;
+		}
+		.inv-footer {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+		}
+		.inv-footer > div {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin: 0;
+		}
+		.inv-footer > div:first-child {
+			order: 2;
+		}
+		.inv-footer > div:last-child {
+			order: 1;
+		}
+		.inv-footer .ant-btn {
+			width: 100%;
+		}
+	}
 }
