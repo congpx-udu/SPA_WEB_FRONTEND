@@ -181,7 +181,7 @@ const exceptionRoutes = [
 	},
 ];
 
-const notFound = { component: './exception/404' };
+const notFound = { component: './exception/404', layout: false };
 
 let routes: any[];
 if (isLanding) {
