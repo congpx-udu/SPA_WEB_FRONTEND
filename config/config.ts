@@ -7,7 +7,8 @@ import routes from './routes';
 // Model admin thuần (an toàn để stub khi build landing). GIỮ THẬT: auth,
 // thongbao/noticeicon, tienich/phanhoi (global widget dùng) + landingServices,
 // landingPage/* (trang landing dùng).
-const ADMIN_ONLY_MODELS = /[\\/]src[\\/]models[\\/](bom|bookings|customers|dashboard|employees|import|invoices|materials|randomuser|serviceOrders|services|staffServiceAssignments|stockLedger|suppliers|danhmuc[\\/]chucvu|thongbao[\\/](nhansu|receiver|sinhvien|thongbao)|tienich[\\/](auditlog|caidat))(\.tsx?)?$/;
+const ADMIN_ONLY_MODELS =
+	/[\\/]src[\\/]models[\\/](bom|bookings|customers|dashboard|employees|import|invoices|materials|randomuser|serviceOrders|services|staffServiceAssignments|stockLedger|suppliers|danhmuc[\\/]chucvu|thongbao[\\/](nhansu|receiver|sinhvien|thongbao)|tienich[\\/](auditlog|caidat))(\.tsx?)?$/;
 // import proxy from './proxy';
 // const { REACT_APP_ENV } = process.env;
 
@@ -38,6 +39,13 @@ export default defineConfig({
 		ie: 11,
 	},
 	routes,
+	openAPI: {
+		schemaPath: 'https://api.ptit-khangvu.me/api-docs-json',
+		projectName: 'luna',
+		requestLibPath: '@/utils/openapiRequest',
+		apiPrefix: "APP_CONFIG_API_URL.replace(/\\/api\\/v1$/, '')",
+		mock: false,
+	},
 	// Theme for antd: https://ant.design/docs/react/customize-theme-cn
 	theme: {
 		'primary-color': defaultSettings.primaryColor,
@@ -70,7 +78,7 @@ export default defineConfig({
 	nodeModulesTransform: {
 		type: 'none',
 	},
-	// mfsu: {},
+	// mfsu: {}, // TẮT: gây trắng màn trên template base-web-umi tuỳ biến (dva + model global)
 	webpack5: {},
 	exportStatic: {},
 	define: Object.entries(process.env).reduce((result, [key, value]) => {
