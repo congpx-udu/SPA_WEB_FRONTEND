@@ -115,10 +115,12 @@ export default function PayrollDetailModal({ open, payroll, onCancel, onAfterAct
 			visible={open}
 			centered
 			width={720}
+			style={{ maxWidth: '95vw' }}
+			bodyStyle={{ maxHeight: '72vh', overflowY: 'auto' }}
 			onCancel={onCancel}
 			footer={footer}
 		>
-			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 13 }}>
+			<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 16, fontSize: 13 }}>
 				<div>
 					<div style={{ color: '#6B7280' }}>Nhân viên</div>
 					<div style={{ fontWeight: 600 }}>{payroll.staffSnapshot.fullName}</div>
@@ -144,7 +146,7 @@ export default function PayrollDetailModal({ open, payroll, onCancel, onAfterAct
 
 			<Divider style={{ margin: '16px 0' }} />
 
-			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px', fontSize: 13 }}>
+			<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '8px 24px', fontSize: 13 }}>
 				<Row label='Lương cứng' value={`${fmt(payroll.baseSalary)} đ`} />
 				<Row label='Tổng hoa hồng' value={`${fmt(payroll.totalCommission)} đ`} />
 				<Row
@@ -166,7 +168,7 @@ export default function PayrollDetailModal({ open, payroll, onCancel, onAfterAct
 			)}
 
 			<Divider style={{ margin: '14px 0' }}>Nhật ký</Divider>
-			<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 24px', fontSize: 13 }}>
+			<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '8px 24px', fontSize: 13 }}>
 				<div>
 					<div style={{ color: '#6B7280' }}>Chốt bởi</div>
 					<div>{payroll.finalizedByName}</div>
@@ -197,6 +199,7 @@ export default function PayrollDetailModal({ open, payroll, onCancel, onAfterAct
 				cancelText='Đóng'
 				okButtonProps={{ danger: true }}
 				width={460}
+				style={{ maxWidth: '95vw' }}
 			>
 				<p style={{ fontSize: 13, color: '#6B7280' }}>
 					Phiếu sau khi huỷ không thể khôi phục. Bạn có thể chốt lại phiếu mới cho kỳ này.

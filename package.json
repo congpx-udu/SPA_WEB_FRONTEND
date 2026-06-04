@@ -72,6 +72,8 @@
     "antd-img-crop": "^4.2.4",
     "apexcharts": "^3.41.1",
     "axios": "^0.21.1",
+    "baseline-browser-mapping": "^2.10.33",
+    "caniuse-lite": "^1.0.30001793",
     "classnames": "^2.2.6",
     "fs-extra": "^11.2.0",
     "js-file-download": "^0.4.12",

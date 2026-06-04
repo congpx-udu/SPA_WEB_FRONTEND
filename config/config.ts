@@ -78,7 +78,7 @@ export default defineConfig({
 	nodeModulesTransform: {
 		type: 'none',
 	},
-	mfsu: {},
+	// mfsu: {}, // TẮT: gây trắng màn trên template base-web-umi tuỳ biến (dva + model global)
 	webpack5: {},
 	exportStatic: {},
 	define: Object.entries(process.env).reduce((result, [key, value]) => {

@@ -184,6 +184,8 @@ export default function PayrollPage() {
 					value={query.periodMonth}
 					style={{ width: 120 }}
 					options={MONTH_OPTIONS}
+					listHeight={384}
+					virtual={false}
 					onChange={(v) => fetch({ periodMonth: v, page: 1 })}
 					placeholder='Tháng'
 				/>
