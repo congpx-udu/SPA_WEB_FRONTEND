@@ -1,58 +1,4 @@
-// 2 bản build từ cùng codebase, chọn tập route theo env build-time APP_CONFIG_TARGET:
-//   - 'landing' → chỉ trang khách (landing + đặt lịch OTP + feedback). Bundle KHÔNG chứa
-//     code các trang quản lý (umi code-split theo route: route không tồn tại → page không vào bundle).
-//   - mặc định (admin/quản lý) → login + toàn bộ menu vận hành.
-// Build: APP_CONFIG_TARGET=landing umi build  ·  umi build (admin).
-
-// Trang dùng chung cho cả 2 build (exception / fallback).
-const sharedRoutes = [
-	{
-		path: '/403',
-		component: './exception/403/403Page',
-		layout: false,
-	},
-	{
-		path: '/hold-on',
-		component: './exception/DangCapNhat',
-		layout: false,
-	},
-	// 404 đứng độc lập, KHÔNG nằm trong layout sidebar.
-	// Phải có path tường minh: ProLayout chỉ bật `pure` (bỏ sidebar) khi getMatchMenu
-	// khớp route có layout:false — route không path sẽ không khớp nên vẫn dính sidebar.
-	// Mọi URL lạ → redirect về /404 (route có path) → render sạch.
-	{
-		path: '/404',
-		name: 'Không tìm thấy',
-		component: './exception/404',
-		layout: false,
-		hideInMenu: true,
-	},
-	{
-		redirect: '/404',
-	},
-];
-
-// Build LANDING — chỉ trang dành cho khách. Không kéo theo bất kỳ trang quản lý nào.
-const landingRoutes = [
-	{
-		path: '/',
-		name: 'LandingPage',
-		component: './landingPage',
-		layout: false,
-		hideInMenu: true,
-	},
-	{
-		path: '/feedback',
-		name: 'Feedback',
-		component: './landingPage/components/FeedbackPage',
-		layout: false,
-		hideInMenu: true,
-	},
-	...sharedRoutes,
-];
-
-// Build ADMIN / QUẢN LÝ — login + toàn bộ menu vận hành (phân quyền theo StaffRole).
-const adminRoutes = [
+export default [
 	{
 		path: '/user',
 		layout: false,
@@ -70,10 +16,12 @@ const adminRoutes = [
 		],
 	},
 
-	// Bản quản lý KHÔNG có landing — vào '/' đẩy thẳng tới trang đăng nhập.
 	{
 		path: '/',
-		redirect: '/login',
+		name: 'LandingPage',
+		component: './landingPage',
+		layout: false,
+		hideInMenu: true,
 	},
 	{
 		path: '/login',
@@ -166,6 +114,13 @@ const adminRoutes = [
 		access: 'canAdmin',
 	},
 	{
+		path: '/bang-luong',
+		name: 'Bảng lương',
+		component: './admin/Payroll',
+		icon: 'WalletOutlined',
+		access: 'canAdmin',
+	},
+	{
 		path: '/kho-dashboard',
 		name: 'Kho vật liệu',
 		component: './admin/InventoryDashboard',
@@ -193,7 +148,17 @@ const adminRoutes = [
 		icon: 'ShopOutlined',
 		access: 'canAdmin',
 	},
-	...sharedRoutes,
+	{
+		path: '/403',
+		component: './exception/403/403Page',
+		layout: false,
+	},
+	{
+		path: '/hold-on',
+		component: './exception/DangCapNhat',
+		layout: false,
+	},
+	{
+		component: './exception/404',
+	},
 ];
-
-export default process.env.APP_CONFIG_TARGET === 'landing' ? landingRoutes : adminRoutes;
