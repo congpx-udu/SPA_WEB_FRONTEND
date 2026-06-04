@@ -40,7 +40,7 @@ export default defineConfig({
 	},
 	routes,
 	openAPI: {
-		schemaPath: 'http://localhost:3000/api-docs-json',
+		schemaPath: 'https://api.ptit-khangvu.me/api-docs-json',
 		projectName: 'luna',
 		requestLibPath: '@/utils/openapiRequest',
 		apiPrefix: "APP_CONFIG_API_URL.replace(/\\/api\\/v1$/, '')",
@@ -78,7 +78,7 @@ export default defineConfig({
 	nodeModulesTransform: {
 		type: 'none',
 	},
-	// mfsu: {},
+	mfsu: {},
 	webpack5: {},
 	exportStatic: {},
 	define: Object.entries(process.env).reduce((result, [key, value]) => {
