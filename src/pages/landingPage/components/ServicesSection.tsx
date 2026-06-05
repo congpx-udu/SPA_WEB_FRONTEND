@@ -87,32 +87,17 @@ export const ServicesSection: React.FC = () => {
 				{loading ? (
 					<Spin />
 				) : (
-					<>
-						<div className='grid grid-cols-3 gap-6 w-full'>
-							{list.slice(0, 3).map((service, idx) => (
-								<ServiceCard
-									key={service._id}
-									icon={getIcon(service, idx)}
-									gradient={ORB_GRADIENTS[idx % ORB_GRADIENTS.length]}
-									service={service}
-									onViewDetail={() => handleOpenDetail(service)}
-								/>
-							))}
-						</div>
-						{list.length > 3 && (
-							<div className='grid grid-cols-2 gap-6 w-full max-w-[730px]'>
-								{list.slice(3).map((service, idx) => (
-									<ServiceCard
-										key={service._id}
-										icon={getIcon(service, idx + 3)}
-										gradient={ORB_GRADIENTS[(idx + 3) % ORB_GRADIENTS.length]}
-										service={service}
-										onViewDetail={() => handleOpenDetail(service)}
-									/>
-								))}
-							</div>
-						)}
-					</>
+					<div className='grid grid-cols-3 gap-6 w-full'>
+						{list.map((service, idx) => (
+							<ServiceCard
+								key={service._id}
+								icon={getIcon(service, idx)}
+								gradient={ORB_GRADIENTS[idx % ORB_GRADIENTS.length]}
+								service={service}
+								onViewDetail={() => handleOpenDetail(service)}
+							/>
+						))}
+					</div>
 				)}
 			</div>
 

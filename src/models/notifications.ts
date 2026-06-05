@@ -6,6 +6,7 @@
 //  - Lịch hẹn sắp tới hôm nay (bookings CONFIRMED, ≤60' tới)
 //  - Hoá đơn chờ thanh toán (invoices PENDING_PAYMENT)
 import { useCallback, useEffect, useState } from 'react';
+import { useModel } from 'umi';
 import moment from 'moment';
 import * as bookingsApi from '@/services/Bookings/api';
 import * as stockApi from '@/services/StockLedger/api';
@@ -43,6 +44,8 @@ const saveRead = (ids: string[]) => {
 };
 
 export default () => {
+	const { initialState } = useModel('@@initialState');
+	const role = (initialState as any)?.currentUser?.role;
 	const [items, setItems] = useState<AppNoti[]>([]);
 	const [readIds, setReadIds] = useState<string[]>(loadRead);
 
@@ -79,20 +82,23 @@ export default () => {
 							}),
 						),
 				),
-			// 2) Tồn kho thấp
-			stockApi.getLowStock().then((r: any) =>
-				(r.data || []).map(
-					(m: any): AppNoti => ({
-						id: `lowstock-${m.materialId}`,
-						type: 'lowstock',
-						title: 'Tồn kho thấp',
-						desc: `${m.materialName} · còn ${m.stockQuantity}/${m.reorderLevel} ${m.unit}`,
-						time: now.toISOString(),
-						timeLabel: 'Hiện tại',
-						link: '/vat-lieu',
-					}),
-				),
-			),
+			// 2) Tồn kho thấp — endpoint chỉ ADMIN; role khác bỏ qua để tránh 403
+			// (interceptor axios sẽ bắn toast "Không có quyền" với OPERATOR).
+			role === 'ADMIN'
+				? stockApi.getLowStock().then((r: any) =>
+						(r.data || []).map(
+							(m: any): AppNoti => ({
+								id: `lowstock-${m.materialId}`,
+								type: 'lowstock',
+								title: 'Tồn kho thấp',
+								desc: `${m.materialName} · còn ${m.stockQuantity}/${m.reorderLevel} ${m.unit}`,
+								time: now.toISOString(),
+								timeLabel: 'Hiện tại',
+								link: '/vat-lieu',
+							}),
+						),
+				  )
+				: Promise.resolve([] as AppNoti[]),
 			// 3) Lịch hẹn sắp tới hôm nay (CONFIRMED, ≤ 60 phút tới)
 			bookingsApi
 				.getBookings({ fromDate: todayStart, toDate: todayEnd, limit: 50 } as any)
@@ -144,7 +150,7 @@ export default () => {
 		all.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 		setItems(all.slice(0, 40));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [role]);
 
 	useEffect(() => {
 		refresh();

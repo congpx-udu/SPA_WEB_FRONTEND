@@ -110,7 +110,10 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 
 		onPageChange: () => {
 			const { location } = history;
-			const path = location.pathname;
+			// Bỏ slash cuối trước khi so khớp — Netlify (pretty URLs + exportStatic)
+			// 301 "/feedback" → "/feedback/" làm includes() trượt → bị đẩy về /login
+			// (bản landing không có /login → 404).
+			const path = location.pathname.replace(/\/+$/, '') || '/';
 			const PUBLIC_PATHS = ['/', '/login', '/feedback', '/403', '/hold-on', '/404'];
 			const isPublic = PUBLIC_PATHS.includes(path);
 			const user = (initialState as any)?.currentUser as Auth.IStaff | undefined;
