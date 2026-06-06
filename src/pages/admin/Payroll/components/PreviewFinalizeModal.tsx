@@ -144,7 +144,7 @@ export default function PreviewFinalizeModal({ open, staffOptions, onCancel, onF
 							<span style={{ fontWeight: 600, fontSize: 15 }}>{data.staffSnapshot.fullName}</span>
 							<Tag>{data.staffSnapshot.role}</Tag>
 							<span style={{ color: '#6B7280', fontSize: 12 }}>
-								· {data.invoiceCount} hoá đơn PAID trong kỳ
+								· {data.invoiceCount} hoá đơn đã thanh toán trong kỳ
 							</span>
 						</div>
 
