@@ -10,7 +10,7 @@ import {
 	TRANSACTION_TYPE_OPTIONS,
 	REFERENCE_TYPE_LABEL,
 } from '@/services/StockLedger/constant';
-import { MATERIAL_TYPE_OPTIONS } from '@/services/Materials/constant';
+import { MATERIAL_TYPE_OPTIONS, fmtQty } from '@/services/Materials/constant';
 
 type Props = {
 	open: boolean;
@@ -93,11 +93,11 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 						<Descriptions.Item label='Đơn vị'>{material.unit}</Descriptions.Item>
 						<Descriptions.Item label='Tồn kho'>
 							<strong style={{ color: low ? '#DC2626' : '#059669' }}>
-								{material.stockQuantity} {material.unit}
+								{fmtQty(material.stockQuantity)} {material.unit}
 							</strong>
 						</Descriptions.Item>
 						<Descriptions.Item label='Tối thiểu'>
-							{material.reorderLevel} {material.unit}
+							{fmtQty(material.reorderLevel)} {material.unit}
 						</Descriptions.Item>
 						<Descriptions.Item label='Giá nhập'>{fmtVnd(material.unitPrice)}</Descriptions.Item>
 						<Descriptions.Item label='Dự kiến sử dụng'>
@@ -164,7 +164,7 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 										render: (v: number) => (
 											<span style={{ color: v >= 0 ? '#059669' : '#DC2626', fontWeight: 600 }}>
 												{v >= 0 ? '+' : ''}
-												{v}
+												{fmtQty(v)}
 											</span>
 										),
 									},
@@ -173,7 +173,7 @@ export default function MaterialDetailDrawer({ open, material, onClose }: Props)
 										dataIndex: 'stockAfter',
 										width: 80,
 										align: 'center' as const,
-										render: (v: number) => <strong>{v}</strong>,
+										render: (v: number) => <strong>{fmtQty(v)}</strong>,
 									},
 									{
 										title: 'Người',

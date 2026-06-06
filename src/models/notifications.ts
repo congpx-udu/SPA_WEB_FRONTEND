@@ -11,6 +11,7 @@ import moment from 'moment';
 import * as bookingsApi from '@/services/Bookings/api';
 import * as stockApi from '@/services/StockLedger/api';
 import * as invoicesApi from '@/services/Invoices/api';
+import { fmtQty } from '@/services/Materials/constant';
 
 export type TNotiType = 'booking' | 'lowstock' | 'upcoming' | 'invoice';
 
@@ -91,7 +92,7 @@ export default () => {
 								id: `lowstock-${m.materialId}`,
 								type: 'lowstock',
 								title: 'Tồn kho thấp',
-								desc: `${m.materialName} · còn ${m.stockQuantity}/${m.reorderLevel} ${m.unit}`,
+								desc: `${m.materialName} · còn ${fmtQty(m.stockQuantity)}/${fmtQty(m.reorderLevel)} ${m.unit}`,
 								time: now.toISOString(),
 								timeLabel: 'Hiện tại',
 								link: '/vat-lieu',
