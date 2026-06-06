@@ -127,7 +127,7 @@ export default function PayrollDetailModal({ open, payroll, onCancel, onAfterAct
 					<Tag style={{ marginTop: 4 }}>{payroll.staffSnapshot.role}</Tag>
 				</div>
 				<div>
-					<div style={{ color: '#6B7280' }}>Số hoá đơn PAID trong kỳ</div>
+					<div style={{ color: '#6B7280' }}>Số hoá đơn đã thanh toán trong kỳ</div>
 					<div style={{ fontWeight: 500 }}>{payroll.invoiceCount}</div>
 				</div>
 			</div>

@@ -11,7 +11,7 @@ const RevenueChart: React.FC<Props> = ({ data }) => {
 		<div className='chart-card'>
 			<div className='chart-header'>
 				<h3>Doanh thu 7 ngày gần đây</h3>
-				<span className='chart-badge'>Theo phiếu COMPLETED</span>
+				<span className='chart-badge'>Theo hoá đơn đã thanh toán</span>
 			</div>
 			<ColumnChart
 				title=' '
