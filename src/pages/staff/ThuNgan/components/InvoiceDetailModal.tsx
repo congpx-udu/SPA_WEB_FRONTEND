@@ -5,14 +5,13 @@ import {
 	Tag,
 	Table,
 	Button,
-	InputNumber,
 	Input,
 	Form,
 	Popconfirm,
 	Divider,
 } from 'antd';
 import { CheckCircle2, CreditCard, XCircle, Save, Package } from 'lucide-react';
-import { INVOICE_STATUS_OPTIONS } from '@/services/Invoices/constant';
+import { INVOICE_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/services/Invoices/constant';
 import * as ledgerApi from '@/services/StockLedger/api';
 
 type Props = {
@@ -62,7 +61,7 @@ export default function InvoiceDetailModal({
 
 	useEffect(() => {
 		if (open && invoice) {
-			form.setFieldsValue({ discountAmount: invoice.discountAmount, note: invoice.note });
+			form.setFieldsValue({ note: invoice.note });
 			setCancelReason('');
 			setCancelOpen(false);
 		}
@@ -78,7 +77,6 @@ export default function InvoiceDetailModal({
 	const handleSave = async () => {
 		const values = await form.validateFields();
 		const r = await onUpdate(invoice.id, {
-			discountAmount: Number(values.discountAmount ?? 0),
 			note: values.note ?? '',
 		});
 		if (r) onAfterAction();
@@ -176,7 +174,11 @@ export default function InvoiceDetailModal({
 				{invoice.paidAt && (
 					<div>
 						<div style={{ color: '#6B7280' }}>Thanh toán</div>
-						<div>{invoice.paidByName} — {invoice.paymentMethod}</div>
+						<div>
+							{invoice.paidByName} —{' '}
+							{PAYMENT_METHOD_OPTIONS.find((m) => m.value === invoice.paymentMethod)?.label ??
+								invoice.paymentMethod}
+						</div>
 						<div style={{ color: '#6B7280', fontSize: 12 }}>{fmtTime(invoice.paidAt)}</div>
 					</div>
 				)}
@@ -229,15 +231,6 @@ export default function InvoiceDetailModal({
 
 			<div className='inv-grid-2' style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
 				<Form form={form} layout='vertical' disabled={!isDraft}>
-					<Form.Item name='discountAmount' label='Giảm giá (VND)'>
-						<InputNumber
-							style={{ width: '100%' }}
-							min={0}
-							step={1000}
-							formatter={(v) => `${v}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-							parser={((v: string) => v.replace(/[^\d]/g, '')) as any}
-						/>
-					</Form.Item>
 					<Form.Item name='note' label='Ghi chú'>
 						<Input.TextArea rows={3} maxLength={500} />
 					</Form.Item>
@@ -253,7 +246,9 @@ export default function InvoiceDetailModal({
 				>
 					<Row label='Tạm tính dịch vụ' value={fmtVnd(invoice.itemsSubtotal)} />
 					<Row label='Phụ thu' value={fmtVnd(invoice.extraCharge)} />
-					<Row label='Giảm giá' value={`- ${fmtVnd(invoice.discountAmount)}`} negative />
+					{invoice.discountAmount > 0 && (
+						<Row label='Giảm giá' value={`- ${fmtVnd(invoice.discountAmount)}`} negative />
+					)}
 					<Divider style={{ margin: '8px 0' }} />
 					<Row
 						label={<strong>Tổng thanh toán</strong>}

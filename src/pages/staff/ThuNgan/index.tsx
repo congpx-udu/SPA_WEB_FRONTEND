@@ -99,13 +99,6 @@ export default function ThuNganPage() {
 				render: (v: number) => fmtVnd(v),
 			},
 			{
-				title: 'Giảm giá',
-				dataIndex: 'discountAmount',
-				width: 100,
-				align: 'center' as const,
-				render: (v: number) => (v > 0 ? <span style={{ color: '#DC2626' }}>-{fmtVnd(v)}</span> : '—'),
-			},
-			{
 				title: 'Tổng',
 				dataIndex: 'totalAmount',
 				width: 120,
