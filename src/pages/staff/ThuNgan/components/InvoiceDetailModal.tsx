@@ -12,6 +12,7 @@ import {
 } from 'antd';
 import { CheckCircle2, CreditCard, XCircle, Save, Package } from 'lucide-react';
 import { INVOICE_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/services/Invoices/constant';
+import { fmtQty } from '@/services/Materials/constant';
 import * as ledgerApi from '@/services/StockLedger/api';
 
 type Props = {
@@ -307,7 +308,7 @@ export default function InvoiceDetailModal({
 								align: 'center' as const,
 								render: (v: number, r: StockLedger.ILedgerEntry) => (
 									<span style={{ color: '#DC2626', fontWeight: 600 }}>
-										{v} {r.materialUnit}
+										{fmtQty(v)} {r.materialUnit}
 									</span>
 								),
 							},
@@ -316,6 +317,7 @@ export default function InvoiceDetailModal({
 								dataIndex: 'stockAfter',
 								width: 80,
 								align: 'center' as const,
+								render: fmtQty,
 							},
 						]}
 					/>
