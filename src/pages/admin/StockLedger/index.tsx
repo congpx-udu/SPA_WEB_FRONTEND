@@ -14,6 +14,7 @@ import {
 	REFERENCE_TYPE_LABEL,
 	DEFAULT_PAGE_SIZE,
 } from '@/services/StockLedger/constant';
+import { fmtQty } from '@/services/Materials/constant';
 import * as invoicesApi from '@/services/Invoices/api';
 import '@/pages/admin/Employees/styles.less';
 
@@ -163,11 +164,11 @@ export default function StockLedgerPage() {
 		{
 			title: 'SL thay đổi', dataIndex: 'quantityChange', width: 120, align: 'right' as const,
 			render: (v: number, r: StockLedger.ILedgerEntry) => (
-				<span style={{ color: v >= 0 ? '#059669' : '#DC2626', fontWeight: 600 }}>{v >= 0 ? '+' : ''}{v} {r.materialUnit}</span>
+				<span style={{ color: v >= 0 ? '#059669' : '#DC2626', fontWeight: 600 }}>{v >= 0 ? '+' : ''}{fmtQty(v)} {r.materialUnit}</span>
 			),
 		},
-		{ title: 'Tồn trước', dataIndex: 'stockBefore', width: 90, align: 'right' as const },
-		{ title: 'Tồn sau', dataIndex: 'stockAfter', width: 90, align: 'right' as const, render: (v: number) => <strong>{v}</strong> },
+		{ title: 'Tồn trước', dataIndex: 'stockBefore', width: 90, align: 'right' as const, render: fmtQty },
+		{ title: 'Tồn sau', dataIndex: 'stockAfter', width: 90, align: 'right' as const, render: (v: number) => <strong>{fmtQty(v)}</strong> },
 		{ title: 'Đơn giá', dataIndex: 'unitPrice', width: 110, align: 'right' as const, render: (v: number | null) => (v != null ? fmtVnd(v) : '—') },
 		{ title: 'Thành tiền', dataIndex: 'totalCost', width: 120, align: 'right' as const, render: (v: number | null) => (v != null ? <strong>{fmtVnd(v)}</strong> : '—') },
 	];
@@ -231,11 +232,11 @@ export default function StockLedgerPage() {
 		{
 			title: 'SL thay đổi', dataIndex: 'quantityChange', width: 110, align: 'right' as const,
 			render: (v: number, r: StockLedger.ILedgerEntry) => (
-				<span style={{ color: v >= 0 ? '#059669' : '#DC2626', fontWeight: 600 }}>{v >= 0 ? '+' : ''}{v} {r.materialUnit}</span>
+				<span style={{ color: v >= 0 ? '#059669' : '#DC2626', fontWeight: 600 }}>{v >= 0 ? '+' : ''}{fmtQty(v)} {r.materialUnit}</span>
 			),
 		},
-		{ title: 'Tồn trước', dataIndex: 'stockBefore', width: 90, align: 'right' as const },
-		{ title: 'Tồn sau', dataIndex: 'stockAfter', width: 90, align: 'right' as const, render: (v: number) => <strong>{v}</strong> },
+		{ title: 'Tồn trước', dataIndex: 'stockBefore', width: 90, align: 'right' as const, render: fmtQty },
+		{ title: 'Tồn sau', dataIndex: 'stockAfter', width: 90, align: 'right' as const, render: (v: number) => <strong>{fmtQty(v)}</strong> },
 		{ title: 'NCC', dataIndex: 'supplierName', width: 150, ellipsis: true, render: (v: string | null) => v || '—' },
 		{ title: 'Đơn giá', dataIndex: 'unitPrice', width: 110, align: 'right' as const, render: (v: number | null) => (v != null ? fmtVnd(v) : '—') },
 		{ title: 'Tổng tiền', dataIndex: 'totalCost', width: 120, align: 'right' as const, render: (v: number | null) => (v != null ? <strong>{fmtVnd(v)}</strong> : '—') },
