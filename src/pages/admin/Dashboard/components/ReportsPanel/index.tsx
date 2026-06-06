@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Tabs, Table, DatePicker, Button, message } from 'antd';
+import { Tabs, Table, DatePicker, Button, message, Tooltip } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
+import { Eye } from 'lucide-react';
 import moment, { Moment } from 'moment';
 import * as reportsApi from '@/services/Reports/api';
 import { formatPrice } from '@/services/admin/Dashboard/constant';
@@ -88,35 +89,43 @@ const ReportsPanel: React.FC = () => {
 		}
 	};
 
+	// Căn giữa các cột số liệu; riêng cột tên (Dịch vụ / Nhân viên) giữ căn trái.
 	const serviceColumns = [
 		{ title: 'Dịch vụ', dataIndex: 'serviceName', key: 'serviceName' },
-		{ title: 'Số lượt', dataIndex: 'count', key: 'count', align: 'right' as const, width: 100 },
+		{ title: 'Số lượt', dataIndex: 'count', key: 'count', align: 'center' as const, width: 100 },
 		{
 			title: 'Doanh thu',
 			dataIndex: 'revenue',
 			key: 'revenue',
-			align: 'right' as const,
+			align: 'center' as const,
 			width: 160,
 			render: (v: number) => formatPrice(v),
 		},
 		{
 			title: '',
 			key: 'action',
-			width: 120,
+			align: 'center' as const,
+			width: 60,
 			render: (_: any, row: ReportMgmt.IServiceRevenueRow) => (
-				<a onClick={() => setDrill({ serviceId: row.serviceId, serviceName: row.serviceName })}>Xem hoá đơn</a>
+				<Tooltip title='Xem hoá đơn'>
+					<Button
+						type='text'
+						icon={<Eye size={16} />}
+						onClick={() => setDrill({ serviceId: row.serviceId, serviceName: row.serviceName })}
+					/>
+				</Tooltip>
 			),
 		},
 	];
 
 	const staffColumns = [
 		{ title: 'Nhân viên', dataIndex: 'staffName', key: 'staffName' },
-		{ title: 'Số ca', dataIndex: 'serviceCount', key: 'serviceCount', align: 'right' as const, width: 100 },
+		{ title: 'Số ca', dataIndex: 'serviceCount', key: 'serviceCount', align: 'center' as const, width: 100 },
 		{
 			title: 'Doanh thu mang lại',
 			dataIndex: 'revenueGenerated',
 			key: 'revenueGenerated',
-			align: 'right' as const,
+			align: 'center' as const,
 			width: 180,
 			render: (v: number) => formatPrice(v),
 		},
@@ -124,7 +133,7 @@ const ReportsPanel: React.FC = () => {
 			title: 'Hoa hồng',
 			dataIndex: 'totalCommission',
 			key: 'totalCommission',
-			align: 'right' as const,
+			align: 'center' as const,
 			width: 160,
 			render: (v: number) => formatPrice(v),
 		},
