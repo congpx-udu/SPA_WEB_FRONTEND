@@ -1,15 +1,21 @@
 import { useEffect, useRef } from 'react';
-import { useModel } from 'umi';
+import { useLocation, useModel } from 'umi';
 import './index.less';
+
+// Các trang `layout: false` (landing, login…) — ProLayout vẫn gọi childrenRender
+// ở chế độ pure nên topbar sẽ đè lên navbar riêng của các trang này nếu không chặn.
+const LAYOUTLESS_PATHS = ['/', '/feedback', '/login', '/change-password', '/user/login', '/403', '/hold-on'];
 
 /**
  * Thanh top bar + nút hamburger cho admin trên MOBILE (<768px).
  * - Chỉ hiển thị ở mobile (ẩn ở desktop qua CSS) → desktop không đổi.
+ * - Chỉ render trên trang quản lý (có sidebar) — ẩn ở landing/login/feedback.
  * - Bấm hamburger toggle `initialState.collapsed`; ProLayout tự render
  *   sidebar thành Drawer trượt ra ở chế độ mobile.
  */
 export default function MobileTopBar() {
 	const { initialState, setInitialState } = useModel('@@initialState') as any;
+	const location = useLocation();
 	const collapsed = !!initialState?.collapsed;
 	const wasMobile = useRef<boolean | null>(null);
 
@@ -30,6 +36,10 @@ export default function MobileTopBar() {
 
 	const toggle = () =>
 		setInitialState((s: any) => ({ ...(s ?? {}), collapsed: !s?.collapsed }));
+
+	// Bỏ slash cuối (Netlify pretty URLs) rồi so khớp — giống onPageChange ở app.tsx.
+	const path = location.pathname.replace(/\/+$/, '') || '/';
+	if (LAYOUTLESS_PATHS.includes(path)) return null;
 
 	return (
 		<>
@@ -52,6 +62,8 @@ export default function MobileTopBar() {
 					<span>Luna Spa</span>
 				</div>
 			</div>
+			{/* Spacer đẩy nội dung xuống dưới top bar fixed (cao 56px ở mobile, 0 ở desktop) */}
+			<div className="admin-mobile-topbar-spacer" />
 		</>
 	);
 }

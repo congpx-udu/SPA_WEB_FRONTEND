@@ -173,9 +173,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
 			<OIDCBounder>
 				<ErrorBoundary>
 					{/* <TechnicalSupportBounder> */}
-					{/* Top bar + hamburger chỉ hiện ở mobile (CSS), điều khiển Drawer sidebar */}
+					{/* Top bar + hamburger chỉ hiện ở mobile (CSS) trên trang quản lý,
+					    tự ẩn ở trang layout:false (landing/login…) — kèm spacer bên trong */}
 					<MobileTopBar />
-					<div className="admin-mobile-topbar-spacer" />
 					<OneSignalBounder>{dom}</OneSignalBounder>
 					{/* </TechnicalSupportBounder> */}
 				</ErrorBoundary>
