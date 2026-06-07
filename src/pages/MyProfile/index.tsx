@@ -179,6 +179,8 @@ export default function MyProfilePage() {
 						)}
 					</Tabs.TabPane>
 
+					{/* OPERATOR không tự đổi mật khẩu — ADMIN cấp/reset tài khoản */}
+					{user?.role !== 'OPERATOR' && (
 					<Tabs.TabPane tab='Đổi mật khẩu' key='password'>
 						<Form form={form} layout='vertical' style={{ maxWidth: 480 }}>
 							<Form.Item
@@ -221,6 +223,7 @@ export default function MyProfilePage() {
 							</Form.Item>
 						</Form>
 					</Tabs.TabPane>
+					)}
 				</Tabs>
 			</div>
 		</div>

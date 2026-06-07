@@ -21,11 +21,17 @@ export default () => {
 	// Tránh response cũ (đến muộn) đè dữ liệu mới khi đổi tuần/lọc liên tục.
 	const reqIdRef = useRef(0);
 
+	// Giữ query MỚI NHẤT qua ref — fetch() là useCallback deps rỗng nên nếu đọc
+	// thẳng state `query` sẽ dính stale closure (luôn là query khởi tạo, mất
+	// fromDate/toDate khi refetch sau check-in/huỷ/no-show ở trang Lễ tân).
+	const queryRef = useRef(query);
+
 	const fetch = useCallback(async (override?: Partial<BookingMgmt.IQuery>) => {
 		const reqId = ++reqIdRef.current;
 		setLoading(true);
 		try {
-			const next = { ...query, ...(override ?? {}) };
+			const next = { ...queryRef.current, ...(override ?? {}) };
+			queryRef.current = next;
 			setQuery(next);
 			const res = await api.getBookings(next);
 			if (reqId !== reqIdRef.current) return; // có request mới hơn → bỏ qua kết quả này
