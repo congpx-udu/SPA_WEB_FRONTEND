@@ -9,11 +9,13 @@ import {
 	Form,
 	Popconfirm,
 	Divider,
+	message,
 } from 'antd';
-import { CheckCircle2, CreditCard, XCircle, Save, Package } from 'lucide-react';
+import { CheckCircle2, CreditCard, XCircle, Save, Package, Printer } from 'lucide-react';
 import { INVOICE_STATUS_OPTIONS, PAYMENT_METHOD_OPTIONS } from '@/services/Invoices/constant';
 import { fmtQty } from '@/services/Materials/constant';
 import * as ledgerApi from '@/services/StockLedger/api';
+import * as invoiceApi from '@/services/Invoices/api';
 
 type Props = {
 	open: boolean;
@@ -46,6 +48,7 @@ export default function InvoiceDetailModal({
 	const [cancelOpen, setCancelOpen] = useState(false);
 	const [stockEntries, setStockEntries] = useState<StockLedger.ILedgerEntry[]>([]);
 	const [loadingStock, setLoadingStock] = useState(false);
+	const [exportingPdf, setExportingPdf] = useState(false);
 
 	useEffect(() => {
 		if (!open || !invoice || !invoice.stockDeducted) {
@@ -73,7 +76,20 @@ export default function InvoiceDetailModal({
 	const statusOpt = INVOICE_STATUS_OPTIONS.find((s) => s.value === invoice.status);
 	const isDraft = invoice.status === 'DRAFT';
 	const isPending = invoice.status === 'PENDING_PAYMENT';
+	const isPaid = invoice.status === 'PAID';
 	const canCancel = isDraft || isPending;
+
+	// Xuất hoá đơn PDF để in bill — chỉ sau khi đã xác nhận thanh toán.
+	const handleExportPdf = async () => {
+		setExportingPdf(true);
+		try {
+			await invoiceApi.exportInvoicePdf(invoice.id, invoice.invoiceCode);
+		} catch {
+			message.error('Xuất PDF hoá đơn thất bại');
+		} finally {
+			setExportingPdf(false);
+		}
+	};
 
 	const handleSave = async () => {
 		const values = await form.validateFields();
@@ -152,6 +168,16 @@ export default function InvoiceDetailModal({
 								style={{ background: '#059669', borderColor: '#059669' }}
 							>
 								Ghi nhận thanh toán (tiền mặt)
+							</Button>
+						)}
+						{isPaid && (
+							<Button
+								type='primary'
+								icon={<Printer size={14} />}
+								onClick={handleExportPdf}
+								loading={exportingPdf}
+							>
+								In hoá đơn (PDF)
 							</Button>
 						)}
 					</div>

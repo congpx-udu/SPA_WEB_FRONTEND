@@ -38,6 +38,13 @@
 			padding-left: 40px !important;
 			padding-right: 40px !important;
 		}
+		/* trang /feedback (Nhận xét khách hàng) */
+		.fb-hero,
+		.fb-filter,
+		.fb-list {
+			padding-left: 40px !important;
+			padding-right: 40px !important;
+		}
 	}
 }
 
@@ -178,6 +185,64 @@
 			align-items: flex-start !important;
 			gap: 16px !important;
 		}
+
+		/* ----- Trang /feedback (Nhận xét khách hàng) ----- */
+		/* Hero: thu padding, chữ nhỏ lại, khối thống kê canh giữa + cho phép wrap */
+		.fb-hero {
+			padding: 40px 20px !important;
+		}
+		.fb-hero h1 {
+			font-size: 28px !important;
+			text-align: center;
+		}
+		.fb-hero > p {
+			text-align: center;
+		}
+		/* Row gutter 64 → bóp lại để 3 chỉ số không tràn màn hình hẹp */
+		.fb-hero .ant-row {
+			margin: 0 !important;
+			justify-content: center;
+			row-gap: 12px;
+		}
+		.fb-hero .ant-row > .ant-col {
+			padding-left: 12px !important;
+			padding-right: 12px !important;
+		}
+		.fb-hero .ant-statistic {
+			text-align: center;
+		}
+		/* valueStyle đặt inline fontSize 36 → cần !important để thắng */
+		.fb-hero .ant-statistic-content {
+			font-size: 26px !important;
+		}
+
+		/* Thanh lọc: wrap nhiều dòng, tag nhỏ lại */
+		.fb-filter {
+			padding: 16px 20px !important;
+			flex-wrap: wrap;
+			gap: 8px !important;
+		}
+		.fb-filter .ant-tag {
+			padding: 3px 12px !important;
+			font-size: 12px !important;
+			margin-right: 0;
+		}
+
+		/* Danh sách card đánh giá */
+		.fb-list {
+			padding: 32px 20px 48px !important;
+		}
+		.fb-list .landing-card .ant-card-body {
+			padding: 18px 16px !important;
+		}
+		/* hàng đầu card (avatar+tên | sao+ngày) → cho phép wrap khi hẹp */
+		.fb-list .landing-card .ant-card-body > div:first-child {
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+		.fb-list .landing-card .items-end {
+			align-items: flex-start !important;
+		}
 	}
 }
 
@@ -218,5 +283,23 @@
 	}
 	.service-detail-modal .ant-modal-body h2 {
 		font-size: 22px !important;
+	}
+}
+
+/* ============================================================
+   MODAL CHI TIẾT ĐÁNH GIÁ (trang /feedback)
+   antd render qua portal ở document.body → rule global như trên.
+   ============================================================ */
+@media (max-width: 768px) {
+	.ant-modal.feedback-detail-modal {
+		width: calc(100vw - 24px) !important;
+		max-width: calc(100vw - 24px) !important;
+	}
+	.feedback-detail-modal .ant-modal-body {
+		padding: 16px 18px !important;
+	}
+	/* hàng Dịch vụ / Ngày / Điện thoại → cho phép wrap */
+	.feedback-detail-modal .ant-row {
+		row-gap: 12px;
 	}
 }

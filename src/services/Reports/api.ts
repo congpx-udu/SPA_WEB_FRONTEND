@@ -61,3 +61,25 @@ export async function exportRevenueExcel(query: ReportMgmt.IRevenueQuery): Promi
 	link.remove();
 	window.URL.revokeObjectURL(url);
 }
+
+// RP-07B — export PDF. BE trả binary (KHÔNG envelope) → blob, mở tab mới để xem/in.
+export async function exportRevenuePdf(query: ReportMgmt.IRevenueQuery): Promise<void> {
+	const res = await axios.get(`${BASE}/reports/revenue/export-pdf`, {
+		params: query,
+		responseType: 'blob',
+	});
+	const blob = new Blob([res.data], { type: 'application/pdf' });
+	const url = window.URL.createObjectURL(blob);
+	const win = window.open(url, '_blank');
+	// Trình duyệt chặn popup → fallback tải file.
+	if (!win) {
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `bao-cao-doanh-thu-${query.fromDate}-${query.toDate}.pdf`;
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+	}
+	// Giải phóng URL sau khi tab đã load.
+	setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+}

@@ -19,7 +19,7 @@ export function FeedbackPage() {
       <Navbar />
 
       <section
-        className="flex flex-col items-center gap-4 px-[120px] py-16"
+        className="fb-hero flex flex-col items-center gap-4 px-[120px] py-16"
         style={{ backgroundColor: 'var(--bg-secondary)' }}
       >
         <h1 className="text-[40px] font-semibold" style={{ color: 'var(--text-primary)' }}>
@@ -57,7 +57,7 @@ export function FeedbackPage() {
       </section>
 
       <div
-        className="flex items-center gap-3 px-[120px]"
+        className="fb-filter flex items-center gap-3 px-[120px]"
         style={{
           backgroundColor: 'var(--bg-card)',
           borderBottom: '1px solid var(--border-light)',
@@ -98,7 +98,7 @@ export function FeedbackPage() {
         ))}
       </div>
 
-      <section className="flex flex-col items-center gap-4 px-[120px] py-12" style={{ marginTop: 8, paddingBottom: 64 }}>
+      <section className="fb-list flex flex-col items-center gap-4 px-[120px] py-12" style={{ marginTop: 8, paddingBottom: 64 }}>
         {filteredReviews.map((review) => (
           <Card
             key={review.id}
@@ -150,6 +150,7 @@ export function FeedbackPage() {
         title="Chi Tiết Đánh Giá"
         width={640}
         centered
+        className="feedback-detail-modal"
         bodyStyle={{ padding: '24px 32px' }}
       >
         {selectedReview && (
