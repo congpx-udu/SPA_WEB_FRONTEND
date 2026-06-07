@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Tabs, Table, DatePicker, Button, message, Tooltip } from 'antd';
-import { DownloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { Eye } from 'lucide-react';
 import moment, { Moment } from 'moment';
 import * as reportsApi from '@/services/Reports/api';
@@ -19,6 +19,7 @@ const ReportsPanel: React.FC = () => {
 	const [range, setRange] = useState<[Moment, Moment]>([moment().startOf('month'), moment().endOf('month')]);
 	const [loading, setLoading] = useState(false);
 	const [exporting, setExporting] = useState(false);
+	const [exportingPdf, setExportingPdf] = useState(false);
 	const [revenue, setRevenue] = useState<ReportMgmt.IRevenueReport | null>(null);
 	const [byService, setByService] = useState<ReportMgmt.IServiceRevenueRow[]>([]);
 	const [byStaff, setByStaff] = useState<ReportMgmt.IStaffStats[]>([]);
@@ -86,6 +87,18 @@ const ReportsPanel: React.FC = () => {
 			message.error('Xuất Excel thất bại');
 		} finally {
 			setExporting(false);
+		}
+	};
+
+	// RP-07B — xuất PDF báo cáo doanh thu (mở tab mới để xem/in).
+	const onExportPdf = async () => {
+		setExportingPdf(true);
+		try {
+			await reportsApi.exportRevenuePdf({ fromDate: fmt(range[0]), toDate: fmt(range[1]) });
+		} catch {
+			message.error('Xuất PDF thất bại');
+		} finally {
+			setExportingPdf(false);
 		}
 	};
 
@@ -168,6 +181,9 @@ const ReportsPanel: React.FC = () => {
 					/>
 					<Button icon={<DownloadOutlined />} loading={exporting} onClick={onExport}>
 						Xuất Excel
+					</Button>
+					<Button icon={<FilePdfOutlined />} loading={exportingPdf} onClick={onExportPdf}>
+						Xuất PDF
 					</Button>
 				</div>
 			</div>

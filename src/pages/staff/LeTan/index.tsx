@@ -59,6 +59,9 @@ export default function LeTanPage() {
 
 	const handleCheckIn = async (b: BookingMgmt.IBooking) => {
 		const r = await checkIn(b.id);
+		if (!r) return;
+		// fetch() không tham số giữ nguyên bộ lọc hôm nay (model nhớ query gần nhất).
+		fetch();
 		if (r?.data?.serviceOrder?.id) {
 			Modal.confirm({
 				title: 'Đã check-in & tạo phiếu DV',
@@ -67,7 +70,6 @@ export default function LeTanPage() {
 				cancelText: 'Ở lại',
 				onOk: () => history.push('/phieu-dich-vu'),
 			});
-			fetch();
 		}
 	};
 
